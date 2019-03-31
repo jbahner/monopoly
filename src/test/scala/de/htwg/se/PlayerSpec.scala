@@ -11,6 +11,9 @@ class PlayerSpec extends WordSpec with Matchers {
       "have money" in {
         player.money should be(1500)
       }
+      "have a String representation" in {
+        player.toString should be("name")
+      }
     }
   }
 }
