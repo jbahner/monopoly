@@ -1,5 +1,5 @@
 package de.htwg.se
 
-class Player {
+case class Player(name : String, money:Int) {
 
 }
