@@ -1,2 +1,16 @@
-*.class
-*.log
+# IntelliJ
+.idea/
+target/
+
+# sbt
+.cache
+.lib/
+dist/*
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+project/project/
+logs/
+project/.sbtserver
+.sbtserver/
