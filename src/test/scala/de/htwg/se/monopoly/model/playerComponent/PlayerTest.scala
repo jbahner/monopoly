@@ -1,5 +1,4 @@
-package de.htwg.se
-
+package de.htwg.se.monopoly.model.playerComponent
 
 import junit.framework.TestCase
 import org.junit.Assert._
