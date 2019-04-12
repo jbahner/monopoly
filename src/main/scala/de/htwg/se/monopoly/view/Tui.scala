@@ -6,7 +6,7 @@ import de.htwg.se.monopoly.util.Observer
 
 import scala.io.StdIn.readLine
 
-class Tui(controller: Controller) extends Observer{
+class Tui(controller: Controller) extends Observer {
     controller.add(this)
     controller.setUp()
     while (true) {

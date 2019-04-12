@@ -1,17 +1,17 @@
 package de.htwg.se.monopoly.controller
 
-import de.htwg.se.monopoly.model.boardComponent.{ActionField, Board, Field, Street}
-import de.htwg.se.monopoly.util.{FieldIterator, Observable, PlayerIterator}
 import de.htwg.se.monopoly.controller.GameStatus._
+import de.htwg.se.monopoly.model.boardComponent.{ActionField, Board, Field, Street}
 import de.htwg.se.monopoly.model.playerComponent.Player
+import de.htwg.se.monopoly.util.{FieldIterator, Observable, PlayerIterator}
 
-class Controller extends Observable{
+class Controller extends Observable {
     var board: Board = _
 
     def setUp() = {
         val go = ActionField("Go")
         var fields = List[Field](go)
-        for(i <- 1 to 9)
+        for (i <- 1 to 9)
             fields = Street("Street" + i, 50 * i) :: fields
         val player1 = Player("Player1", 1500, new FieldIterator(fields))
         val player2 = Player("Player2", 1500, new FieldIterator(fields))
