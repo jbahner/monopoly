@@ -6,11 +6,10 @@ class FieldIterator(fields: List[Field]) extends Iterator[Field] {
     private var current = 0
 
     override def next(): Field = {
+        current += 1
         if (!hasNext)
             throw new NoSuchElementException
-        val tmp = current
-        current += 1
-        fields(tmp)
+        fields(current)
     }
 
     override def hasNext: Boolean = {
@@ -18,7 +17,4 @@ class FieldIterator(fields: List[Field]) extends Iterator[Field] {
             current = 0
         fields(current) != null
     }
-
-    def get(): Field = if (current >= fields.size) fields.head else fields(current)
-
 }
