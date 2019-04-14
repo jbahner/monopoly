@@ -7,5 +7,8 @@ case class Board(fields: List[Field], currentPlayer: Player, playerIt: PlayerIte
 
     def nextPlayer = playerIt.next()
 
-    def replacePlayer(player: Player, newPlayer: Player) = playerIt.replace(player, newPlayer)
+    def replacePlayer(player: Player, newPlayer: Player): Board = {
+        playerIt.replace(player, newPlayer)
+        this.copy(currentPlayer = newPlayer)
+    }
 }
