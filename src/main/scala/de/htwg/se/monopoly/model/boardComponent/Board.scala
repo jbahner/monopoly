@@ -9,6 +9,6 @@ case class Board(fields: List[Field], currentPlayer: Player, playerIt: PlayerIte
 
     def replacePlayer(player: Player, newPlayer: Player): Board = {
         playerIt.replace(player, newPlayer)
-        this.copy(currentPlayer = newPlayer)
+        this.copy(currentPlayer = if(currentPlayer == player) newPlayer else currentPlayer)
     }
 }
