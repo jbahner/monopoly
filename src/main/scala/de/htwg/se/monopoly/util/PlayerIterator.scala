@@ -19,4 +19,17 @@ class PlayerIterator(players: Array[Player]) extends Iterator[Player] {
     }
 
     def replace(player: Player, newPlayer: Player) = players(players.indexOf(player)) = newPlayer
+
+    def list : List[Player] =  {
+        var list : List[Player] = List()
+        var cur = current
+        for(i <- players.indices) {
+            if(cur >= players.length) {
+                cur = 0
+            }
+            list = players(cur) :: list
+            cur += 1
+        }
+        list
+    }
 }
