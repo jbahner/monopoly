@@ -37,6 +37,7 @@ class Tui(controller: Controller) extends Observer {
             case CAN_BUY => askForBuy(controller.getCurrentField.asInstanceOf[Buyable])
             case BOUGHT_BY_OTHER => info("Field already bought!")//TODO pay rent
             case BOUGHT => info("Successfully bought " + controller.getCurrentField.getName)
+            case PASSED_GO => info("Received 200€ by passing Go")
             case NOTHING =>
         }
     }

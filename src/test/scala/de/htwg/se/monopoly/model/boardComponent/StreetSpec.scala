@@ -12,6 +12,9 @@ class StreetSpec extends WordSpec with Matchers {
             "should have a price" in {
                 street.price should be(100)
             }
+            "should not be bought" in {
+                street.isBought should be(false)
+            }
         }
     }
 }

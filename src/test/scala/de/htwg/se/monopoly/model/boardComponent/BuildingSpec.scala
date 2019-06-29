@@ -12,6 +12,9 @@ class BuildingSpec extends WordSpec with Matchers {
             "should have a price" in {
                 building.price should be(100)
             }
+            "should not be bought" in {
+                building.isBought should be(false)
+            }
         }
     }
 }

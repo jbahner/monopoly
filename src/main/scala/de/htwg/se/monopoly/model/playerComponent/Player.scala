@@ -5,14 +5,14 @@ import de.htwg.se.monopoly.util.FieldIterator
 
 case class Player(name: String, money: Int, currentField: Field, bought : List[Buyable], fieldIt: FieldIterator) {
 
-    def walk(steps: Int): Player = {
-        var overGo = false
+    def walk(steps: Int): (Player, Boolean) = {
+        var passedGo = false
         var field: Field = null
         for (_ <- 0 until steps) {
             field = fieldIt.next()
-            if (field.getName.equals("Go")) overGo = true
+            if (field.getName.equals("Go")) passedGo = true
         }
-        this.copy(money = money + (if (overGo) 200 else 0), currentField = field)
+        (this.copy(money = money + (if (passedGo) 200 else 0), currentField = field), passedGo)
     }
 
     override def toString: String = name + ", money: " + money
