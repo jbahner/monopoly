@@ -25,7 +25,8 @@ class Controller extends Observable {
 
     def processRoll(firstDice: Int, secondDice: Int): Unit = {
         val player = board.currentPlayer
-        val newPlayer = player.walk(firstDice + secondDice)
+        val (newPlayer, passedGo) = player.walk(firstDice + secondDice)
+        if(passedGo) notifyObservers(PASSED_GO)
         board = board.replacePlayer(player, newPlayer)
         notifyObservers(NEW_FIELD)
         val newField = getCurrentField

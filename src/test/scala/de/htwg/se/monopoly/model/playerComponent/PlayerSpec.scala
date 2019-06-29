@@ -32,11 +32,12 @@ class PlayerSpec extends WordSpec with Matchers {
             val fields = List(go, street1, street2)
             val player = Player("name", 1500, fields.head, List(), new FieldIterator(fields))
             "stand on the correct field" in {
-                val movedPlayer = player.walk(1)
+                val (movedPlayer, _) = player.walk(1)
                 movedPlayer.currentField should be(fields(1))
             }
             "earn 200 when passing Go" in {
-                val movedPlayer = player.walk(4)
+                val (movedPlayer, passedGo) = player.walk(4)
+                passedGo should be(true)
                 movedPlayer.money should be(1700)
             }
 
