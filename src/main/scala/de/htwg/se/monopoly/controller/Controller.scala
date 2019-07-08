@@ -37,7 +37,6 @@ class Controller extends Observable {
 
     def getBuyer(buyable: Buyable) : Option[Player] = {
         val players= board.playerIt.list
-        players.foreach(p => println(p.bought))
         players.find(p => p.bought.contains(buyable))
     }
 
