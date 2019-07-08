@@ -34,8 +34,15 @@ class Tui(controller: Controller) extends Observer {
         gameStatus match {
             case NEXT_PLAYER => turn("Next player: " + controller.getCurrentPlayer.name); playerInfo(controller.getCurrentPlayer.getDetails)
             case NEW_FIELD =>  playerInfo("New Field: " + controller.getCurrentField.getName)
+            case ALREADY_BOUGHT => info("You already own this street")
             case CAN_BUY => askForBuy(controller.getCurrentField.asInstanceOf[Buyable])
-            case BOUGHT_BY_OTHER => info("Field already bought!")//TODO pay rent
+            case BOUGHT_BY_OTHER =>  {
+                val field = controller.getCurrentField.asInstanceOf[Buyable]
+                info("Field already bought by " + controller.getBuyer(field).get.name + ".")
+                info("You must pay " + field.getPrice + " rent!")
+                controller.payRent()
+            }
+            case MISSING_MONEY => info("You do not have enough money!") // TODO: mortgage/sell houses/lose
             case BOUGHT => info("Successfully bought " + controller.getCurrentField.getName)
             case PASSED_GO => info("Received 200€ by passing Go")
             case NOTHING =>

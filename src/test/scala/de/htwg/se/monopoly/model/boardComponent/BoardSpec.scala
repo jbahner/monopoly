@@ -6,7 +6,7 @@ import org.scalatest.{Matchers, WordSpec}
 
 class BoardSpec extends WordSpec with Matchers {
     "A Board" should {
-        val fields = List(ActionField("Go"), Street("street1", 50))
+        val fields = List(ActionField("Go"), Street("street1", 50, Array(1, 2, 3, 4, 5)))
         val player1 = Player("player1", 1500, fields.head, List(), new FieldIterator(fields))
         val player2 = Player("player2", 1500, fields.head, List(), new FieldIterator(fields))
         val playerIterator = new PlayerIterator(Array(player1, player2))
