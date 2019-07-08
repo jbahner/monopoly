@@ -21,16 +21,12 @@ class Controller extends Observable {
         }
         for(i <- 6 to 9)
             player2 = player2.copy(bought = player2.bought :+ fields(i).asInstanceOf[Street])
-        println(player1.bought)
-        println(player2.bought)
         board = Board(fields, player1,new PlayerIterator(Array(player1, player2)))
     }
 
     // This is only for testing purposes
     private def getRentArray(cost : Int) : Array[Int] = {
-        println(cost)
         val step = cost / 10
-        println(step)
         Array(step, step*2, step*3, step*4, step*5)
     }
 
