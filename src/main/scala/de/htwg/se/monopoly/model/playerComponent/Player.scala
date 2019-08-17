@@ -1,9 +1,9 @@
 package de.htwg.se.monopoly.model.playerComponent
 
-import de.htwg.se.monopoly.model.boardComponent.{Buyable, Field}
+import de.htwg.se.monopoly.model.boardComponent.{Buyable, Field, Street}
 import de.htwg.se.monopoly.util.FieldIterator
 
-case class Player(name: String, money: Int, currentField: Field, bought : List[Buyable], fieldIt: FieldIterator) {
+case class Player(name: String, money: Int, currentField: Field, bought : Set[Buyable], fieldIt: FieldIterator) {
 
     def walk(steps: Int): (Player, Boolean) = {
         var passedGo = false
@@ -21,7 +21,18 @@ case class Player(name: String, money: Int, currentField: Field, bought : List[B
 
     def listStreets:String = {
         val sb = new StringBuilder()
-        bought.foreach(field => sb.append("\n%-10s%s".format("", field.getName)))
+        bought.foreach(field => {
+            sb.append("\n%-10s%s".format("", field.getName))
+            field match {
+                case street: Street =>
+                    sb.append("\thouses: %d".format(street.numHouses))
+                case _ =>
+            }
+        })
         sb.toString()
+    }
+
+    def equals(that : Player): Boolean = {
+        name.equals(that.name)
     }
 }

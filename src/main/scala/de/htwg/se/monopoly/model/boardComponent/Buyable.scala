@@ -13,5 +13,5 @@ abstract class Buyable(name: String, price: Int, isBought : Boolean = false) ext
 
     def getPrice : Int = price
 
-    def getRent: Int
+    def getRent(): Int
 }
