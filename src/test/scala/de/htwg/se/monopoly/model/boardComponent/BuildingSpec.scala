@@ -1,5 +1,8 @@
 package de.htwg.se.monopoly.model.boardComponent
 
+import de.htwg.se.monopoly.controller.GameStatus
+import de.htwg.se.monopoly.model.playerComponent.Player
+import de.htwg.se.monopoly.util.FieldIterator
 import org.scalatest.{Matchers, WordSpec}
 
 class BuildingSpec extends WordSpec with Matchers {
@@ -7,13 +10,33 @@ class BuildingSpec extends WordSpec with Matchers {
         "new" should {
             val building = Building("buildingName", 100)
             "should have a name" in {
-                building.name should be("buildingName")
+                building.getName should be("buildingName")
             }
             "should have a price" in {
-                building.price should be(100)
+                building.getPrice should be(100)
             }
             "should not be bought" in {
                 building.isBought should be(false)
+            }
+            "should be buyable" in {
+                val boughtBuilding = building.setBought()
+                boughtBuilding.isBought should be(true)
+            }
+            "get the correct action" should {
+                "can buy" in {
+                    val player = Player("player", 1500, building, Set(), new FieldIterator(List(building)))
+                    building.action(player) should be(GameStatus.CAN_BUY)
+                }
+                "bought by other" in {
+                    val boughtBuilding = building.setBought()
+                    val player = Player("player", 1500, boughtBuilding, Set(), new FieldIterator(List(boughtBuilding)))
+                    boughtBuilding.action(player) should be(GameStatus.BOUGHT_BY_OTHER)
+                }
+                "bought by same" in {
+                    val boughtBuilding = building.setBought()
+                    val player = Player("player", 1500, boughtBuilding, Set(boughtBuilding), new FieldIterator(List(boughtBuilding)))
+                    boughtBuilding.action(player) should be(GameStatus.ALREADY_BOUGHT)
+                }
             }
         }
     }
