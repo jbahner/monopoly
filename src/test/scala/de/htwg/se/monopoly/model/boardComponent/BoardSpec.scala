@@ -36,13 +36,13 @@ class BoardSpec extends WordSpec with Matchers {
         }
         "be able to replace a field" in {
             var board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
-            val newField = Street("NewField", 1000, Array(0,0,0,0,0), 1000)
+            val newField = Street("NewField", 1000, Array(0, 0, 0, 0, 0), 1000)
             board = board.replaceField(fields(1), newField)
             board.fields(1) should be(newField)
         }
         "be able to replace a field that belongs to a player" in {
             var board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
-            val newField = Street("street1", 1000, Array(0,0,0,0,0), 1000)
+            val newField = Street("street1", 1000, Array(0, 0, 0, 0, 0), 1000)
             board = board.replacePlayer(player1, player1.copy(bought = player1.bought + fields(1).asInstanceOf[Buyable]))
             board = board.replaceField(board.fields(1), newField)
             board.currentPlayer.bought.contains(newField) should be(true)
