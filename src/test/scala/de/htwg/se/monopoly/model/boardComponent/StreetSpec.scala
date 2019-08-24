@@ -8,25 +8,25 @@ import org.scalatest.{Matchers, WordSpec}
 class StreetSpec extends WordSpec with Matchers {
     "A Street" should {
         val street = Street("streetName", 100, Array(10, 20, 30, 40 ,50), 50)
-        "should have a name" in {
+        "have a name" in {
             street.getName should be("streetName")
         }
-        "should have a price" in {
+        "have a price" in {
             street.getPrice should be(100)
         }
-        "should not be bought" in {
+        "not be bought" in {
             street.isBought should be(false)
         }
-        "should be buyable" in {
+        "be buyable" in {
             val boughtStreet = street.setBought()
             boughtStreet.isBought should be (true)
         }
-        "should get the correct rent" in {
+        "get the correct rent" in {
             street.getRent() should be(10)
             val houseStreet = street.copy(numHouses = 2)
             houseStreet.getRent() should be(30)
         }
-        "should be able to build houses" in {
+        "be able to build houses" in {
             val houseStreet = street.buyHouses(3)
             houseStreet.numHouses should be (3)
         }

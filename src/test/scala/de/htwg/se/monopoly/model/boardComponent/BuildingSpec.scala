@@ -9,20 +9,20 @@ class BuildingSpec extends WordSpec with Matchers {
     "A Building" when {
         "new" should {
             val building = Building("buildingName", 100)
-            "should have a name" in {
+            "have a name" in {
                 building.getName should be("buildingName")
             }
-            "should have a price" in {
+            "have a price" in {
                 building.getPrice should be(100)
             }
-            "should not be bought" in {
+            "not be bought" in {
                 building.isBought should be(false)
             }
-            "should be buyable" in {
+            "be buyable" in {
                 val boughtBuilding = building.setBought()
                 boughtBuilding.isBought should be(true)
             }
-            "should get the correct rent" in {
+            "get the correct rent" in {
                 building.getRent() should be(100)
             }
             "get the correct action" should {

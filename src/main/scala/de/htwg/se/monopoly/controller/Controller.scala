@@ -10,6 +10,8 @@ class Controller extends Observable {
 
     val groupList : List[Set[String]] = List(Set("Street1", "Street2", "Street3"), Set("Street4", "Street5", "Street6"), Set("Street7", "Street8", "Street9"))
     var board: Board = _
+    // TODO check if 2nd variable needed
+    var currentDice : Int = _
 
     def setUp() = {
         val go = ActionField("Go")
@@ -55,7 +57,9 @@ class Controller extends Observable {
 
     def rollDice(): (Int, Int) = {
         val r = scala.util.Random
-        (r.nextInt(6) + 1, r.nextInt(6) + 1)
+        val (d1, d2) = (r.nextInt(6) + 1, r.nextInt(6) + 1)
+        currentDice = d1 + d2
+        (d1, d2)
     }
 
     def getBuyer(buyable: Buyable) : Option[Player] = {
@@ -83,8 +87,22 @@ class Controller extends Observable {
         val payer = getCurrentPlayer
         val field = getCurrentField.asInstanceOf[Buyable]
         val receiver = getBuyer(getCurrentField.asInstanceOf[Buyable]).get
-        var payAmount = field.getPrice
-        if(hasWholeGroup(receiver, field.getName)) payAmount = payAmount * 2
+        var payAmount = 0
+        field match {
+            case street: Street => {
+                if(street.numHouses == 0 && hasWholeGroup(receiver, field.getName))
+                    payAmount = field.getRent() * 2
+                else
+                    payAmount = field.getRent()
+            }
+            case building: Building => {
+                // TODO check this is correct
+                if(hasWholeGroup(receiver, field.getName))
+                    payAmount = currentDice * 10
+                else
+                    payAmount = currentDice* 4
+            }
+        }
         if(payer.money < payAmount) {
             notifyObservers(MISSING_MONEY)
         } else {
@@ -96,21 +114,19 @@ class Controller extends Observable {
     def buy(): Unit = {
         val currentPlayer = getCurrentPlayer
         val currentField = getCurrentField.asInstanceOf[Buyable]
+        if(currentPlayer.money < currentField.getPrice) {
+            notifyObservers(MISSING_MONEY)
+            return
+        }
         var newField = currentField
         currentField match {
             case street: Street => newField = street.copy(isBought = true)
             case building: Building => newField = building.copy(isBought = true)
         }
-        val newPlayer : Player = currentPlayer.copy(money = currentPlayer.money - currentField.getPrice,
-            bought = currentPlayer.bought + currentField)
-        board = board.replacePlayer(currentPlayer, newPlayer)
-        currentField match {
-            case street: Street=>
-                board = board.replaceField(field = street, newField = street.copy(isBought = true))
-            case building: Building =>
-                board = board.replaceField(field = building, newField = building.copy(isBought = true))
-        }
-        board = board.copy(currentPlayer = newPlayer)
+        val newPlayer : Player = currentPlayer.copy(money = currentPlayer.money - newField.getPrice,
+            bought = currentPlayer.bought + newField)
+        board = board.replacePlayer(currentPlayer, newPlayer).copy(currentPlayer = newPlayer)
+        board = board.replaceField(currentField, newField)
         notifyObservers(BOUGHT)
     }
 
@@ -124,13 +140,13 @@ class Controller extends Observable {
             return BuildStatus.INVALID_ARGS
         val street = field.get.asInstanceOf[Street]
         val buyer = getBuyer(street)
-        if(!street.isBought || !buyer.get.equals(getCurrentPlayer))
+        if(!street.isBought || buyer.isEmpty || !buyer.get.equals(getCurrentPlayer))
             return BuildStatus.NOT_OWN
         if(street.numHouses + amount > 5)
             return BuildStatus.TOO_MANY_HOUSES
         if(getCurrentPlayer.money < street.houseCost * amount)
             return BuildStatus.MISSING_MONEY
-        board = board.replaceField(field = field.get, newField = street.buyHouses(amount))
+        board = board.replaceField(field = street, newField = street.buyHouses(amount))
         board = board.replacePlayer(getCurrentPlayer, getCurrentPlayer.copy(money = getCurrentPlayer.money - street.houseCost * amount))
         BuildStatus.BUILT
     }

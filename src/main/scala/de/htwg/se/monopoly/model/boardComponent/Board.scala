@@ -12,7 +12,7 @@ case class Board(fields: List[Field], currentPlayer: Player, playerIt: PlayerIte
         this.copy(currentPlayer = if(currentPlayer == player) newPlayer else currentPlayer)
     }
 
-    def replaceField(field: Field, newField : Field) : Board = {
+    def replaceField(field: Buyable, newField : Buyable) : Board = {
         val newFields = fields.updated(fields.indexOf(field), newField)
         var newPlayers : List[Player] = List()
         var currentPlayerIdx = 0
@@ -20,10 +20,12 @@ case class Board(fields: List[Field], currentPlayer: Player, playerIt: PlayerIte
         for(player <- players) {
             if(player == currentPlayer)
                 currentPlayerIdx = playerIt.list.indexOf(player)
-            var bought = player.bought
-            if(player.bought.contains(field.asInstanceOf[Buyable]))
-                bought = player.bought.map(f => if(f == field.asInstanceOf[Buyable]) newField.asInstanceOf[Buyable] else f)
-            newPlayers = newPlayers :+ player.copy(fieldIt = player.fieldIt.replace(field, newField), bought = bought)
+            val bought = player.bought.map(f => if(f == field) newField else f)
+            var newPlayerField = player.currentField
+            if(player.currentField == field) {
+                newPlayerField = newField
+            }
+            newPlayers = newPlayers :+ player.copy(fieldIt = player.fieldIt.replace(field, newField),currentField = newPlayerField, bought = bought)
         }
         this.copy(fields = newFields, currentPlayer = newPlayers(currentPlayerIdx), playerIt = new PlayerIterator(newPlayers.toArray))
     }
