@@ -7,6 +7,8 @@ case class Board(fields: List[Field], currentPlayer: Player, playerIt: PlayerIte
 
     def nextPlayer = playerIt.next()
 
+    def nextPlayerTurn() : Board = this.copy(currentPlayer = nextPlayer)
+
     def replacePlayer(player: Player, newPlayer: Player): Board = {
         playerIt.replace(player, newPlayer)
         this.copy(currentPlayer = if(currentPlayer == player) newPlayer else currentPlayer)
@@ -27,6 +29,6 @@ case class Board(fields: List[Field], currentPlayer: Player, playerIt: PlayerIte
             }
             newPlayers = newPlayers :+ player.copy(fieldIt = player.fieldIt.replace(field, newField),currentField = newPlayerField, bought = bought)
         }
-        this.copy(fields = newFields, currentPlayer = newPlayers(currentPlayerIdx), playerIt = new PlayerIterator(newPlayers.toArray))
+        this.copy(fields = newFields, currentPlayer = newPlayers(currentPlayerIdx), playerIt = new PlayerIterator(newPlayers.toArray, playerIt.currentIdx))
     }
 }

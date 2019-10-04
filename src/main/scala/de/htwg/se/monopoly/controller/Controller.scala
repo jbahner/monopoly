@@ -79,7 +79,7 @@ class Controller extends Observable {
         if(getWholeGroups(newPlayer) != Nil) {
             notifyObservers(CAN_BUILD)
         }
-        board = board.copy(currentPlayer = board.nextPlayer)
+        board = board.nextPlayerTurn()
         notifyObservers(NEXT_PLAYER)
     }
 
