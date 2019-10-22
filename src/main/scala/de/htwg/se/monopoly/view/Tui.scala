@@ -1,6 +1,6 @@
 package de.htwg.se.monopoly.view
 
-import de.htwg.se.monopoly.controller.Controller
+import de.htwg.se.monopoly.controller.{Controller, GameStatus}
 import de.htwg.se.monopoly.controller.GameStatus._
 import de.htwg.se.monopoly.model.boardComponent.{Buyable, Street}
 import de.htwg.se.monopoly.util.Observer
@@ -11,95 +11,104 @@ class Tui(controller: Controller) extends Observer {
     controller.add(this)
     controller.setUp()
     playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer.getDetails)
+
     while (true) {
+        controller.controllerState = START_OF_TURN
         userInput("\"r\" to roll, \"q\" to quit!")
         val input = readLine()
-        processInput(START_OF_TURN, input)
+        processInput(input)
     }
 
-    def processInput(gameStatus: GameStatus, input: String): Unit = {
-        gameStatus match {
+    def readInput(): String = {
+        readLine()
+    }
+
+
+    def processInput(input: String) = {
+
+        controller.controllerState match {
+
             case START_OF_TURN => {
                 input match {
+
                     case "r" => {
                         val (d1, d2) = controller.rollDice()
                         info("Rolled: " + d1 + " and " + d2)
-                        controller.processRoll(d1, d2)
+                        controller.playerTurn(d1, d2)
                     }
                     case "q" => System.exit(0)
                     case other => error("Wrong input: " + other)
                 }
             }
-            case
+
+            case CAN_BUY =>
+                input match {
+                    case "y" | "Y" => controller.buy()
+                    case "n" | "N" =>
+                    case _ => userInput("Y / N")
+                }
+
+            case CAN_BUILD =>
+                val args = input.split(" ")
+
+                if (!input.equals("q"))  {
+                    if (args.length != 2) {
+                        userInput("<street> <amout of houses>")
+                    }
+
+                    controller.tryToBuildHouses(args(0), args(1).toInt)
+                }
+                else {
+                    controller.buildStatus = GameStatus.BuildStatus.DONE
+                }
+
         }
-
-
     }
 
-    override def update(gameStatus: GameStatus): Unit = {
-        gameStatus match {
-            case NEXT_PLAYER => turn("Next player: " + controller.getCurrentPlayer.name); playerInfo(controller.getCurrentPlayer.getDetails)
-            case NEW_FIELD =>  playerInfo("New Field: " + controller.getCurrentField.getName)
-            case ALREADY_BOUGHT => info("You already own this street")
-            case CAN_BUY => askForBuy(controller.getCurrentField.asInstanceOf[Buyable])
-            case BOUGHT_BY_OTHER =>  {
-                val field = controller.getCurrentField.asInstanceOf[Buyable]
-                info("Field already bought by " + controller.getBuyer(field).get.name + ".")
-                info("You must pay " + field.getPrice + " rent!")
-                controller.payRent()
-            }
-            case MISSING_MONEY => info("You do not have enough money!") // TODO: mortgage/sell houses/lose
-            case BOUGHT => info("Successfully bought " + controller.getCurrentField.getName)
-            case PASSED_GO => info("Received 200€ by passing Go")
-            case CAN_BUILD => askForBuild()
+    override def update(): Unit = {
+
+        val currentMessage: String = controller.currentGameMessage()
+
+        controller.controllerState match {
+            case PASSED_GO => info(currentMessage)
+            case NEW_FIELD => playerInfo(currentMessage)
+            case CAN_BUY => userInput(currentMessage)
+                processInput(readInput())
+            case ALREADY_BOUGHT => info(currentMessage)
+            case BOUGHT_BY_OTHER => info(currentMessage)
+            case CAN_BUILD =>
+                info(currentMessage)
+                //TODO make it possible to buy multiple houses in one turn
+                if (controller.buildStatus != GameStatus.BuildStatus.BUILT && controller.buildStatus != GameStatus.BuildStatus.DONE)
+                    processInput(readInput())
+
+            case NEXT_PLAYER => turn(currentMessage)
+            case MISSING_MONEY => info(currentMessage) // TODO: mortgage/sell houses/lose
+            case BOUGHT => info(currentMessage)
             case NOTHING =>
         }
-    }
 
-    def askForBuild() : Unit = {
-        val wholeGroups = controller.getWholeGroups(controller.getCurrentPlayer)
-        info("You can build on: \n" + buildablesToString(wholeGroups))
-        var finished = false
-        while (!finished) {
-            userInput("Type the name of the street and the amount of houses you want to build. Press 'q' to quit.")
-            val input = readLine()
-            val args = input.split(" ")
-            // TODO Nik call process input here
-            if(args(0).equals("q"))
-                finished = true
-            else {
-                if (args.length != 2)
-                    error("Invalid number of arguments: " + args.length)
-                else {
-                    val street = args(0)
-                    val amount = args(1)
-                    // TODO must build equally
-
-                    controller.buildHouses(street, amount.toInt) match {
-                        case BuildStatus.BUILT => info("Successfully built " + args(1) + " houses!")
-                        case BuildStatus.INVALID_ARGS => error("Invalid argument for street or amount of houses!")
-                        case BuildStatus.NOT_OWN => error("You don't own this street!")
-                        case BuildStatus.TOO_MANY_HOUSES => error("There can only be 5 houses on a street")
-                        case BuildStatus.MISSING_MONEY => error("You don't have enough money!")
+        /*
+                controller.controllerState match {
+                    case NEXT_PLAYER => turn("Next player: " + controller.getCurrentPlayer.name); playerInfo(controller.getCurrentPlayer.getDetails)
+                    case NEW_FIELD =>  playerInfo("New Field: " + controller.getCurrentField.getName)
+                    case ALREADY_BOUGHT => info("You already own this street")
+                    case CAN_BUY => askForBuy(controller.getCurrentField.asInstanceOf[Buyable])
+                    case BOUGHT_BY_OTHER =>  {
+                        val field = controller.getCurrentField.asInstanceOf[Buyable]
+                        info("Field already bought by " + controller.getBuyer(field).get.name + ".")
+                        info("You must pay " + field.getPrice + " rent!")
                     }
+                    case MISSING_MONEY => info("You do not have enough money!")
+                    case BOUGHT => info("Successfully bought " + controller.getCurrentField.getName)
+                    case PASSED_GO => info("Received 200€ by passing Go")
+                    case CAN_BUILD => askForBuild()
+                    case NOTHING =>
                 }
-            }
-        }
+         */
     }
 
-    def buildablesToString(buildables : List[Set[String]]) : String = {
-        val sb = new StringBuilder()
-        buildables.foreach(set => {
-            sb.append("\t")
-            set.foreach {
-                street => sb.append(street).append(" (" + controller.getFieldByName(street).get.asInstanceOf[Street].houseCost +"€)").append("   ")
-            }
-            sb.append("\n")
-        })
-        sb.toString()
-    }
-
-    def turn(message : String): Unit = {
+    def turn(message: String): Unit = {
         Console.println(Console.BOLD + Console.UNDERLINED + Console.GREEN + message + Console.RESET)
     }
 
@@ -107,29 +116,17 @@ class Tui(controller: Controller) extends Observer {
         Console.println(Console.BOLD + Console.MAGENTA + message + Console.RESET)
     }
 
-    def info(message : String): Unit = {
+    def info(message: String): Unit = {
         Console.println(Console.BOLD + Console.BLUE + message + Console.RESET)
     }
 
-    def userInput(message : String): Unit = {
+    def userInput(message: String): Unit = {
         Console.println(Console.BOLD + Console.YELLOW + message + Console.RESET)
     }
 
-    def error(message : String): Unit = {
+    def error(message: String): Unit = {
         Console.println(Console.BOLD + Console.RED + message + Console.RESET)
     }
 
-    def askForBuy(field : Buyable) : Unit =  {
-        userInput("Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice))
-        var done = false
-        while(!done) {
-            val input = readLine()
-            input.toLowerCase match {
-                case "y" => controller.buy(); done = true
-                case "n" => done = true
-                case _ => userInput("Y / N"); done = false
-            }
-        }
-    }
 
 }

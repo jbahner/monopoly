@@ -35,7 +35,7 @@ class ControllerSpec extends WordSpec with Matchers {
         }
         "walk correctly when processing the roll" in {
             controller.board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
-            controller.processRoll(1,1)
+            controller.playerTurn(1,1)
             controller.board.playerIt.list.head.currentField should be(fields(2))
         }
         "buy a street correctly" in {
@@ -63,12 +63,12 @@ class ControllerSpec extends WordSpec with Matchers {
         }
         "pay rent correctly" in {
             val rentFields = List(fields(1).asInstanceOf[Street].setBought(), fields(2).asInstanceOf[Street])
-            val payer = Player("payer", 1500, rentFields.head, Set(), new FieldIterator(rentFields))
+            val player = Player("player", 1500, rentFields.head, Set(), new FieldIterator(rentFields))
             val buyer = Player("buyer", 1500, rentFields.head, Set(rentFields.head), new FieldIterator(rentFields))
-            controller.board = Board(rentFields, payer, new PlayerIterator(Array(payer, buyer)))
-            controller.payRent()
+            controller.board = Board(rentFields, player, new PlayerIterator(Array(player, buyer)))
+            controller.payRent(player, rentFields.head, buyer)
 
-            controller.board.playerIt.list(0).money should be(payer.money - rentFields.head.getRent())
+            controller.board.playerIt.list(0).money should be(player.money - rentFields.head.getRent())
             controller.board.playerIt.list(1).money should be(buyer.money + rentFields.head.getRent())
         }
         "build houses correctly" in {
