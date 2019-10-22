@@ -14,19 +14,26 @@ class Tui(controller: Controller) extends Observer {
     while (true) {
         userInput("\"r\" to roll, \"q\" to quit!")
         val input = readLine()
-        processInput(input)
+        processInput(START_OF_TURN, input)
     }
 
-    def processInput(input: String): Unit = {
-        input match {
-            case "r" => {
-                val (d1, d2) = controller.rollDice()
-                info("Rolled: " + d1 + " and " + d2)
-                controller.processRoll(d1, d2)
+    def processInput(gameStatus: GameStatus, input: String): Unit = {
+        gameStatus match {
+            case START_OF_TURN => {
+                input match {
+                    case "r" => {
+                        val (d1, d2) = controller.rollDice()
+                        info("Rolled: " + d1 + " and " + d2)
+                        controller.processRoll(d1, d2)
+                    }
+                    case "q" => System.exit(0)
+                    case other => error("Wrong input: " + other)
+                }
             }
-            case "q" => System.exit(0)
-            case other => error("Wrong input: " + other)
+            case
         }
+
+
     }
 
     override def update(gameStatus: GameStatus): Unit = {
@@ -53,14 +60,15 @@ class Tui(controller: Controller) extends Observer {
         val wholeGroups = controller.getWholeGroups(controller.getCurrentPlayer)
         info("You can build on: \n" + buildablesToString(wholeGroups))
         var finished = false
-        while(!finished) {
+        while (!finished) {
             userInput("Type the name of the street and the amount of houses you want to build. Press 'q' to quit.")
             val input = readLine()
             val args = input.split(" ")
+            // TODO Nik call process input here
             if(args(0).equals("q"))
                 finished = true
             else {
-                if(args.length != 2)
+                if (args.length != 2)
                     error("Invalid number of arguments: " + args.length)
                 else {
                     val street = args(0)
