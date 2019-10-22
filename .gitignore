@@ -1,7 +1,6 @@
 # IntelliJ
 .idea/
 target/
-out
 
 # sbt
 .cache
