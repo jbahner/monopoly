@@ -35,7 +35,7 @@ class ControllerSpec extends WordSpec with Matchers {
         }
         "walk correctly when processing the roll" in {
             controller.board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
-            controller.playerTurn(1,1)
+            controller.processRoll(1,1)
             controller.board.playerIt.list.head.currentField should be(fields(2))
         }
         "buy a street correctly" in {

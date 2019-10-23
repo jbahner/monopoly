@@ -11,6 +11,7 @@ class Controller extends Observable {
 
     var controllerState: GameStatus = _
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
+    var currentGameMessageString: String = _
     val groupList: List[Set[String]] = List(
         Set("Street1", "Street2", "Street3"),
         Set("Street4", "Street5", "Street6"),
@@ -67,7 +68,6 @@ class Controller extends Observable {
         board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
     }
 
-
     def hasWholeGroup(player: Player, street: String): Boolean = {
         val group = groupList.find(g => g.contains(street)).get
         group.subsetOf(player.bought.flatMap(street => street.getName).asInstanceOf[Set[String]])
@@ -101,7 +101,9 @@ class Controller extends Observable {
         players.find(p => p.bought.contains(buyable))
     }
 
-    def playerTurn(firstDice: Int, secondDice: Int): Unit = {
+    def processRoll(firstDice: Int, secondDice: Int): Unit = {
+        // TODO Nik -- is this needed anymore
+        //currentGameMessageString = ""
         val player = board.currentPlayer
         val (newPlayer, passedGo) = player.walk(firstDice + secondDice)
 
@@ -125,18 +127,25 @@ class Controller extends Observable {
             case _ =>
         }
 
+
         if (getWholeGroups(newPlayer) != Nil) {
             controllerState = CAN_BUILD
-            //for asking to buy
-            notifyObservers()
-            //for printing out if you bought
-            notifyObservers()
             buildStatus = BuildStatus.DEFAULT
-        }
+            //for asking to buy
+            //notifyObservers()
 
+
+            //for printing out if you bought
+            //notifyObservers()
+        }
+    }
+
+    def nextPlayer(): Unit = {
         board = board.nextPlayerTurn()
         controllerState = NEXT_PLAYER
         notifyObservers()
+        controllerState = START_OF_TURN
+        buildStatus = BuildStatus.DEFAULT
     }
 
     def payRent(currentPlayer: Player, field: Buyable, receiver: Player) = {
@@ -214,34 +223,59 @@ class Controller extends Observable {
     def getCurrentPlayer: Player = board.currentPlayer
 
     def currentGameMessage(): String = {
+        currentGameMessageString = catCurrentGameMessage()
+        currentGameMessageString
+    }
+
+    def catCurrentGameMessage(): String = {
         controllerState match {
-            case PASSED_GO => "Received 200€ by passing Go"
-            case NEW_FIELD => "New Field: " + getCurrentField.getName
-            case ALREADY_BOUGHT => "You already own this street"
+            case START_OF_TURN => currentGameMessageString = "\"r\" to roll, \"q\" to quit!"
+                currentGameMessageString
+            case PASSED_GO => currentGameMessageString = "Received 200€ by passing Go"
+                currentGameMessageString
+            case NEW_FIELD => currentGameMessageString = "New Field: " + getCurrentField.getName
+                currentGameMessageString
+            case ALREADY_BOUGHT => currentGameMessageString = "You already own this street"
+                currentGameMessageString
             case CAN_BUY =>
                 val field: Buyable = getCurrentField.asInstanceOf[Buyable]
-                "Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice)
+                currentGameMessageString = "Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice)
+                currentGameMessageString
             case BOUGHT_BY_OTHER => {
                 val field = getCurrentField.asInstanceOf[Buyable]
-                "Field already bought by " + getBuyer(field).get.name + ".\n" +
-                  "You must pay " + field.getPrice + " rent!"
+                currentGameMessageString = "Field already bought by " + getBuyer(field).get.name + ".\n" +
+                    "You must pay " + field.getPrice + " rent!"
+                currentGameMessageString
             }
             case CAN_BUILD =>
                 buildStatus match {
                     case BuildStatus.DEFAULT => val wholeGroups = getWholeGroups(getCurrentPlayer)
-                        "You can build on: \n" + buildablesToString(wholeGroups) +
-                          "\nType the name of the street and the amount of houses you want to build. Press 'q' to quit. Q NEEDS TO BE IMPLEMENTED BACK IN"
-                    case BuildStatus.BUILT => "Successfully built houses!"
-                    case BuildStatus.INVALID_ARGS => "Invalid argument for street or amount of houses!"
-                    case BuildStatus.NOT_OWN => "You don't own this street!"
-                    case BuildStatus.TOO_MANY_HOUSES => "There can only be 5 houses on a street"
-                    case BuildStatus.MISSING_MONEY => "You don't have enough money!"
-                    case BuildStatus.DONE => ""
+                        currentGameMessageString = "You can build on: \n" + buildablesToString(wholeGroups) +
+                            "\nType the name of the street and the amount of houses you want to build. Press 'q' to quit."
+                        currentGameMessageString
+                    case BuildStatus.BUILT => currentGameMessageString = "Successfully built houses!"
+                        currentGameMessageString
+                    case BuildStatus.INVALID_ARGS => currentGameMessageString = "Invalid argument for street or amount of houses!"
+                        currentGameMessageString
+                    case BuildStatus.NOT_OWN => currentGameMessageString = "You don't own this street!"
+                        currentGameMessageString
+                    case BuildStatus.TOO_MANY_HOUSES => currentGameMessageString = "There can only be 5 houses on a street"
+                        currentGameMessageString
+                    case BuildStatus.MISSING_MONEY => currentGameMessageString = "You don't have enough money!"
+                        currentGameMessageString
+                    case BuildStatus.DONE => currentGameMessageString = ""
+                        currentGameMessageString
                 }
-            case NEXT_PLAYER => "Next player: " + getCurrentPlayer.name + "\n" + getCurrentPlayer.getDetails
-            case MISSING_MONEY => "You do not have enough money!"
-            case BOUGHT => "Successfully bought the street"
-            case NOTHING => ""
+            case DONE => currentGameMessageString = getCurrentPlayer.name + " ended his turn.\n\n"
+              currentGameMessageString
+            case NEXT_PLAYER => currentGameMessageString = "Next player: " + getCurrentPlayer.name + "\n" + getCurrentPlayer.getDetails
+                currentGameMessageString
+            case MISSING_MONEY => currentGameMessageString = "You do not have enough money!"
+                currentGameMessageString
+            case BOUGHT => currentGameMessageString = "Successfully bought the street"
+                currentGameMessageString
+            case NOTHING => currentGameMessageString = ""
+                currentGameMessageString
         }
     }
 
@@ -252,8 +286,8 @@ class Controller extends Observable {
             set.foreach {
                 street =>
                     sb.append(street)
-                      .append(" (" + getFieldByName(street).get.asInstanceOf[Street].houseCost + "€)")
-                      .append("   ")
+                        .append(" (" + getFieldByName(street).get.asInstanceOf[Street].houseCost + "€)")
+                        .append("   ")
             }
             sb.append("\n")
         })
