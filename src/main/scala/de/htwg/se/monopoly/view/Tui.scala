@@ -12,17 +12,6 @@ class Tui(controller: Controller) extends Observer {
     controller.setUp()
     playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer.getDetails)
 
-    while (true) {
-        controller.controllerState = START_OF_TURN
-        userInput("\"r\" to roll, \"q\" to quit!")
-        val input = readLine()
-        processInput(input)
-    }
-
-    def readInput(): String = {
-        readLine()
-    }
-
 
     def processInput(input: String) = {
 
@@ -34,7 +23,7 @@ class Tui(controller: Controller) extends Observer {
                     case "r" => {
                         val (d1, d2) = controller.rollDice()
                         info("Rolled: " + d1 + " and " + d2)
-                        controller.playerTurn(d1, d2)
+                        controller.processRoll(d1, d2)
                     }
                     case "q" => System.exit(0)
                     case other => error("Wrong input: " + other)
@@ -49,38 +38,44 @@ class Tui(controller: Controller) extends Observer {
                 }
 
             case CAN_BUILD =>
-                val args = input.split(" ")
+                val args = input.split("_")
 
                 if (!input.equals("q"))  {
                     if (args.length != 2) {
-                        userInput("<street> <amout of houses>")
+                        userInput("<street name>_<amount of houses>")
                     }
-
-                    controller.tryToBuildHouses(args(0), args(1).toInt)
+                    else
+                    {
+                        controller.tryToBuildHouses(args(0), args(1).toInt)
+                        playerInfo(controller.currentGameMessage())
+                    }
                 }
                 else {
                     controller.buildStatus = GameStatus.BuildStatus.DONE
+                    controller.controllerState = GameStatus.DONE
+                    controller.notifyObservers()
                 }
+            case DONE => controller.nextPlayer()
 
         }
     }
 
     override def update(): Unit = {
 
-        val currentMessage: String = controller.currentGameMessage()
+        val currentMessage: String = controller.catCurrentGameMessage()
 
         controller.controllerState match {
             case PASSED_GO => info(currentMessage)
             case NEW_FIELD => playerInfo(currentMessage)
             case CAN_BUY => userInput(currentMessage)
-                processInput(readInput())
+            case DONE => userInput(currentMessage)
             case ALREADY_BOUGHT => info(currentMessage)
             case BOUGHT_BY_OTHER => info(currentMessage)
             case CAN_BUILD =>
                 info(currentMessage)
                 //TODO make it possible to buy multiple houses in one turn
-                if (controller.buildStatus != GameStatus.BuildStatus.BUILT && controller.buildStatus != GameStatus.BuildStatus.DONE)
-                    processInput(readInput())
+                //if (controller.buildStatus != GameStatus.BuildStatus.BUILT && controller.buildStatus != GameStatus.BuildStatus.DONE)
+                    //processInput(readInput())
 
             case NEXT_PLAYER => turn(currentMessage)
             case MISSING_MONEY => info(currentMessage) // TODO: mortgage/sell houses/lose
@@ -88,24 +83,6 @@ class Tui(controller: Controller) extends Observer {
             case NOTHING =>
         }
 
-        /*
-                controller.controllerState match {
-                    case NEXT_PLAYER => turn("Next player: " + controller.getCurrentPlayer.name); playerInfo(controller.getCurrentPlayer.getDetails)
-                    case NEW_FIELD =>  playerInfo("New Field: " + controller.getCurrentField.getName)
-                    case ALREADY_BOUGHT => info("You already own this street")
-                    case CAN_BUY => askForBuy(controller.getCurrentField.asInstanceOf[Buyable])
-                    case BOUGHT_BY_OTHER =>  {
-                        val field = controller.getCurrentField.asInstanceOf[Buyable]
-                        info("Field already bought by " + controller.getBuyer(field).get.name + ".")
-                        info("You must pay " + field.getPrice + " rent!")
-                    }
-                    case MISSING_MONEY => info("You do not have enough money!")
-                    case BOUGHT => info("Successfully bought " + controller.getCurrentField.getName)
-                    case PASSED_GO => info("Received 200€ by passing Go")
-                    case CAN_BUILD => askForBuild()
-                    case NOTHING =>
-                }
-         */
     }
 
     def turn(message: String): Unit = {
