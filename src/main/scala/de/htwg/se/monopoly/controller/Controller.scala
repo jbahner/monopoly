@@ -5,17 +5,13 @@ import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus._
 import de.htwg.se.monopoly.model.boardComponent.{ActionField, Board, Building, Buyable, Field, Street}
 import de.htwg.se.monopoly.model.playerComponent.Player
-import de.htwg.se.monopoly.util.{FieldIterator, Observable, PlayerIterator}
+import de.htwg.se.monopoly.util.{FieldIterator, Observable, PlayerIterator, GeneralUtil}
 
 class Controller extends Observable {
 
     var controllerState: GameStatus = _
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
-    var currentGameMessageString: String = _
-    val groupList: List[Set[String]] = List(
-        Set("Street1", "Street2", "Street3"),
-        Set("Street4", "Street5", "Street6"),
-        Set("Street7", "Street8", "Street9"))
+    private var currentGameMessageString: String = _
 
     var board: Board = _
     // TODO check if 2nd variable needed
@@ -68,26 +64,11 @@ class Controller extends Observable {
         board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
     }
 
-    def hasWholeGroup(player: Player, street: String): Boolean = {
-        val group = groupList.find(g => g.contains(street)).get
-        group.subsetOf(player.bought.flatMap(street => street.getName).asInstanceOf[Set[String]])
-    }
-
     def rollDice(): (Int, Int) = {
         val r = scala.util.Random
         val (d1, d2) = (r.nextInt(6) + 1, r.nextInt(6) + 1)
         currentDice = d1 + d2
         (d1, d2)
-    }
-
-    def getWholeGroups(player: Player): List[Set[String]] = {
-        var list: List[Set[String]] = List()
-        groupList.foreach(group => {
-            if (group.subsetOf(player.bought.map(street => street.getName))) {
-                list = list :+ group
-            }
-        })
-        list
     }
 
     // This is only for testing purposes
@@ -102,8 +83,6 @@ class Controller extends Observable {
     }
 
     def processRoll(firstDice: Int, secondDice: Int): Unit = {
-        // TODO Nik -- is this needed anymore
-        //currentGameMessageString = ""
         val player = board.currentPlayer
         val (newPlayer, passedGo) = player.walk(firstDice + secondDice)
 
@@ -128,15 +107,9 @@ class Controller extends Observable {
         }
 
 
-        if (getWholeGroups(newPlayer) != Nil) {
+        if (GeneralUtil.getWholeGroups(newPlayer) != Nil) {
             controllerState = CAN_BUILD
             buildStatus = BuildStatus.DEFAULT
-            //for asking to buy
-            //notifyObservers()
-
-
-            //for printing out if you bought
-            //notifyObservers()
         }
     }
 
@@ -152,13 +125,13 @@ class Controller extends Observable {
         var payAmount = 0
         field match {
             case street: Street =>
-                if (street.numHouses == 0 && hasWholeGroup(receiver, field.getName))
+                if (street.numHouses == 0 && GeneralUtil.hasWholeGroup(receiver, field.getName))
                     payAmount = field.getRent() * 2
                 else
                     payAmount = field.getRent()
             case building: Building =>
                 // TODO check this is correct
-                if (hasWholeGroup(receiver, field.getName))
+                if (GeneralUtil.hasWholeGroup(receiver, field.getName))
                     payAmount = currentDice * 10
                 else
                     payAmount = currentDice * 4
@@ -249,7 +222,7 @@ class Controller extends Observable {
             }
             case CAN_BUILD =>
                 buildStatus match {
-                    case BuildStatus.DEFAULT => val wholeGroups = getWholeGroups(getCurrentPlayer)
+                    case BuildStatus.DEFAULT => val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer)
                         currentGameMessageString = "You can build on: \n" + buildablesToString(wholeGroups) +
                             "\nType the name of the street and the amount of houses you want to build. Press 'q' to quit."
                         currentGameMessageString
