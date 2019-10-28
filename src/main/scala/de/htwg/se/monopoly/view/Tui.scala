@@ -38,22 +38,22 @@ class Tui(controller: Controller) extends Observer {
                 }
 
             case CAN_BUILD =>
-                val args = input.split("_")
 
                 if (!input.equals("q"))  {
+                    val args = input.split("_")
                     if (args.length != 2) {
                         userInput("<street name>_<amount of houses>")
                     }
                     else
                     {
                         controller.tryToBuildHouses(args(0), args(1).toInt)
-                        playerInfo(controller.currentGameMessage())
                     }
                 }
                 else {
                     controller.buildStatus = GameStatus.BuildStatus.DONE
                     controller.controllerState = GameStatus.DONE
                     controller.notifyObservers()
+                    controller.nextPlayer()
                 }
             case DONE => controller.nextPlayer()
 
@@ -65,8 +65,9 @@ class Tui(controller: Controller) extends Observer {
         val currentMessage: String = controller.catCurrentGameMessage()
 
         controller.controllerState match {
+            case START_OF_TURN =>  userInput(currentMessage)
             case PASSED_GO => info(currentMessage)
-            case NEW_FIELD => playerInfo(currentMessage)
+            case NEW_FIELD => userInput(currentMessage)
             case CAN_BUY => userInput(currentMessage)
             case DONE => userInput(currentMessage)
             case ALREADY_BOUGHT => info(currentMessage)

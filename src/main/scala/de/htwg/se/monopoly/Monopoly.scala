@@ -15,10 +15,10 @@ object Monopoly {
     def main(args: Array[String]): Unit = {
 
         controller.controllerState = START_OF_TURN
-        tui.userInput("\"r\" to roll, \"q\" to quit!")
 
         while (true) {
             print("MAIN CLASS LOOP\n")
+            controller.notifyObservers()
             val input = readLine()
             tui.processInput(input)
         }
