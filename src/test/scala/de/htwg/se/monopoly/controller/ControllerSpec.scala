@@ -146,74 +146,74 @@ class ControllerSpec extends WordSpec with Matchers {
         "return the correct game message" when {
             "controller state is START_OF_TURN" in {
                 controller.controllerState = GameStatus.START_OF_TURN
-                controller.currentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a [String]
             }
             "controller state is PASSED_GO" in {
                 controller.controllerState = GameStatus.PASSED_GO
-                controller.currentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a [String]
             }
             "controller state is NEW_FIELD" in {
                 controller.controllerState = GameStatus.NEW_FIELD
-                controller.currentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a [String]
             }
             "controller state is ALREADY_BOUGHT" in {
                 controller.controllerState = GameStatus.ALREADY_BOUGHT
-                controller.currentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a [String]
             }
             "controller state is CAN_BUY" in {
                 controller.controllerState = GameStatus.CAN_BUY
-                controller.currentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a [String]
             }
             "controller state is BOUGHT_BY_OTHER" in {
                 controller.controllerState = GameStatus.BOUGHT_BY_OTHER
-                controller.currentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a [String]
             }
             "controller state is DONE" in {
                 controller.controllerState = GameStatus.DONE
-                controller.currentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a [String]
             }
             "controller state is NEXT_PLAYER" in {
                 controller.controllerState = GameStatus.NEXT_PLAYER
-                controller.currentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a [String]
             }
             "controller state is MISSING_MONEY" in {
                 controller.controllerState = GameStatus.MISSING_MONEY
-                controller.currentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a [String]
             }
             "controller state is BOUGHT" in {
                 controller.controllerState = GameStatus.BOUGHT
-                controller.currentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a [String]
             }
             "controller state is NOTHING" in {
                 controller.controllerState = GameStatus.NOTHING
-                controller.currentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a [String]
             }
             "controller state is CAN_BUILD" when {
                 controller.controllerState = GameStatus.CAN_BUILD
 
                 "build status is BUILT" in {
                     controller.buildStatus = GameStatus.BuildStatus.DEFAULT
-                    controller.currentGameMessage() shouldBe a [String]
+                    controller.catCurrentGameMessage() shouldBe a [String]
                 }
                 "build status is INVALID_ARGS" in {
                     controller.buildStatus = GameStatus.BuildStatus.INVALID_ARGS
-                    controller.currentGameMessage() shouldBe a [String]
+                    controller.catCurrentGameMessage() shouldBe a [String]
                 }
                 "build status is NOT_OWN" in {
                     controller.buildStatus = GameStatus.BuildStatus.NOT_OWN
-                    controller.currentGameMessage() shouldBe a [String]
+                    controller.catCurrentGameMessage() shouldBe a [String]
                 }
                 "build status is TOO_MANY_HOUSES" in {
                     controller.buildStatus = GameStatus.BuildStatus.TOO_MANY_HOUSES
-                    controller.currentGameMessage() shouldBe a [String]
+                    controller.catCurrentGameMessage() shouldBe a [String]
                 }
                 "build status is MISSING_MONEY" in {
                     controller.buildStatus = GameStatus.BuildStatus.MISSING_MONEY
-                    controller.currentGameMessage() shouldBe a [String]
+                    controller.catCurrentGameMessage() shouldBe a [String]
                 }
                 "build status is DONE" in {
                     controller.buildStatus = GameStatus.BuildStatus.DONE
-                    controller.currentGameMessage() shouldBe a [String]
+                    controller.catCurrentGameMessage() shouldBe a [String]
                 }
             }
 

@@ -38,11 +38,13 @@ class Tui(controller: Controller) extends Observer {
                 }
 
             case CAN_BUILD =>
-
+                controller.buildStatus = GameStatus.BuildStatus.DEFAULT
                 if (!input.equals("q"))  {
                     val args = input.split("_")
                     if (args.length != 2) {
-                        userInput("<street name>_<amount of houses>")
+                        userInput("Invalid argument for street or amount of houses!\n" +
+                          "<street name>_<amount of houses>")
+                        controller.buildStatus = GameStatus.BuildStatus.INVALID_ARGS
                     }
                     else
                     {
@@ -62,25 +64,23 @@ class Tui(controller: Controller) extends Observer {
 
     override def update(): Unit = {
 
-        val currentMessage: String = controller.catCurrentGameMessage()
-
         controller.controllerState match {
-            case START_OF_TURN =>  userInput(currentMessage)
-            case PASSED_GO => info(currentMessage)
-            case NEW_FIELD => userInput(currentMessage)
-            case CAN_BUY => userInput(currentMessage)
-            case DONE => userInput(currentMessage)
-            case ALREADY_BOUGHT => info(currentMessage)
-            case BOUGHT_BY_OTHER => info(currentMessage)
+            case START_OF_TURN =>  info(controller.catCurrentGameMessage)
+            case PASSED_GO => info(controller.catCurrentGameMessage)
+            case NEW_FIELD => info(controller.catCurrentGameMessage)
+            case CAN_BUY => info(controller.catCurrentGameMessage)
+            case DONE => info(controller.catCurrentGameMessage)
+            case ALREADY_BOUGHT => info(controller.catCurrentGameMessage)
+            case BOUGHT_BY_OTHER => info(controller.catCurrentGameMessage)
             case CAN_BUILD =>
-                info(currentMessage)
+                info(controller.catCurrentGameMessage)
                 //TODO make it possible to buy multiple houses in one turn
                 //if (controller.buildStatus != GameStatus.BuildStatus.BUILT && controller.buildStatus != GameStatus.BuildStatus.DONE)
                     //processInput(readInput())
 
-            case NEXT_PLAYER => turn(currentMessage)
-            case MISSING_MONEY => info(currentMessage) // TODO: mortgage/sell houses/lose
-            case BOUGHT => info(currentMessage)
+            case NEXT_PLAYER => info(controller.catCurrentGameMessage)
+            case MISSING_MONEY => info(controller.catCurrentGameMessage) // TODO: mortgage/sell houses/lose
+            case BOUGHT => info(controller.catCurrentGameMessage)
             case NOTHING =>
         }
 

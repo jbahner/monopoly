@@ -17,7 +17,6 @@ object Monopoly {
         controller.controllerState = START_OF_TURN
 
         while (true) {
-            print("MAIN CLASS LOOP\n")
             controller.notifyObservers()
             val input = readLine()
             tui.processInput(input)
