@@ -4,6 +4,7 @@ import de.htwg.se.monopoly.model.playerComponent.Player
 
 object GeneralUtil {
 
+    //TODO this needs to be somewhere else
     val groupList: List[Set[String]] = List(
         Set("Street1", "Street2", "Street3"),
         Set("Street4", "Street5", "Street6"),

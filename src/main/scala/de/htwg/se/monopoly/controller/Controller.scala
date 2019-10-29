@@ -88,17 +88,17 @@ class Controller extends Observable {
 
         if (passedGo) {
             controllerState = PASSED_GO
-            notifyObservers()
+            catCurrentGameMessage()
         }
 
         board = board.replacePlayer(player, newPlayer)
         controllerState = NEW_FIELD
-        notifyObservers()
+        catCurrentGameMessage()
 
         val newField = getCurrentField
         // Action return ALREADY_BOUGHT, CAN_BUY or BOUGHT_BY_OTHER
         controllerState = newField.action(newPlayer)
-        notifyObservers()
+        catCurrentGameMessage()
 
         controllerState match {
             case BOUGHT_BY_OTHER =>
@@ -180,7 +180,7 @@ class Controller extends Observable {
             return BuildStatus.INVALID_ARGS
         val street = field.get.asInstanceOf[Street]
         val buyer = getBuyer(street)
-        if (!street.isBought || buyer.isEmpty || !buyer.get.equals(getCurrentPlayer))
+        if (buyer.isEmpty || !buyer.get.equals(getCurrentPlayer))
             return BuildStatus.NOT_OWN
         if (street.numHouses + amount > 5)
             return BuildStatus.TOO_MANY_HOUSES
@@ -195,49 +195,44 @@ class Controller extends Observable {
 
     def getCurrentPlayer: Player = board.currentPlayer
 
-    def currentGameMessage(): String = {
-        currentGameMessageString = catCurrentGameMessage()
-        currentGameMessageString
-    }
-
     def catCurrentGameMessage(): String = {
         controllerState match {
             case START_OF_TURN => currentGameMessageString = "\"r\" to roll, \"q\" to quit!"
                 currentGameMessageString
-            case PASSED_GO => currentGameMessageString = "Received 200€ by passing Go"
+            case PASSED_GO => currentGameMessageString += "Received 200€ by passing Go\n"
                 currentGameMessageString
-            case NEW_FIELD => currentGameMessageString = "New Field: " + getCurrentField.getName
+            case NEW_FIELD => currentGameMessageString = "New Field: " + getCurrentField.getName + "\n"
                 currentGameMessageString
-            case ALREADY_BOUGHT => currentGameMessageString = "You already own this street"
+            case ALREADY_BOUGHT => currentGameMessageString += "You already own this street\n"
                 currentGameMessageString
             case CAN_BUY =>
                 val field: Buyable = getCurrentField.asInstanceOf[Buyable]
-                currentGameMessageString = "Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice)
+                currentGameMessageString += "Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice) + "\n"
                 currentGameMessageString
             case BOUGHT_BY_OTHER => {
                 val field = getCurrentField.asInstanceOf[Buyable]
-                currentGameMessageString = "Field already bought by " + getBuyer(field).get.name + ".\n" +
-                    "You must pay " + field.getPrice + " rent!"
+                currentGameMessageString += "Field already bought by " + getBuyer(field).get.name + ".\n" +
+                    "You must pay " + field.getPrice + " rent!\n"
                 currentGameMessageString
             }
             case CAN_BUILD =>
                 buildStatus match {
                     case BuildStatus.DEFAULT => val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer)
-                        currentGameMessageString = "You can build on: \n" + buildablesToString(wholeGroups) +
-                            "\nType the name of the street and the amount of houses you want to build. Press 'q' to quit."
+                        currentGameMessageString += "You can build on: \n" + buildablesToString(wholeGroups) +
+                            "\nType the name of the street and the amount of houses you want to build. Press 'q' to quit.\n"
                         currentGameMessageString
-                    case BuildStatus.BUILT => currentGameMessageString = "Successfully built houses!"
+                    case BuildStatus.BUILT => currentGameMessageString = "Successfully built!\n"
                         currentGameMessageString
-                    case BuildStatus.INVALID_ARGS => currentGameMessageString = "Invalid argument for street or amount of houses!"
-                        currentGameMessageString
+                    case BuildStatus.INVALID_ARGS => currentGameMessageString
                     case BuildStatus.NOT_OWN => currentGameMessageString = "You don't own this street!"
                         currentGameMessageString
-                    case BuildStatus.TOO_MANY_HOUSES => currentGameMessageString = "There can only be 5 houses on a street"
+                    case BuildStatus.TOO_MANY_HOUSES => currentGameMessageString += "There can only be 5 houses on a street\n"
                         currentGameMessageString
-                    case BuildStatus.MISSING_MONEY => currentGameMessageString = "You don't have enough money!"
+                    case BuildStatus.MISSING_MONEY => currentGameMessageString += "You don't have enough money!\n"
                         currentGameMessageString
-                    case BuildStatus.DONE => currentGameMessageString = ""
-                        currentGameMessageString
+                    //TODO delete if not needed
+                    //case BuildStatus.DONE => currentGameMessageString = ""
+                    //    currentGameMessageString
                 }
             case DONE => currentGameMessageString = getCurrentPlayer.name + " ended his turn.\n\n"
               currentGameMessageString
@@ -250,6 +245,10 @@ class Controller extends Observable {
             case NOTHING => currentGameMessageString = ""
                 currentGameMessageString
         }
+    }
+
+    def getCurrentGameMessage() : String = {
+        currentGameMessageString
     }
 
     def buildablesToString(buildables: List[Set[String]]): String = {
