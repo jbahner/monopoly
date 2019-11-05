@@ -15,7 +15,7 @@ class Controller extends Observable {
     var board: Board = _
     // TODO check if 2nd variable needed
     var currentDice: Int = _
-    var currentGameMessageString : String
+    var currentGameMessageString : String = _
 
     def setUp() = {
 
