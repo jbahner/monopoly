@@ -4,7 +4,7 @@ import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
 import de.htwg.se.monopoly.model.boardComponent._
 import de.htwg.se.monopoly.model.playerComponent.Player
-import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, PlayerIterator}
+import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, PlayerIterator, UndoManager}
 import play.api.libs.json.{JsValue, Json}
 
 import scala.swing.Publisher
@@ -12,6 +12,7 @@ import scala.swing.event.Event
 
 class Controller extends Publisher {
     RentContext.controller = this
+    val undoManager = new UndoManager
     var controllerState: GameStatus = START_OF_TURN
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
 
