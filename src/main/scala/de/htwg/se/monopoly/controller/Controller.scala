@@ -9,7 +9,7 @@ import play.api.libs.json.{JsNumber, JsValue, Json}
 
 class Controller extends Observable {
 
-    var controllerState: GameStatus = _
+    var controllerState: GameStatus = START_OF_TURN
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
 
     var board: Board = _
@@ -268,6 +268,7 @@ class Controller extends Observable {
     def getJSON(): JsValue = {
         Json.obj(
             "board" -> Json.obj(
+                "state" -> controllerState.toString,
                 "current_player" -> getCurrentPlayer.name,
                 "players" -> board.playerIt.list.map(p => p.getJSON).toList
             )
