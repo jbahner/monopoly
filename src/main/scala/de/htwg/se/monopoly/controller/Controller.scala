@@ -1,11 +1,11 @@
 package de.htwg.se.monopoly.controller
 
-import de.htwg.se.monopoly.controller.GameStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
-import de.htwg.se.monopoly.controller.GameStatus._
-import de.htwg.se.monopoly.model.boardComponent.{ActionField, Board, Building, Buyable, Field, Street}
+import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
+import de.htwg.se.monopoly.model.boardComponent._
 import de.htwg.se.monopoly.model.playerComponent.Player
-import de.htwg.se.monopoly.util.{FieldIterator, Observable, PlayerIterator, GeneralUtil}
+import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, Observable, PlayerIterator}
+import play.api.libs.json.{JsNumber, JsValue, Json}
 
 class Controller extends Observable {
 
@@ -15,7 +15,7 @@ class Controller extends Observable {
     var board: Board = _
     // TODO check if 2nd variable needed
     var currentDice: Int = _
-    var currentGameMessageString : String = _
+    var currentGameMessageString: String = _
 
     def setUp() = {
 
@@ -82,8 +82,7 @@ class Controller extends Observable {
         players.find(p => p.bought.contains(buyable))
     }
 
-    def processRoll(firstDice: Int, secondDice: Int): Unit =
-    {
+    def processRoll(firstDice: Int, secondDice: Int): Unit = {
         val player = board.currentPlayer
         val (newPlayer, passedGo) = player.walk(firstDice + secondDice)
 
@@ -212,14 +211,14 @@ class Controller extends Observable {
             case BOUGHT_BY_OTHER => {
                 val field = getCurrentField.asInstanceOf[Buyable]
                 currentGameMessageString += "Field already bought by " + getBuyer(field).get.name + ".\n" +
-                    "You must pay " + field.getPrice + " rent!\n"
+                  "You must pay " + field.getPrice + " rent!\n"
                 currentGameMessageString
             }
             case CAN_BUILD =>
                 buildStatus match {
                     case BuildStatus.DEFAULT => val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer)
                         currentGameMessageString += "You can build on: \n" + buildablesToString(wholeGroups) +
-                            "\nType the name of the street and the amount of houses you want to build. Press 'q' to quit.\n"
+                          "\nType the name of the street and the amount of houses you want to build. Press 'q' to quit.\n"
                         currentGameMessageString
                     case BuildStatus.BUILT => currentGameMessageString = "Successfully built!\n"
                         currentGameMessageString
@@ -235,7 +234,7 @@ class Controller extends Observable {
                     //    currentGameMessageString
                 }
             case DONE => currentGameMessageString = getCurrentPlayer.name + " ended his turn.\n\n"
-              currentGameMessageString
+                currentGameMessageString
             case NEXT_PLAYER => currentGameMessageString = "Next player: " + getCurrentPlayer.name + "\n" + getCurrentPlayer.getDetails
                 currentGameMessageString
             case MISSING_MONEY => currentGameMessageString = "You do not have enough money!"
@@ -247,7 +246,7 @@ class Controller extends Observable {
         }
     }
 
-    def getCurrentGameMessage() : String = {
+    def getCurrentGameMessage(): String = {
         currentGameMessageString
     }
 
@@ -258,11 +257,20 @@ class Controller extends Observable {
             set.foreach {
                 street =>
                     sb.append(street)
-                        .append(" (" + getFieldByName(street).get.asInstanceOf[Street].houseCost + "€)")
-                        .append("   ")
+                      .append(" (" + getFieldByName(street).get.asInstanceOf[Street].houseCost + "€)")
+                      .append("   ")
             }
             sb.append("\n")
         })
         sb.toString()
+    }
+
+    def getJSON(): JsValue = {
+        Json.obj(
+            "board" -> Json.obj(
+                "current_player" -> getCurrentPlayer.name,
+                "players" -> board.playerIt.list.map(p => p.getJSON).toList
+            )
+        )
     }
 }

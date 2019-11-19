@@ -11,5 +11,6 @@ libraryDependencies ++= Seq(
     "com.novocode" % "junit-interface" % "0.11" % Test
       exclude("junit", "junit-dep")
 )
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.6"
 
 coverageExcludedPackages := ".*view.*"
