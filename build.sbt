@@ -14,3 +14,4 @@ libraryDependencies ++= Seq(
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.6"
 
 coverageExcludedPackages := ".*view.*"
+coverageExcludedFiles := ".*Monopoly"
