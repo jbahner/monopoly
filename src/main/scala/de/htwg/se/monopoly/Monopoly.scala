@@ -1,6 +1,6 @@
 package de.htwg.se.monopoly
 
-import de.htwg.se.monopoly.controller.Controller
+import de.htwg.se.monopoly.controller.{Controller, UpdateInfo}
 import de.htwg.se.monopoly.controller.GameStatus.START_OF_TURN
 import de.htwg.se.monopoly.view.Tui
 
@@ -17,7 +17,7 @@ object Monopoly {
         controller.controllerState = START_OF_TURN
 
         while (true) {
-            controller.notifyObservers()
+            controller.publish(new UpdateInfo)
             val input = readLine()
             tui.processInput(input)
         }

@@ -4,10 +4,13 @@ import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
 import de.htwg.se.monopoly.model.boardComponent._
 import de.htwg.se.monopoly.model.playerComponent.Player
-import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, Observable, PlayerIterator}
-import play.api.libs.json.{JsNumber, JsValue, Json}
+import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, PlayerIterator}
+import play.api.libs.json.{JsValue, Json}
 
-class Controller extends Observable {
+import scala.swing.Publisher
+import scala.swing.event.Event
+
+class Controller extends Publisher {
 
     var controllerState: GameStatus = START_OF_TURN
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
@@ -115,7 +118,7 @@ class Controller extends Observable {
     def nextPlayer(): Unit = {
         board = board.nextPlayerTurn()
         controllerState = NEXT_PLAYER
-        notifyObservers()
+        publish(new UpdateInfo)
         controllerState = START_OF_TURN
         buildStatus = BuildStatus.DEFAULT
     }
@@ -137,7 +140,7 @@ class Controller extends Observable {
         }
         if (currentPlayer.money < payAmount) {
             controllerState = MISSING_MONEY
-            notifyObservers()
+            publish(new UpdateInfo)
         } else {
             board.replacePlayer(currentPlayer, currentPlayer.copy(money = currentPlayer.money - payAmount))
             board.replacePlayer(receiver, receiver.copy(money = receiver.money + payAmount))
@@ -149,7 +152,7 @@ class Controller extends Observable {
         val currentField = getCurrentField.asInstanceOf[Buyable]
         if (currentPlayer.money < currentField.getPrice) {
             controllerState = MISSING_MONEY
-            notifyObservers()
+            publish(new UpdateInfo)
             return
         }
         var newField = currentField
@@ -162,7 +165,7 @@ class Controller extends Observable {
         board = board.replacePlayer(currentPlayer, newPlayer).copy(currentPlayer = newPlayer)
         board = board.replaceField(currentField, newField)
         controllerState = BOUGHT
-        notifyObservers()
+        publish(new UpdateInfo)
     }
 
     def getFieldByName(name: String): Option[Field] = {
@@ -275,3 +278,5 @@ class Controller extends Observable {
         )
     }
 }
+
+class UpdateInfo extends Event

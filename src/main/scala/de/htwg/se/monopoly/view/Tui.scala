@@ -1,14 +1,12 @@
 package de.htwg.se.monopoly.view
 
-import de.htwg.se.monopoly.controller.{Controller, GameStatus}
 import de.htwg.se.monopoly.controller.GameStatus._
-import de.htwg.se.monopoly.model.boardComponent.{Buyable, Street}
-import de.htwg.se.monopoly.util.Observer
+import de.htwg.se.monopoly.controller.{Controller, GameStatus, UpdateInfo}
 
-import scala.io.StdIn.readLine
+import scala.swing.Reactor
 
-class Tui(controller: Controller) extends Observer {
-    controller.add(this)
+class Tui(controller: Controller) extends Reactor {
+    listenTo(controller);
     controller.setUp()
     playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer.getDetails)
 
@@ -39,22 +37,21 @@ class Tui(controller: Controller) extends Observer {
 
             case CAN_BUILD =>
                 controller.buildStatus = GameStatus.BuildStatus.DEFAULT
-                if (!input.equals("q"))  {
+                if (!input.equals("q")) {
                     val args = input.split("_")
                     if (args.length != 2) {
                         userInput("Invalid argument for street or amount of houses!\n" +
                           "<street name>_<amount of houses>")
                         controller.buildStatus = GameStatus.BuildStatus.INVALID_ARGS
                     }
-                    else
-                    {
+                    else {
                         controller.tryToBuildHouses(args(0), args(1).toInt)
                     }
                 }
                 else {
                     controller.buildStatus = GameStatus.BuildStatus.DONE
                     controller.controllerState = GameStatus.DONE
-                    controller.notifyObservers()
+                    controller.publish(new UpdateInfo)
                     controller.nextPlayer()
                 }
             case DONE => controller.nextPlayer()
@@ -62,28 +59,8 @@ class Tui(controller: Controller) extends Observer {
         }
     }
 
-    override def update(): Unit = {
-
-        controller.controllerState match {
-            case START_OF_TURN =>  info(controller.catCurrentGameMessage)
-            case PASSED_GO => info(controller.catCurrentGameMessage)
-            case NEW_FIELD => info(controller.catCurrentGameMessage)
-            case CAN_BUY => info(controller.catCurrentGameMessage)
-            case DONE => info(controller.catCurrentGameMessage)
-            case ALREADY_BOUGHT => info(controller.catCurrentGameMessage)
-            case BOUGHT_BY_OTHER => info(controller.catCurrentGameMessage)
-            case CAN_BUILD =>
-                info(controller.catCurrentGameMessage)
-                //TODO make it possible to buy multiple houses in one turn
-                //if (controller.buildStatus != GameStatus.BuildStatus.BUILT && controller.buildStatus != GameStatus.BuildStatus.DONE)
-                    //processInput(readInput())
-
-            case NEXT_PLAYER => info(controller.catCurrentGameMessage)
-            case MISSING_MONEY => info(controller.catCurrentGameMessage) // TODO: mortgage/sell houses/lose
-            case BOUGHT => info(controller.catCurrentGameMessage)
-            case NOTHING =>
-        }
-
+    reactions += {
+        case event: UpdateInfo => info(controller.catCurrentGameMessage())
     }
 
     def turn(message: String): Unit = {
