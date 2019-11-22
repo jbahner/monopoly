@@ -12,6 +12,8 @@ libraryDependencies ++= Seq(
       exclude("junit", "junit-dep")
 )
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.6"
+libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0"
+libraryDependencies += "org.scala-lang.modules" % "scala-swing_2.12" % "2.0.3"
 
 coverageExcludedPackages := ".*view.*"
 coverageExcludedFiles := ".*Monopoly"
