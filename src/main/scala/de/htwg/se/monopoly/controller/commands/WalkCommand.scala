@@ -31,7 +31,7 @@ case class WalkCommand(dice: (Int, Int), controller: Controller) extends Command
 
         controller.controllerState match {
             case BOUGHT_BY_OTHER =>
-                controller.payRent(controller.getCurrentPlayer, controller.getCurrentField.asInstanceOf[Buyable], controller.getBuyer(controller.getCurrentField.asInstanceOf[Buyable]).get)
+                controller.payRent(controller.getCurrentPlayer.get, controller.getCurrentField.asInstanceOf[Buyable], controller.getBuyer(controller.getCurrentField.asInstanceOf[Buyable]).get)
             case _ =>
         }
 
