@@ -62,23 +62,23 @@ class ControllerSpec extends WordSpec with Matchers {
             val buyer = Player("buyer", 1500, fields(1), Set(), new FieldIterator(fields.drop(1)))
             controller.board = Board(fields.drop(1), buyer, new PlayerIterator(Array(buyer)))
             controller.buy()
-            controller.getCurrentPlayer.bought should contain(controller.getCurrentField)
-            controller.getCurrentPlayer.money should be(buyer.money - fields(1).asInstanceOf[Street].getPrice)
+            controller.getCurrentPlayer.get.bought should contain(controller.getCurrentField)
+            controller.getCurrentPlayer.get.money should be(buyer.money - fields(1).asInstanceOf[Street].getPrice)
             controller.undoManager.undoStep()
             controller.controllerState should be(GameStatus.CAN_BUY)
-            controller.getCurrentPlayer.bought should be(empty)
-            controller.getCurrentPlayer.money should be(buyer.money)
+            controller.getCurrentPlayer.get.bought should be(empty)
+            controller.getCurrentPlayer.get.money should be(buyer.money)
             controller.undoManager.redoStep()
-            controller.getCurrentPlayer.bought should contain(controller.getCurrentField)
-            controller.getCurrentPlayer.money should be(buyer.money - fields(1).asInstanceOf[Street].getPrice)
+            controller.getCurrentPlayer.get.bought should contain(controller.getCurrentField)
+            controller.getCurrentPlayer.get.money should be(buyer.money - fields(1).asInstanceOf[Street].getPrice)
         }
         "buy a building correctly" in {
             val buildings = List(Building("building", 100))
             val buyer = Player("buyer", 1500, buildings.head, Set(), new FieldIterator(buildings))
             controller.board = Board(buildings, buyer, new PlayerIterator(Array(buyer)))
             controller.buy()
-            controller.getCurrentPlayer.bought should contain(controller.getCurrentField)
-            controller.getCurrentPlayer.money should be(buyer.money - buildings.head.getPrice)
+            controller.getCurrentPlayer.get.bought should contain(controller.getCurrentField)
+            controller.getCurrentPlayer.get.money should be(buyer.money - buildings.head.getPrice)
         }
         "not buy a field" when {
             "the player does not have enough money" in {

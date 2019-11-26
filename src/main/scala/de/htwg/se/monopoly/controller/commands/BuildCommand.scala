@@ -11,7 +11,7 @@ case class BuildCommand(street: Street, amount: Int, controller: Controller) ext
 
   override def doStep(): Unit = {
     controller.board = controller.board.replaceField(field = street, newField = street.buyHouses(amount))
-    controller.board = controller.board.replacePlayer(controller.getCurrentPlayer, controller.getCurrentPlayer.copy(money = controller.getCurrentPlayer.money - street.houseCost * amount))
+    controller.board = controller.board.replacePlayer(controller.getCurrentPlayer.get, controller.getCurrentPlayer.get.copy(money = controller.getCurrentPlayer.get.money - street.houseCost * amount))
     controller.buildStatus = BuildStatus.BUILT
   }
 

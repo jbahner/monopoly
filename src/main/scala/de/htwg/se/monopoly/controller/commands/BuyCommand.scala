@@ -18,9 +18,9 @@ case class BuyCommand(buyable: Buyable, controller: Controller) extends Command 
       case building: Building => newField = building.copy(isBought = true)
     }
     val currentPlayer = controller.getCurrentPlayer
-    val newPlayer: Player = currentPlayer.copy(money = currentPlayer.money - newField.getPrice,
-      bought = currentPlayer.bought + newField)
-    controller.board = controller.board.replacePlayer(currentPlayer, newPlayer).copy(currentPlayer = newPlayer)
+    val newPlayer: Player = currentPlayer.get.copy(money = currentPlayer.get.money - newField.getPrice,
+      bought = currentPlayer.get.bought + newField)
+    controller.board = controller.board.replacePlayer(currentPlayer.get, newPlayer).copy(currentPlayer = newPlayer)
     controller.board = controller.board.replaceField(buyable, newField)
     controller.controllerState = BOUGHT
     controller.publish(new UpdateInfo)
