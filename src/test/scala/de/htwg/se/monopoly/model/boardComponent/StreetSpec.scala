@@ -21,11 +21,6 @@ class StreetSpec extends WordSpec with Matchers {
             val boughtStreet = street.setBought()
             boughtStreet.isBought should be (true)
         }
-        "get the correct rent" in {
-            street.getRent() should be(10)
-            val houseStreet = street.copy(numHouses = 2)
-            houseStreet.getRent() should be(30)
-        }
         "be able to build houses" in {
             val houseStreet = street.buyHouses(3)
             houseStreet.numHouses should be (3)

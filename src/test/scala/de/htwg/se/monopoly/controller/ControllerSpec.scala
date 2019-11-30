@@ -1,7 +1,7 @@
 package de.htwg.se.monopoly.controller
 
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus
-import de.htwg.se.monopoly.model.boardComponent.{ActionField, Board, Building, Buyable, Street}
+import de.htwg.se.monopoly.model.boardComponent.{ActionField, Board, Building, Buyable, RentContext, Street}
 import de.htwg.se.monopoly.model.playerComponent.Player
 import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, PlayerIterator}
 import org.scalatest.{Matchers, WordSpec}
@@ -66,10 +66,12 @@ class ControllerSpec extends WordSpec with Matchers {
             val player = Player("player", 1500, rentFields.head, Set(), new FieldIterator(rentFields))
             val buyer = Player("buyer", 1500, rentFields.head, Set(rentFields.head), new FieldIterator(rentFields))
             controller.board = Board(rentFields, player, new PlayerIterator(Array(player, buyer)))
+            RentContext.controller = controller
             controller.payRent(player, rentFields.head, buyer)
 
-            controller.board.playerIt.list(0).money should be(player.money - rentFields.head.getRent())
-            controller.board.playerIt.list(1).money should be(buyer.money + rentFields.head.getRent())
+            val amount = RentContext.rentStrategy.executeStrategy(rentFields.head.asInstanceOf[Buyable])
+            controller.board.playerIt.list(0).money should be(player.money - amount)
+            controller.board.playerIt.list(1).money should be(buyer.money + amount)
         }
         "build houses correctly" in {
             val groupFields = List(fields(1).asInstanceOf[Street].setBought(), fields(2).asInstanceOf[Street], fields(3).asInstanceOf[Street])

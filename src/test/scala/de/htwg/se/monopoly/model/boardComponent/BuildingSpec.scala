@@ -22,9 +22,6 @@ class BuildingSpec extends WordSpec with Matchers {
                 val boughtBuilding = building.setBought()
                 boughtBuilding.isBought should be(true)
             }
-            "get the correct rent" in {
-                building.getRent() should be(100)
-            }
             "get the correct action" should {
                 "can buy" in {
                     val player = Player("player", 1500, building, Set(), new FieldIterator(List(building)))

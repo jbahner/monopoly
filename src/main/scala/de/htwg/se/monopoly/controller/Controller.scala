@@ -11,7 +11,7 @@ import scala.swing.Publisher
 import scala.swing.event.Event
 
 class Controller extends Publisher {
-
+    RentContext.controller = this
     var controllerState: GameStatus = START_OF_TURN
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
 
@@ -124,20 +124,7 @@ class Controller extends Publisher {
     }
 
     def payRent(currentPlayer: Player, field: Buyable, receiver: Player) = {
-        var payAmount = 0
-        field match {
-            case street: Street =>
-                if (street.numHouses == 0 && GeneralUtil.hasWholeGroup(receiver, field.getName))
-                    payAmount = field.getRent() * 2
-                else
-                    payAmount = field.getRent()
-            case building: Building =>
-                // TODO check this is correct
-                if (GeneralUtil.hasWholeGroup(receiver, field.getName))
-                    payAmount = currentDice * 10
-                else
-                    payAmount = currentDice * 4
-        }
+        val payAmount = RentContext.rentStrategy.executeStrategy(field)
         if (currentPlayer.money < payAmount) {
             controllerState = MISSING_MONEY
             publish(new UpdateInfo)
@@ -214,7 +201,7 @@ class Controller extends Publisher {
             case BOUGHT_BY_OTHER => {
                 val field = getCurrentField.asInstanceOf[Buyable]
                 currentGameMessageString += "Field already bought by " + getBuyer(field).get.name + ".\n" +
-                  "You must pay " + field.getPrice + " rent!\n"
+                  "You must pay " + RentContext.rentStrategy.executeStrategy(field) + " rent!\n"
                 currentGameMessageString
             }
             case CAN_BUILD =>
