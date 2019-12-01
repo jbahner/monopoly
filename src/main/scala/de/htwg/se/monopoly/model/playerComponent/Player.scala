@@ -38,9 +38,6 @@ case class Player(name: String, money: Int, currentField: Field, bought : Set[Bu
     }
 
     def getJSON:JsValue = {
-        var str = ""
-        bought.filter(b => b.isInstanceOf[Street]).foreach(s => {str = str + s.getName + ":" + s.asInstanceOf[Street].numHouses + ","})
-        str = str.substring(0, str.length - 1)
         Json.obj(
             "name" -> name,
             "money" -> JsNumber(money),

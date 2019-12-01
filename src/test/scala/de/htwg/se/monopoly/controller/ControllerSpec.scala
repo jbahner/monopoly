@@ -5,6 +5,7 @@ import de.htwg.se.monopoly.model.boardComponent.{ActionField, Board, Building, B
 import de.htwg.se.monopoly.model.playerComponent.Player
 import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, PlayerIterator}
 import org.scalatest.{Matchers, WordSpec}
+import play.api.libs.json.Json
 
 class ControllerSpec extends WordSpec with Matchers {
     "A controller" should {
@@ -23,6 +24,14 @@ class ControllerSpec extends WordSpec with Matchers {
         }
         "get the correct current player" in {
             controller.getCurrentPlayer should be(player1)
+        }
+        "have a JSON representation" in {
+            val player1JSON = player1.getJSON
+            val player2JSON = player2.getJSON
+            val json = Json.parse(
+                "{ \"board\" : { \"state\" : \"START_OF_TURN\",  \"current_player\" : \"player1\", \"players\" : [ " +
+                  player1JSON.toString + ", " + player2JSON.toString() + " ]}}")
+            controller.getJSON() shouldEqual(json)
         }
         "get the correct buyer" in {
             controller.board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))

@@ -3,6 +3,7 @@ package de.htwg.se.monopoly.model.playerComponent
 import de.htwg.se.monopoly.model.boardComponent.{ActionField, Street}
 import de.htwg.se.monopoly.util.FieldIterator
 import org.scalatest._
+import play.api.libs.json.Json
 
 class PlayerSpec extends WordSpec with Matchers {
     "A Player" when {
@@ -27,6 +28,22 @@ class PlayerSpec extends WordSpec with Matchers {
                 testPlayer.getDetails should include(street1.getName)
                 testPlayer.getDetails should include(fields.head.getName)
             }
+
+            "have a JSON representation" in {
+                val json = Json.parse("""{ "name" : "name", "money" : 1500, "current_field" : "Go", "bought_fields" : [ ]}""")
+                player.getJSON shouldEqual(json)
+            }
+
+            "have bought fields included in JSON representation" in {
+                val s1 = street1.copy(isBought = true, numHouses = 3)
+                val s2 = street2.copy(isBought = true, numHouses = 4)
+                val player2 = player.copy(bought = Set(s1, s2))
+                val json = Json.parse(
+                    """{ "name" : "name", "money" : 1500, "current_field" : "Go",
+                      |"bought_fields" : [ { "name" : "Street1", "houses" : 3}, { "name" : "Street2", "houses" : 4 } ]}""".stripMargin)
+                player2.getJSON shouldEqual(json)
+            }
+
             "stand on the first field" in {
                 player.currentField should be(fields.head)
             }

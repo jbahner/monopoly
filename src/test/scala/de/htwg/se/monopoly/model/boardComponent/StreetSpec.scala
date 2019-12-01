@@ -4,6 +4,7 @@ import de.htwg.se.monopoly.controller.GameStatus
 import de.htwg.se.monopoly.model.playerComponent.Player
 import de.htwg.se.monopoly.util.FieldIterator
 import org.scalatest.{Matchers, WordSpec}
+import play.api.libs.json.Json
 
 class StreetSpec extends WordSpec with Matchers {
     "A Street" should {
@@ -24,6 +25,15 @@ class StreetSpec extends WordSpec with Matchers {
         "be able to build houses" in {
             val houseStreet = street.buyHouses(3)
             houseStreet.numHouses should be (3)
+        }
+        "have a JSON representation" in {
+            val json = Json.parse("""{ "name" : "streetName", "houses" : 0 }""")
+            street.getJSON shouldEqual(json)
+        }
+        "have a JSON representation with correct houses" in {
+            val street2 = street.copy(isBought = true, numHouses = 3)
+            val json = Json.parse("""{ "name" : "streetName", "houses" : 3 }""")
+            street2.getJSON shouldEqual(json)
         }
         "get the correct action" should {
             "can buy" in {
