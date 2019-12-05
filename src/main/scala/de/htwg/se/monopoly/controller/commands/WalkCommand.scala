@@ -6,8 +6,8 @@ import de.htwg.se.monopoly.model.boardComponent.{Board, Buyable, Field}
 import de.htwg.se.monopoly.util.{Command, GeneralUtil}
 
 case class WalkCommand(dice: (Int, Int), controller: Controller) extends Command{
-    val backupBoard: Board = controller.board.copy(fields = controller.board.fields, playerIt = controller.board.playerIt.copy)
-    val backupGameString = controller.currentGameMessageString
+    private val backupBoard: Board = controller.board.copy(fields = controller.board.fields, playerIt = controller.board.playerIt.copy)
+    private val backupGameString: String = controller.currentGameMessageString
     override def doStep(): Unit = {
         println("WALKING " + dice._1 + " and " + dice._2)
         controller.controllerState = ROLLED

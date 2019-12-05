@@ -54,7 +54,7 @@ class Tui(controller: Controller) extends Reactor {
                             controller.buildStatus = GameStatus.BuildStatus.INVALID_ARGS
                         }
                         else {
-                            controller.tryToBuildHouses(args(0), args(1).toInt)
+                            controller.buildHouses(args(0), args(1).toInt)
                         }
                     }
                 }

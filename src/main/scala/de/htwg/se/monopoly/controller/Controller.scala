@@ -2,7 +2,7 @@ package de.htwg.se.monopoly.controller
 
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
-import de.htwg.se.monopoly.controller.commands.{WalkCommand, SetupCommand}
+import de.htwg.se.monopoly.controller.commands.{BuildCommand, SetupCommand, WalkCommand}
 import de.htwg.se.monopoly.model.boardComponent._
 import de.htwg.se.monopoly.model.playerComponent.Player
 import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, PlayerIterator, UndoManager}
@@ -84,25 +84,20 @@ class Controller extends Publisher {
         board.fields.find(field => field.getName.equals(name))
     }
 
-    def tryToBuildHouses(streetName: String, amount: Int) = {
-        buildStatus = buildHouses(streetName, amount)
-    }
-
-    def buildHouses(streetName: String, amount: Int): BuildStatus = {
+    def buildHouses(streetName: String, amount: Int): Unit = {
         val field = getFieldByName(streetName)
         if (field.isEmpty || !field.get.isInstanceOf[Street])
-            return BuildStatus.INVALID_ARGS
+            buildStatus = BuildStatus.INVALID_ARGS
         val street = field.get.asInstanceOf[Street]
         val buyer = getBuyer(street)
         if (buyer.isEmpty || !buyer.get.equals(getCurrentPlayer))
-            return BuildStatus.NOT_OWN
+            buildStatus = BuildStatus.NOT_OWN
         if (street.numHouses + amount > 5)
-            return BuildStatus.TOO_MANY_HOUSES
+            buildStatus = BuildStatus.TOO_MANY_HOUSES
         if (getCurrentPlayer.money < street.houseCost * amount)
-            return BuildStatus.MISSING_MONEY
-        board = board.replaceField(field = street, newField = street.buyHouses(amount))
-        board = board.replacePlayer(getCurrentPlayer, getCurrentPlayer.copy(money = getCurrentPlayer.money - street.houseCost * amount))
-        BuildStatus.BUILT
+            buildStatus = BuildStatus.MISSING_MONEY
+        else
+            undoManager.doStep(BuildCommand(street, amount, this))
     }
 
     def getCurrentField: Field = board.currentPlayer.currentField
