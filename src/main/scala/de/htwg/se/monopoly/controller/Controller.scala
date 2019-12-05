@@ -111,57 +111,67 @@ class Controller extends Publisher {
 
     def catCurrentGameMessage(): String = {
         controllerState match {
-            case START_OF_TURN => currentGameMessageString = "\"r\" to roll, \"q\" to quit!"
+            case START_OF_TURN => currentGameMessageString = userInputString("\"r\" to roll, \"q\" to quit!")
                 currentGameMessageString
-            case ROLLED => currentGameMessageString = "Rolled: " + currentDice._1 + " and " + currentDice._2+ "\n"
+            case ROLLED => currentGameMessageString = infoString("Rolled: " + currentDice._1 + " and " + currentDice._2+ "\n")
                 currentGameMessageString
-            case PASSED_GO => currentGameMessageString += "Received 200€ by passing Go\n"
+            case PASSED_GO => currentGameMessageString += infoString("Received 200€ by passing Go\n")
                 currentGameMessageString
-            case NEW_FIELD => currentGameMessageString = "New Field: " + getCurrentField.getName + "\n"
+            case NEW_FIELD => currentGameMessageString = infoString("New Field: " + getCurrentField.getName + "\n")
                 currentGameMessageString
-            case ALREADY_BOUGHT => currentGameMessageString += "You already own this street\n"
+            case ALREADY_BOUGHT => currentGameMessageString += infoString("You already own this street\n")
                 currentGameMessageString
             case CAN_BUY =>
                 val field: Buyable = getCurrentField.asInstanceOf[Buyable]
-                currentGameMessageString += "Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice) + "\n"
+                currentGameMessageString += userInputString("Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice) + "\n")
                 currentGameMessageString
             case BOUGHT_BY_OTHER => {
                 val field = getCurrentField.asInstanceOf[Buyable]
-                currentGameMessageString += "Field already bought by " + getBuyer(field).get.name + ".\n" +
-                  "You must pay " + RentContext.rentStrategy.executeStrategy(field) + " rent!\n"
+                currentGameMessageString += infoString("Field already bought by " + getBuyer(field).get.name + ".\n" +
+                  "You must pay " + RentContext.rentStrategy.executeStrategy(field) + " rent!\n")
                 currentGameMessageString
             }
             case CAN_BUILD =>
                 buildStatus match {
                     case BuildStatus.DEFAULT => val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer)
-                        currentGameMessageString += "You can build on: \n" + buildablesToString(wholeGroups) +
-                          "\nType the name of the street and the amount of houses you want to build. Press 'q' to quit.\n"
+                        currentGameMessageString += userInputString("You can build on: \n" + buildablesToString(wholeGroups) +
+                          "\nType the name of the street and the amount of houses you want to build. Press 'q' to quit.\n")
                         currentGameMessageString
-                    case BuildStatus.BUILT => currentGameMessageString = "Successfully built!\n"
+                    case BuildStatus.BUILT => currentGameMessageString = infoString("Successfully built!\n")
                         currentGameMessageString
                     case BuildStatus.INVALID_ARGS => currentGameMessageString
-                    case BuildStatus.NOT_OWN => currentGameMessageString = "You don't own this street!"
+                    case BuildStatus.NOT_OWN => currentGameMessageString = errorString("You don't own this street!")
                         currentGameMessageString
-                    case BuildStatus.TOO_MANY_HOUSES => currentGameMessageString += "There can only be 5 houses on a street\n"
+                    case BuildStatus.TOO_MANY_HOUSES => currentGameMessageString += errorString("There can only be 5 houses on a street\n")
                         currentGameMessageString
-                    case BuildStatus.MISSING_MONEY => currentGameMessageString += "You don't have enough money!\n"
+                    case BuildStatus.MISSING_MONEY => currentGameMessageString += errorString("You don't have enough money!\n")
                         currentGameMessageString
                     //TODO delete if not needed
                     //case BuildStatus.DONE => currentGameMessageString = ""
                     //    currentGameMessageString
                 }
-            case DONE => currentGameMessageString = getCurrentPlayer.name + " ended his turn.\n\n"
+            case DONE => currentGameMessageString = turnString(getCurrentPlayer.name + " ended his turn.\n\n")
                 currentGameMessageString
-            case NEXT_PLAYER => currentGameMessageString = "Next player: " + getCurrentPlayer.name + "\n" + getCurrentPlayer.getDetails
+            case NEXT_PLAYER => currentGameMessageString = turnString("Next player: " + getCurrentPlayer.name + "\n") + playerInfoString(getCurrentPlayer.getDetails)
                 currentGameMessageString
             case MISSING_MONEY => currentGameMessageString = "You do not have enough money!"
                 currentGameMessageString
-            case BOUGHT => currentGameMessageString = "Successfully bought the street"
+            case BOUGHT => currentGameMessageString = infoString("Successfully bought the street")
                 currentGameMessageString
             case NOTHING => currentGameMessageString = ""
                 currentGameMessageString
         }
     }
+
+    def turnString(message: String): String = Console.BOLD + Console.UNDERLINED + Console.GREEN + message + Console.RESET
+
+    def playerInfoString(message: String): String = Console.BOLD + Console.MAGENTA + message + Console.RESET
+
+    def infoString(message: String): String = Console.BOLD + Console.BLUE + message + Console.RESET
+
+    def userInputString(message: String): String = Console.BOLD + Console.YELLOW + message + Console.RESET
+
+    def errorString(message: String): String = Console.BOLD + Console.RED + message + Console.RESET
 
     def getCurrentGameMessage(): String = {
         currentGameMessageString
