@@ -1,7 +1,8 @@
 package de.htwg.se.monopoly.controller
 
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus
-import de.htwg.se.monopoly.model.boardComponent.{ActionField, Board, Building, Buyable, RentContext, Street}
+import de.htwg.se.monopoly.controller.commands.WalkCommand
+import de.htwg.se.monopoly.model.boardComponent._
 import de.htwg.se.monopoly.model.playerComponent.Player
 import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, PlayerIterator}
 import org.scalatest.{Matchers, WordSpec}
@@ -14,11 +15,6 @@ class ControllerSpec extends WordSpec with Matchers {
         val player1 = Player("player1", 1500, fields.head, Set(), new FieldIterator(fields))
         val player2 = Player("player2", 1500, fields.head, Set(), new FieldIterator(fields))
         controller.board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
-        "roll dice" in {
-            val (d1, d2) = controller.rollDice()
-            d1 should (be >= 1 and be <= 6)
-            d2 should (be >= 1 and be <= 6)
-        }
         "get the correct current field" in {
             controller.getCurrentField should be(fields.head)
         }
@@ -31,7 +27,7 @@ class ControllerSpec extends WordSpec with Matchers {
             val json = Json.parse(
                 "{ \"board\" : { \"state\" : \"START_OF_TURN\",  \"current_player\" : \"player1\", \"players\" : [ " +
                   player1JSON.toString + ", " + player2JSON.toString() + " ]}}")
-            controller.getJSON() shouldEqual(json)
+            controller.getJSON() shouldEqual (json)
         }
         "get the correct buyer" in {
             controller.board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
@@ -44,8 +40,10 @@ class ControllerSpec extends WordSpec with Matchers {
         }
         "walk correctly when processing the roll" in {
             controller.board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
-            controller.processRoll(1, 1)
-            controller.board.playerIt.list.head.currentField should be(fields(2))
+            controller.rollDice()
+            controller.currentDice._1 should (be >= 1 and be <= 6)
+            controller.currentDice._2 should (be >= 1 and be <= 6)
+            controller.board.playerIt.list.head.currentField should be(fields((controller.currentDice._1 + controller.currentDice._2) % fields.size))
         }
         "buy a street correctly" in {
             val buyer = Player("buyer", 1500, fields(1), Set(), new FieldIterator(fields.drop(1)))
@@ -125,7 +123,7 @@ class ControllerSpec extends WordSpec with Matchers {
         val fields = List(ActionField("Go"), s1, s2, s3)
 
         val player1 = Player("player1", 1500, fields.head, Set(), new FieldIterator(fields))
-        val player2 = Player("player2", 1500, fields.head, Set(s1,s2,s3), new FieldIterator(fields))
+        val player2 = Player("player2", 1500, fields.head, Set(s1, s2, s3), new FieldIterator(fields))
         controller.board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
         "declare the next player" in {
             controller.getCurrentPlayer should be(player1)
@@ -133,11 +131,13 @@ class ControllerSpec extends WordSpec with Matchers {
             controller.getCurrentPlayer should be(player2)
         }
         "state should be CAN_BUILD" in {
-            controller.processRoll(1, 2)
-            controller.controllerState should be (GameStatus.CAN_BUILD)
+            //controller.processRoll(1, 2)
+            controller.currentDice = (1, 2)
+            controller.undoManager.doStep(WalkCommand((1, 2), controller))
+            controller.controllerState should be(GameStatus.CAN_BUILD)
         }
         "concat buildables to String" in {
-            controller.buildablesToString(GeneralUtil.getWholeGroups(player1)) shouldBe a [String]
+            controller.buildablesToString(GeneralUtil.getWholeGroups(player1)) shouldBe a[String]
         }
     }
 
@@ -157,74 +157,74 @@ class ControllerSpec extends WordSpec with Matchers {
         "return the correct game message" when {
             "controller state is START_OF_TURN" in {
                 controller.controllerState = GameStatus.START_OF_TURN
-                controller.catCurrentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a[String]
             }
             "controller state is PASSED_GO" in {
                 controller.controllerState = GameStatus.PASSED_GO
-                controller.catCurrentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a[String]
             }
             "controller state is NEW_FIELD" in {
                 controller.controllerState = GameStatus.NEW_FIELD
-                controller.catCurrentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a[String]
             }
             "controller state is ALREADY_BOUGHT" in {
                 controller.controllerState = GameStatus.ALREADY_BOUGHT
-                controller.catCurrentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a[String]
             }
             "controller state is CAN_BUY" in {
                 controller.controllerState = GameStatus.CAN_BUY
-                controller.catCurrentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a[String]
             }
             "controller state is BOUGHT_BY_OTHER" in {
                 controller.controllerState = GameStatus.BOUGHT_BY_OTHER
-                controller.catCurrentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a[String]
             }
             "controller state is DONE" in {
                 controller.controllerState = GameStatus.DONE
-                controller.catCurrentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a[String]
             }
             "controller state is NEXT_PLAYER" in {
                 controller.controllerState = GameStatus.NEXT_PLAYER
-                controller.catCurrentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a[String]
             }
             "controller state is MISSING_MONEY" in {
                 controller.controllerState = GameStatus.MISSING_MONEY
-                controller.catCurrentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a[String]
             }
             "controller state is BOUGHT" in {
                 controller.controllerState = GameStatus.BOUGHT
-                controller.catCurrentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a[String]
             }
             "controller state is NOTHING" in {
                 controller.controllerState = GameStatus.NOTHING
-                controller.catCurrentGameMessage() shouldBe a [String]
+                controller.catCurrentGameMessage() shouldBe a[String]
             }
             "controller state is CAN_BUILD" when {
                 controller.controllerState = GameStatus.CAN_BUILD
 
                 "build status is BUILT" in {
                     controller.buildStatus = GameStatus.BuildStatus.DEFAULT
-                    controller.catCurrentGameMessage() shouldBe a [String]
+                    controller.catCurrentGameMessage() shouldBe a[String]
                 }
                 "build status is INVALID_ARGS" in {
                     controller.buildStatus = GameStatus.BuildStatus.INVALID_ARGS
-                    controller.catCurrentGameMessage() shouldBe a [String]
+                    controller.catCurrentGameMessage() shouldBe a[String]
                 }
                 "build status is NOT_OWN" in {
                     controller.buildStatus = GameStatus.BuildStatus.NOT_OWN
-                    controller.catCurrentGameMessage() shouldBe a [String]
+                    controller.catCurrentGameMessage() shouldBe a[String]
                 }
                 "build status is TOO_MANY_HOUSES" in {
                     controller.buildStatus = GameStatus.BuildStatus.TOO_MANY_HOUSES
-                    controller.catCurrentGameMessage() shouldBe a [String]
+                    controller.catCurrentGameMessage() shouldBe a[String]
                 }
                 "build status is MISSING_MONEY" in {
                     controller.buildStatus = GameStatus.BuildStatus.MISSING_MONEY
-                    controller.catCurrentGameMessage() shouldBe a [String]
+                    controller.catCurrentGameMessage() shouldBe a[String]
                 }
                 "build status is DONE" in {
                     controller.buildStatus = GameStatus.BuildStatus.DONE
-                    controller.catCurrentGameMessage() shouldBe a [String]
+                    controller.catCurrentGameMessage() shouldBe a[String]
                 }
             }
 
@@ -238,7 +238,7 @@ class ControllerSpec extends WordSpec with Matchers {
 
         "use the test setUp correctly" in {
             controller.setUp()
-            controller.board.currentPlayer shouldBe a [Player]
+            controller.board.currentPlayer shouldBe a[Player]
         }
     }
 }

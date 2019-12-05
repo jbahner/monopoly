@@ -23,4 +23,6 @@ class PlayerIterator(players: Array[Player], startIdx : Int = 0) extends Iterato
     def list : List[Player] = players.toList
 
     def currentIdx = current
+
+    def copy = new PlayerIterator(players = players.clone(), startIdx = current)
 }

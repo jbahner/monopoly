@@ -19,9 +19,10 @@ class Tui(controller: Controller) extends Reactor {
                 input match {
 
                     case "r" => {
-                        val (d1, d2) = controller.rollDice()
-                        info("Rolled: " + d1 + " and " + d2)
-                        controller.processRoll(d1, d2)
+                        //val (d1, d2) = controller.rollDice()
+                        //info("Rolled: " + d1 + " and " + d2)
+                        controller.rollDice()
+                        //controller.processRoll(d1, d2)
                     }
                     case "q" => System.exit(0)
                     case other => error("Wrong input: " + other)

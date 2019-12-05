@@ -19,9 +19,9 @@ case class StreetRentStrategy(controller: Controller, street: Street) extends Re
 case class BuildingRentStrategy(controller: Controller, building: Building) extends RentStrategy {
     override def executeStrategy(buyable: Buyable): Int = {
         if (GeneralUtil.hasWholeGroup(controller.getBuyer(building.asInstanceOf[Buyable]).get, building.getName))
-            controller.currentDice * 10
+            (controller.currentDice._1 + controller.currentDice._2) * 10
         else
-            controller.currentDice * 4
+            (controller.currentDice._1 + controller.currentDice._2) * 4
     }
 }
 

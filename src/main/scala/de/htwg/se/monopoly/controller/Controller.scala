@@ -2,7 +2,7 @@ package de.htwg.se.monopoly.controller
 
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
-import de.htwg.se.monopoly.controller.commands.SetupCommand
+import de.htwg.se.monopoly.controller.commands.{WalkCommand, SetupCommand}
 import de.htwg.se.monopoly.model.boardComponent._
 import de.htwg.se.monopoly.model.playerComponent.Player
 import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, PlayerIterator, UndoManager}
@@ -19,51 +19,21 @@ class Controller extends Publisher {
 
     var board: Board = _
     // TODO check if 2nd variable needed
-    var currentDice: Int = _
+    var currentDice: (Int, Int) = _
     var currentGameMessageString: String = _
 
     def setUp() = undoManager.doStep(new SetupCommand(Set("Player1", "Player2"),this))
-
-    def rollDice(): (Int, Int) = {
-        val r = scala.util.Random
-        val (d1, d2) = (r.nextInt(6) + 1, r.nextInt(6) + 1)
-        currentDice = d1 + d2
-        (d1, d2)
-    }
 
     def getBuyer(buyable: Buyable): Option[Player] = {
         val players = board.playerIt.list
         players.find(p => p.bought.contains(buyable))
     }
 
-    def processRoll(firstDice: Int, secondDice: Int): Unit = {
-        val player = board.currentPlayer
-        val (newPlayer, passedGo) = player.walk(firstDice + secondDice)
-
-        if (passedGo) {
-            controllerState = PASSED_GO
-            catCurrentGameMessage()
-        }
-
-        board = board.replacePlayer(player, newPlayer)
-        controllerState = NEW_FIELD
+    def rollDice(): Unit = {
+        val r = scala.util.Random
+        currentDice = (r.nextInt(6) + 1, r.nextInt(6) + 1)
         catCurrentGameMessage()
-
-        val newField = getCurrentField
-        // Action return ALREADY_BOUGHT, CAN_BUY or BOUGHT_BY_OTHER
-        controllerState = newField.action(newPlayer)
-        catCurrentGameMessage()
-
-        controllerState match {
-            case BOUGHT_BY_OTHER =>
-                payRent(getCurrentPlayer, getCurrentField.asInstanceOf[Buyable], getBuyer(getCurrentField.asInstanceOf[Buyable]).get)
-            case _ =>
-        }
-
-        if (GeneralUtil.getWholeGroups(newPlayer) != Nil) {
-            controllerState = CAN_BUILD
-            buildStatus = BuildStatus.DEFAULT
-        }
+        undoManager.doStep(WalkCommand(currentDice, this))
     }
 
     def nextPlayer(): Unit = {
@@ -138,6 +108,8 @@ class Controller extends Publisher {
     def catCurrentGameMessage(): String = {
         controllerState match {
             case START_OF_TURN => currentGameMessageString = "\"r\" to roll, \"q\" to quit!"
+                currentGameMessageString
+            case ROLLED => currentGameMessageString += "Rolled: " + currentDice._1 + " and " + currentDice._2+ "\n"
                 currentGameMessageString
             case PASSED_GO => currentGameMessageString += "Received 200€ by passing Go\n"
                 currentGameMessageString
