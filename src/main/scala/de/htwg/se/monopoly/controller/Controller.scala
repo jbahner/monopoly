@@ -2,7 +2,7 @@ package de.htwg.se.monopoly.controller
 
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
-import de.htwg.se.monopoly.controller.commands.{BuildCommand, SetupCommand, WalkCommand}
+import de.htwg.se.monopoly.controller.commands.{BuildCommand, BuyCommand, SetupCommand, WalkCommand}
 import de.htwg.se.monopoly.model.boardComponent._
 import de.htwg.se.monopoly.model.playerComponent.Player
 import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, PlayerIterator, UndoManager}
@@ -67,17 +67,7 @@ class Controller extends Publisher {
             publish(new UpdateInfo)
             return
         }
-        var newField = currentField
-        currentField match {
-            case street: Street => newField = street.copy(isBought = true)
-            case building: Building => newField = building.copy(isBought = true)
-        }
-        val newPlayer: Player = currentPlayer.copy(money = currentPlayer.money - newField.getPrice,
-            bought = currentPlayer.bought + newField)
-        board = board.replacePlayer(currentPlayer, newPlayer).copy(currentPlayer = newPlayer)
-        board = board.replaceField(currentField, newField)
-        controllerState = BOUGHT
-        publish(new UpdateInfo)
+        undoManager.doStep(BuyCommand(currentField, this))
     }
 
     def getFieldByName(name: String): Option[Field] = {
