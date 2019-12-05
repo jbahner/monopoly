@@ -76,15 +76,17 @@ class Controller extends Publisher {
 
     def buildHouses(streetName: String, amount: Int): Unit = {
         val field = getFieldByName(streetName)
-        if (field.isEmpty || !field.get.isInstanceOf[Street])
+        if (field.isEmpty || !field.get.isInstanceOf[Street]) {
             buildStatus = BuildStatus.INVALID_ARGS
+            return
+        }
         val street = field.get.asInstanceOf[Street]
         val buyer = getBuyer(street)
         if (buyer.isEmpty || !buyer.get.equals(getCurrentPlayer))
             buildStatus = BuildStatus.NOT_OWN
-        if (street.numHouses + amount > 5)
+        else if (street.numHouses + amount > 5)
             buildStatus = BuildStatus.TOO_MANY_HOUSES
-        if (getCurrentPlayer.money < street.houseCost * amount)
+        else if (getCurrentPlayer.money < street.houseCost * amount)
             buildStatus = BuildStatus.MISSING_MONEY
         else
             undoManager.doStep(BuildCommand(street, amount, this))

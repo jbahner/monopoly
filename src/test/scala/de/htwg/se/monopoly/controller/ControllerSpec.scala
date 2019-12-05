@@ -84,32 +84,37 @@ class ControllerSpec extends WordSpec with Matchers {
             val groupFields = List(fields(1).asInstanceOf[Street].setBought(), fields(2).asInstanceOf[Street], fields(3).asInstanceOf[Street])
             val builder = Player("builder", 1500, fields(1), groupFields.toSet, new FieldIterator(groupFields))
             controller.board = Board(groupFields, builder, new PlayerIterator(Array(builder)))
-            controller.buildHouses(groupFields(0).getName, 2) should be(BuildStatus.BUILT)
+            controller.buildHouses(groupFields(0).getName, 2)
+            controller.buildStatus should be(BuildStatus.BUILT)
             controller.board.fields(0).asInstanceOf[Street].numHouses should be(2)
         }
         "not build houses" when {
             "field is not a street" in {
                 val builder = Player("builder", 1500, fields.head, Set(), new FieldIterator(fields))
                 controller.board = Board(fields, builder, new PlayerIterator(Array(builder)))
-                controller.buildHouses(fields.head.getName, 1) should be(BuildStatus.INVALID_ARGS)
+                controller.buildHouses(fields.head.getName, 1)
+                controller.buildStatus should be(BuildStatus.INVALID_ARGS)
             }
             "the player does not own the street" in {
                 val streets = List(fields(1).asInstanceOf[Street].setBought(), fields(2).asInstanceOf[Street].setBought(), fields(3).asInstanceOf[Street].setBought())
                 val builder = Player("builder", 1500, streets(1), Set(), new FieldIterator(streets))
                 controller.board = Board(streets, builder, new PlayerIterator(Array(builder)))
-                controller.buildHouses(streets.head.getName, 1) should be(BuildStatus.NOT_OWN)
+                controller.buildHouses(streets.head.getName, 1)
+                controller.buildStatus should be(BuildStatus.NOT_OWN)
             }
             "the amount of houses cannot be built" in {
                 val streets = List(fields(1).asInstanceOf[Street].setBought(), fields(2).asInstanceOf[Street].setBought(), fields(3).asInstanceOf[Street].setBought())
                 val builder = Player("builder", 1500, streets(1), streets.toSet, new FieldIterator(streets))
                 controller.board = Board(streets, builder, new PlayerIterator(Array(builder)))
-                controller.buildHouses(streets.head.getName, 6) should be(BuildStatus.TOO_MANY_HOUSES)
+                controller.buildHouses(streets.head.getName, 6)
+                controller.buildStatus should be(BuildStatus.TOO_MANY_HOUSES)
             }
             "the player does not have enough money" in {
                 val streets = List(fields(1).asInstanceOf[Street].setBought(), fields(2).asInstanceOf[Street].setBought(), fields(3).asInstanceOf[Street].setBought())
                 val builder = Player("builder", 1, streets(1), streets.toSet, new FieldIterator(streets))
                 controller.board = Board(streets, builder, new PlayerIterator(Array(builder)))
-                controller.buildHouses(streets.head.getName, 3) should be(BuildStatus.MISSING_MONEY)
+                controller.buildHouses(streets.head.getName, 3)
+                controller.buildStatus should be(BuildStatus.MISSING_MONEY)
             }
         }
     }
