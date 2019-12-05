@@ -18,13 +18,9 @@ class Tui(controller: Controller) extends Reactor {
             case START_OF_TURN => {
                 input match {
 
-                    case "r" => {
-                        //val (d1, d2) = controller.rollDice()
-                        //info("Rolled: " + d1 + " and " + d2)
-                        controller.rollDice()
-                        //controller.processRoll(d1, d2)
-                    }
-                    case "q" => System.exit(0)
+                    case "r" => controller.rollDice()
+                    case "q" | null => System.exit(0)
+                    case "re" => controller.undoManager.redoStep()
                     case other => error("Wrong input: " + other)
                 }
             }
@@ -39,14 +35,20 @@ class Tui(controller: Controller) extends Reactor {
             case CAN_BUILD =>
                 controller.buildStatus = GameStatus.BuildStatus.DEFAULT
                 if (!input.equals("q")) {
-                    val args = input.split("_")
-                    if (args.length != 2) {
-                        userInput("Invalid argument for street or amount of houses!\n" +
-                          "<street name>_<amount of houses>")
-                        controller.buildStatus = GameStatus.BuildStatus.INVALID_ARGS
-                    }
-                    else {
-                        controller.tryToBuildHouses(args(0), args(1).toInt)
+                    if (input.equals("u")) {
+                        controller.undoManager.undoStep()
+                    } else if (input.equals("re")) {
+                        controller.undoManager.redoStep()
+                    } else {
+                        val args = input.split("_")
+                        if (args.length != 2) {
+                            userInput("Invalid argument for street or amount of houses!\n" +
+                              "<street name>_<amount of houses>")
+                            controller.buildStatus = GameStatus.BuildStatus.INVALID_ARGS
+                        }
+                        else {
+                            controller.tryToBuildHouses(args(0), args(1).toInt)
+                        }
                     }
                 }
                 else {

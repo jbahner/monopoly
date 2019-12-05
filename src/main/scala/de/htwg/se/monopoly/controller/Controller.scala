@@ -38,6 +38,10 @@ class Controller extends Publisher {
 
     def nextPlayer(): Unit = {
         board = board.nextPlayerTurn()
+        updateCurrentPlayerInfo()
+    }
+
+    def updateCurrentPlayerInfo() : Unit = {
         controllerState = NEXT_PLAYER
         publish(new UpdateInfo)
         controllerState = START_OF_TURN
@@ -109,7 +113,7 @@ class Controller extends Publisher {
         controllerState match {
             case START_OF_TURN => currentGameMessageString = "\"r\" to roll, \"q\" to quit!"
                 currentGameMessageString
-            case ROLLED => currentGameMessageString += "Rolled: " + currentDice._1 + " and " + currentDice._2+ "\n"
+            case ROLLED => currentGameMessageString = "Rolled: " + currentDice._1 + " and " + currentDice._2+ "\n"
                 currentGameMessageString
             case PASSED_GO => currentGameMessageString += "Received 200€ by passing Go\n"
                 currentGameMessageString
