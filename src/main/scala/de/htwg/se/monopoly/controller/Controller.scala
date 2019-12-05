@@ -2,6 +2,7 @@ package de.htwg.se.monopoly.controller
 
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
+import de.htwg.se.monopoly.controller.commands.SetupCommand
 import de.htwg.se.monopoly.model.boardComponent._
 import de.htwg.se.monopoly.model.playerComponent.Player
 import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, PlayerIterator, UndoManager}
@@ -21,64 +22,13 @@ class Controller extends Publisher {
     var currentDice: Int = _
     var currentGameMessageString: String = _
 
-    def setUp() = {
-
-        val go = ActionField("Go")
-        var fields = List[Field](go)
-
-        for (i <- 1 to 3)
-            fields = fields :+ Street(name = "Street" + i,
-                price = 50 * i,
-                rentCosts = getRentArray(50 * i),
-                houseCost = 25 * i,
-                isBought = true)
-
-        for (i <- 4 to 6)
-            fields = fields :+ Street(name = "Street" + i,
-                price = 50 * i,
-                rentCosts = getRentArray(50 * i),
-                houseCost = 25 * i,
-                isBought = true)
-
-        for (i <- 7 to 9)
-            fields = fields :+ Street(name = "Street" + i,
-                price = 50 * i,
-                rentCosts = getRentArray(50 * i),
-                houseCost = 25 * i,
-                isBought = true)
-
-        var player1 = Player(name = "Player1",
-            money = 1500,
-            currentField = fields.head,
-            bought = Set(),
-            fieldIt = new FieldIterator(fields))
-
-        var player2 = Player(name = "Player2",
-            money = 1500,
-            currentField = fields.head,
-            bought = Set(),
-            fieldIt = new FieldIterator(fields))
-
-        // For paying rent testing purposes
-        for (i <- 1 to 6) {
-            player1 = player1.copy(bought = player1.bought + fields(i).asInstanceOf[Street])
-        }
-        for (i <- 7 to 9)
-            player2 = player2.copy(bought = player2.bought + fields(i).asInstanceOf[Street])
-        board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
-    }
+    def setUp() = undoManager.doStep(new SetupCommand(Set("Player1", "Player2"),this))
 
     def rollDice(): (Int, Int) = {
         val r = scala.util.Random
         val (d1, d2) = (r.nextInt(6) + 1, r.nextInt(6) + 1)
         currentDice = d1 + d2
         (d1, d2)
-    }
-
-    // This is only for testing purposes
-    private def getRentArray(cost: Int): Array[Int] = {
-        val step = cost / 10
-        Array(step, step * 2, step * 3, step * 4, step * 5)
     }
 
     def getBuyer(buyable: Buyable): Option[Player] = {
