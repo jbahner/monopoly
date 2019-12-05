@@ -111,7 +111,7 @@ class Controller extends Publisher {
 
     def catCurrentGameMessage(): String = {
         controllerState match {
-            case START_OF_TURN => currentGameMessageString = userInputString("\"r\" to roll, \"q\" to quit!")
+            case START_OF_TURN => currentGameMessageString = userInputString("\"r\" to roll, \"q\" to quit, \"u\" to undo or \"re\" to redo!")
                 currentGameMessageString
             case ROLLED => currentGameMessageString = infoString("Rolled: " + currentDice._1 + " and " + currentDice._2+ "\n")
                 currentGameMessageString
@@ -135,7 +135,7 @@ class Controller extends Publisher {
                 buildStatus match {
                     case BuildStatus.DEFAULT => val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer)
                         currentGameMessageString += userInputString("You can build on: \n" + buildablesToString(wholeGroups) +
-                          "\nType the name of the street and the amount of houses you want to build. Press 'q' to quit.\n")
+                          "\nType the name of the street and the amount of houses you want to build. Press \"q\" to quit, \"u\" to undo or \"re\" to redo.\n")
                         currentGameMessageString
                     case BuildStatus.BUILT => currentGameMessageString = infoString("Successfully built!\n")
                         currentGameMessageString

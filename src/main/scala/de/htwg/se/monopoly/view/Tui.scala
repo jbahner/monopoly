@@ -20,6 +20,7 @@ class Tui(controller: Controller) extends Reactor {
 
                     case "r" => controller.rollDice()
                     case "q" | null => System.exit(0)
+                    case "u" => controller.undoManager.undoStep()
                     case "re" => controller.undoManager.redoStep()
                     case other => error("Wrong input: " + other)
                 }
@@ -29,18 +30,24 @@ class Tui(controller: Controller) extends Reactor {
                 input match {
                     case "y" | "Y" => controller.buy()
                     case "n" | "N" =>
+                    case "u" => controller.undoManager.undoStep()
+                    case "re" => controller.undoManager.redoStep()
                     case _ => userInput("Y / N")
                 }
 
             case CAN_BUILD =>
                 controller.buildStatus = GameStatus.BuildStatus.DEFAULT
-                if (!input.equals("q")) {
-                    if (input.equals("u")) {
-                        controller.undoManager.undoStep()
-                    } else if (input.equals("re")) {
-                        controller.undoManager.redoStep()
-                    } else {
-                        val args = input.split("_")
+                input match {
+                    case "q" => {
+                        controller.buildStatus = GameStatus.BuildStatus.DONE
+                        controller.controllerState = GameStatus.DONE
+                        controller.publish(new UpdateInfo)
+                        controller.nextPlayer()
+                    }
+                    case "u" => controller.undoManager.undoStep()
+                    case "re" => controller.undoManager.redoStep()
+                    case other => {
+                        val args = other.split("_")
                         if (args.length != 2) {
                             userInput("Invalid argument for street or amount of houses!\n" +
                               "<street name>_<amount of houses>")
@@ -50,12 +57,6 @@ class Tui(controller: Controller) extends Reactor {
                             controller.tryToBuildHouses(args(0), args(1).toInt)
                         }
                     }
-                }
-                else {
-                    controller.buildStatus = GameStatus.BuildStatus.DONE
-                    controller.controllerState = GameStatus.DONE
-                    controller.publish(new UpdateInfo)
-                    controller.nextPlayer()
                 }
             case DONE => controller.nextPlayer()
 
