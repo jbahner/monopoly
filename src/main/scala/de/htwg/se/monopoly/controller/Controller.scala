@@ -1,5 +1,6 @@
 package de.htwg.se.monopoly.controller
 
+import de.htwg.se.monopoly.Monopoly.controller
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
 import de.htwg.se.monopoly.controller.commands.{BuildCommand, BuyCommand, SetupCommand, WalkCommand}
@@ -17,11 +18,14 @@ class Controller extends Publisher {
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
 
     var board: Board = _
-    // TODO check if 2nd variable needed
     var currentDice: (Int, Int) = _
     var currentGameMessageString: String = _
 
-    def setUp() = undoManager.doStep(new SetupCommand(Set("Player1", "Player2"),this))
+    def setUp() = {
+        undoManager.doStep(new SetupCommand(Set("Player1", "Player2"),this))
+        controllerState = START_OF_TURN
+        publish(new UpdateInfo)
+    }
 
     def getBuyer(buyable: Buyable): Option[Player] = {
         val players = board.playerIt.list
@@ -33,12 +37,13 @@ class Controller extends Publisher {
         currentDice = (r.nextInt(6) + 1, r.nextInt(6) + 1)
         catCurrentGameMessage()
         undoManager.doStep(WalkCommand(currentDice, this))
-        publish(new UpdateGui)
+        publish(new UpdateInfo)
     }
 
     def nextPlayer(): Unit = {
         board = board.nextPlayerTurn()
         updateCurrentPlayerInfo()
+        publish(new UpdateInfo)
     }
 
     def updateCurrentPlayerInfo() : Unit = {
@@ -58,6 +63,7 @@ class Controller extends Publisher {
             board.replacePlayer(currentPlayer, currentPlayer.copy(money = currentPlayer.money - payAmount))
             board.replacePlayer(receiver, receiver.copy(money = receiver.money + payAmount))
         }
+        publish(new UpdateGui)
     }
 
     def buy(): Unit = {
@@ -84,7 +90,7 @@ class Controller extends Publisher {
         }
         val street = field.get.asInstanceOf[Street]
         val buyer = getBuyer(street)
-        if (buyer.isEmpty || !buyer.get.equals(getCurrentPlayer))
+        if (buyer.isEmpty || !buyer.get.equals(getCurrentPlayer.get))
             buildStatus = BuildStatus.NOT_OWN
         else if (street.numHouses + amount > 5)
             buildStatus = BuildStatus.TOO_MANY_HOUSES
@@ -92,6 +98,7 @@ class Controller extends Publisher {
             buildStatus = BuildStatus.MISSING_MONEY
         else
             undoManager.doStep(BuildCommand(street, amount, this))
+        publish(new UpdateInfo)
     }
 
     def getCurrentField: Field = board.currentPlayer.currentField
