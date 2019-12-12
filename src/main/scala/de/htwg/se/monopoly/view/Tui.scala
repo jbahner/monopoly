@@ -7,7 +7,6 @@ import scala.swing.Reactor
 
 class Tui(controller: Controller) extends Reactor {
     listenTo(controller);
-    controller.setUp()
     playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer.get.getDetails)
 
 

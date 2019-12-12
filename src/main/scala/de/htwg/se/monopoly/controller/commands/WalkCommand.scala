@@ -46,7 +46,11 @@ case class WalkCommand(dice: (Int, Int), controller: Controller) extends Command
         controller.controllerState = START_OF_TURN
         controller.currentGameMessageString = backupGameString
         controller.updateCurrentPlayerInfo()
+        controller.publish(new UpdateInfo)
     }
 
-    override def redoStep(): Unit = doStep()
+    override def redoStep(): Unit = {
+        doStep()
+        controller.publish(new UpdateInfo)
+    }
 }

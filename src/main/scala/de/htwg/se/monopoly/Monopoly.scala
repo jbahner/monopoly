@@ -10,15 +10,17 @@ object Monopoly {
 
 
     val controller = new Controller()
+    controller.setUp()
     val tui = new Tui(controller)
     val gui = new Gui(controller)
 
     def main(args: Array[String]): Unit = {
 
-        controller.controllerState = START_OF_TURN
+
+        controller.publish(new UpdateInfo)
+
 
         while (true) {
-            controller.publish(new UpdateInfo)
             val input = readLine()
             tui.processInput(input)
         }

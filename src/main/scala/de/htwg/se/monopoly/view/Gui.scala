@@ -4,7 +4,7 @@ import java.awt.Color
 import java.util
 
 import de.htwg.se.monopoly.controller.{Controller, GameStatus, UpdateGui, UpdateInfo}
-import de.htwg.se.monopoly.model.boardComponent.{Building, Field, Street}
+import de.htwg.se.monopoly.model.boardComponent.{Building, Field, RentContext, Street}
 import javax.imageio.ImageIO
 import javax.swing.{BorderFactory, ImageIcon, JLabel}
 
@@ -19,7 +19,7 @@ class Gui(controller: Controller) extends Frame {
     // - wrap text output in own labels per line to make mupltiple lines in gui passible
     // - make auto setup an extra command -- set up game with custom player names and -count
 
-    val windowDimension = new Dimension(700, 350)
+    val windowDimension = new Dimension(800, 400)
     val menuBarDimension = new Dimension(1000, 30)
 
     listenTo(controller)
@@ -42,6 +42,8 @@ class Gui(controller: Controller) extends Frame {
             add(generateBuildButtons(), BorderPanel.Position.East)
             add(redrawButtons(), BorderPanel.Position.South)
             add(generateLeftPanel(), BorderPanel.Position.West)
+            minimumSize = windowDimension
+
         }
     }
 
@@ -64,6 +66,12 @@ class Gui(controller: Controller) extends Frame {
             contents += new Menu("Edit") {
                 contents += new MenuItem(Action("Refresh") {
                     controller.publish(new UpdateInfo)
+                })
+                contents += new MenuItem(Action("Undo") {
+                    controller.undoManager.undoStep()
+                })
+                contents += new MenuItem(Action("Redo") {
+                    controller.undoManager.redoStep()
                 })
             }
         }
@@ -115,6 +123,7 @@ class Gui(controller: Controller) extends Frame {
                     case _: ButtonClicked =>
                         controller.buildHouses(streetName, 1)
                 }
+                tooltip = controller.getFieldByName(streetName).get.asInstanceOf[Street].houseCost + "€"
             }
             contents += new Label(" -- " + controller.getFieldByName(streetName).get.asInstanceOf[Street].numHouses.toString)
         }
@@ -129,36 +138,41 @@ class Gui(controller: Controller) extends Frame {
     }
 
     def generateCenterCurrentFieldDetails(): GridPanel = {
-        new GridPanel(7, 1) {
-
-            contents += new Label("Current Field") {
-                font = (new Font(font.getFontName, font.getStyle, 20))
-                background = Color.CYAN
-                opaque = true
-            }
-
+        new GridPanel(2, 1) {
             val curField: Field = controller.getCurrentField
-            contents += new Label(curField.getName)
 
 
-            curField match {
-                case street: Street =>
-                    contents += new Label(
-                        if (curField.asInstanceOf[Street].isBought) "Bought by " + controller.getBuyer(curField.asInstanceOf[Street]).get.name
-                        else "Not owned")
-                    contents += new Label("Houses: " + curField.asInstanceOf[Street].numHouses.toString)
-                    contents += new Label("House price: " + curField.asInstanceOf[Street].houseCost)
-                    contents += new Label("Current Rent: " + curField.asInstanceOf[Street].getRent())
-                case building: Building =>
-                    contents += new Label(
-                        if (curField.asInstanceOf[Building].isBought) "Bought by " + controller.getBuyer(curField.asInstanceOf[Building]).get.name
-                        else "Not owned")
-                case _ =>
+            contents += new GridPanel(7, 1) {
+                contents += new Label("Current Field") {
+                    font = (new Font(font.getFontName, font.getStyle, 20))
+                    background = Color.CYAN
+                    opaque = true
+                }
+
+
+                contents += new Label(curField.getName)
+
+
+                curField match {
+                    case street: Street =>
+                        contents += new Label(
+                            if (curField.asInstanceOf[Street].isBought) "Bought by " + controller.getBuyer(curField.asInstanceOf[Street]).get.name
+                            else "Not owned")
+                        contents += new Label("Current Rent: " + curField.asInstanceOf[Street].rentCosts(curField.asInstanceOf[Street].numHouses))
+                        contents += new Label("Houses: " + curField.asInstanceOf[Street].numHouses.toString)
+                    case building: Building =>
+                        contents += new Label(
+                            if (curField.asInstanceOf[Building].isBought) "Bought by " + controller.getBuyer(curField.asInstanceOf[Building]).get.name
+                            else "Not owned")
+                    case _ =>
+                }
             }
+
+
             if (curField.getName.equals("Go")) {
                 contents += new Label() {
-                    icon = new ImageIcon("D:\\HTWG\\5.Semester\\monopoly\\src\\main\\scala\\de\\htwg\\se\\monopoly\\view\\textures\\go_field.png")
-                    maximumSize = new Dimension(100,100)
+                    icon = new ImageIcon("src\\main\\scala\\de\\htwg\\se\\monopoly\\view\\textures\\go_field.png")
+                    maximumSize = new Dimension(100, 100)
                 }
             }
 
