@@ -31,7 +31,7 @@ case class WalkCommand(dice: (Int, Int), controller: Controller) extends Command
 
         controller.controllerState match {
             case BOUGHT_BY_OTHER =>
-                controller.payRent(controller.getCurrentPlayer, controller.getCurrentField.asInstanceOf[Buyable], controller.getBuyer(controller.getCurrentField.asInstanceOf[Buyable]).get)
+                controller.payRent(controller.getCurrentPlayer.get, controller.getCurrentField.asInstanceOf[Buyable], controller.getBuyer(controller.getCurrentField.asInstanceOf[Buyable]).get)
             case _ =>
         }
 
@@ -46,7 +46,11 @@ case class WalkCommand(dice: (Int, Int), controller: Controller) extends Command
         controller.controllerState = START_OF_TURN
         controller.currentGameMessageString = backupGameString
         controller.updateCurrentPlayerInfo()
+        controller.publish(new UpdateInfo)
     }
 
-    override def redoStep(): Unit = doStep()
+    override def redoStep(): Unit = {
+        doStep()
+        controller.publish(new UpdateInfo)
+    }
 }

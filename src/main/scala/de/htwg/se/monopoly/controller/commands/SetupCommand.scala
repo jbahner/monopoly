@@ -31,7 +31,7 @@ class SetupCommand(playerNames: Set[String], controller: Controller) extends Com
     // This is only for testing purposes
     private def getRentArray(cost: Int): Array[Int] = {
         val step = cost / 10
-        Array(step, step * 2, step * 3, step * 4, step * 5)
+        Array(step, step * 2, step * 3, step * 4, step * 5, step * 6)
     }
 
     override def undoStep(): Unit = controller.board = null

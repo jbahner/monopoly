@@ -1,6 +1,6 @@
 package de.htwg.se.monopoly.controller.commands
 
-import de.htwg.se.monopoly.controller.Controller
+import de.htwg.se.monopoly.controller.{Controller, UpdateInfo}
 import de.htwg.se.monopoly.controller.GameStatus._
 import de.htwg.se.monopoly.model.boardComponent.{Board, Street}
 import de.htwg.se.monopoly.util.Command
@@ -11,7 +11,7 @@ case class BuildCommand(street: Street, amount: Int, controller: Controller) ext
 
   override def doStep(): Unit = {
     controller.board = controller.board.replaceField(field = street, newField = street.buyHouses(amount))
-    controller.board = controller.board.replacePlayer(controller.getCurrentPlayer, controller.getCurrentPlayer.copy(money = controller.getCurrentPlayer.money - street.houseCost * amount))
+    controller.board = controller.board.replacePlayer(controller.getCurrentPlayer.get, controller.getCurrentPlayer.get.copy(money = controller.getCurrentPlayer.get.money - street.houseCost * amount))
     controller.buildStatus = BuildStatus.BUILT
   }
 
@@ -20,7 +20,11 @@ case class BuildCommand(street: Street, amount: Int, controller: Controller) ext
     //controller.currentGameMessageString = backupGameString
     controller.controllerState = CAN_BUILD
     controller.buildStatus = BuildStatus.DEFAULT
+    controller.publish(new UpdateInfo)
   }
 
-  override def redoStep(): Unit = doStep()
+  override def redoStep(): Unit = {
+    doStep()
+    controller.publish(new UpdateInfo)
+  }
 }

@@ -7,8 +7,7 @@ import scala.swing.Reactor
 
 class Tui(controller: Controller) extends Reactor {
     listenTo(controller);
-    controller.setUp()
-    playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer.getDetails)
+    playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer.get.getDetails)
 
 
     def processInput(input: String) = {
@@ -86,6 +85,4 @@ class Tui(controller: Controller) extends Reactor {
     def error(message: String): Unit = {
         Console.println(Console.BOLD + Console.RED + message + Console.RESET)
     }
-
-
 }
