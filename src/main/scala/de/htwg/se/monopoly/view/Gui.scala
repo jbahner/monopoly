@@ -226,5 +226,7 @@ class Gui(controller: IController) extends Frame with IUi {
         sys.exit(0)
     }
 
-    def processInput(input: String): Unit = {}
+    def processInput(input: String): Unit = {
+        throw new UnsupportedOperationException
+    }
 }
