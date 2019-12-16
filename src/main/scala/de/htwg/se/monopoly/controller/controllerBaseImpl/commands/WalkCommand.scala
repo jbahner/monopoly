@@ -1,8 +1,8 @@
-package de.htwg.se.monopoly.controller.commands
+package de.htwg.se.monopoly.controller.controllerBaseImpl.commands
 
-import de.htwg.se.monopoly.controller.{Controller, UpdateInfo}
 import de.htwg.se.monopoly.controller.GameStatus._
-import de.htwg.se.monopoly.model.boardComponent.{Board, Buyable, Field}
+import de.htwg.se.monopoly.controller.controllerBaseImpl.{Controller, UpdateInfo}
+import de.htwg.se.monopoly.model.boardComponent.{Board, Buyable}
 import de.htwg.se.monopoly.util.{Command, GeneralUtil}
 
 case class WalkCommand(dice: (Int, Int), controller: Controller) extends Command{

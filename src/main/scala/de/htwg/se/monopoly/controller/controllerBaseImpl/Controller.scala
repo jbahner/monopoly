@@ -1,17 +1,18 @@
-package de.htwg.se.monopoly.controller
+package de.htwg.se.monopoly.controller.controllerBaseImpl
 
-import de.htwg.se.monopoly.Monopoly.controller
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
-import de.htwg.se.monopoly.controller.commands.{BuildCommand, BuyCommand, SetupCommand, WalkCommand}
+import de.htwg.se.monopoly.controller.IController
+import de.htwg.se.monopoly.controller.controllerBaseImpl.commands.{BuildCommand, BuyCommand, SetupCommand, WalkCommand}
 import de.htwg.se.monopoly.model.boardComponent._
 import de.htwg.se.monopoly.model.playerComponent.Player
-import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, PlayerIterator, UndoManager}
+import de.htwg.se.monopoly.util.{GeneralUtil, UndoManager}
 import play.api.libs.json.{JsValue, Json}
 
 import scala.swing.Publisher
+import scala.swing.event.Event
 
-class Controller extends Publisher {
+class Controller extends IController with Publisher {
     RentContext.controller = this
     val undoManager = new UndoManager
     var controllerState: GameStatus = START_OF_TURN
@@ -22,7 +23,7 @@ class Controller extends Publisher {
     var currentGameMessageString: String = _
 
     def setUp() = {
-        undoManager.doStep(new SetupCommand(Set("Player1", "Player2"),this))
+        undoManager.doStep(new SetupCommand(Set("Player1", "Player2"), this))
         controllerState = START_OF_TURN
         publish(new UpdateInfo)
     }
@@ -46,7 +47,7 @@ class Controller extends Publisher {
         publish(new UpdateInfo)
     }
 
-    def updateCurrentPlayerInfo() : Unit = {
+    def updateCurrentPlayerInfo(): Unit = {
         controllerState = NEXT_PLAYER
         publish(new UpdateInfo)
         controllerState = START_OF_TURN
@@ -111,7 +112,7 @@ class Controller extends Publisher {
         controllerState match {
             case START_OF_TURN => currentGameMessageString = userInputString("\"r\" to roll, \"q\" to quit, \"u\" to undo or \"re\" to redo!")
                 currentGameMessageString
-            case ROLLED => currentGameMessageString = infoString("Rolled: " + currentDice._1 + " and " + currentDice._2+ "\n")
+            case ROLLED => currentGameMessageString = infoString("Rolled: " + currentDice._1 + " and " + currentDice._2 + "\n")
                 currentGameMessageString
             case PASSED_GO => currentGameMessageString += infoString("Received 200€ by passing Go\n")
                 currentGameMessageString
@@ -126,14 +127,14 @@ class Controller extends Publisher {
             case BOUGHT_BY_OTHER => {
                 val field = getCurrentField.asInstanceOf[Buyable]
                 currentGameMessageString += infoString("Field already bought by " + getBuyer(field).get.name + ".\n" +
-                  "You must pay " + RentContext.rentStrategy.executeStrategy(field) + " rent!\n")
+                    "You must pay " + RentContext.rentStrategy.executeStrategy(field) + " rent!\n")
                 currentGameMessageString
             }
             case CAN_BUILD =>
                 buildStatus match {
                     case BuildStatus.DEFAULT => val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer.get)
                         currentGameMessageString += userInputString("You can build on: \n" + buildablesToString(wholeGroups) +
-                          "\nType the name of the street and the amount of houses you want to build. Press \"q\" to quit, \"u\" to undo or \"re\" to redo.\n")
+                            "\nType the name of the street and the amount of houses you want to build. Press \"q\" to quit, \"u\" to undo or \"re\" to redo.\n")
                         currentGameMessageString
                     case BuildStatus.BUILT => currentGameMessageString = infoString("Successfully built!\n")
                         currentGameMessageString
@@ -175,6 +176,10 @@ class Controller extends Publisher {
         currentGameMessageString
     }
 
+    def getControllerState(): GameStatus = {
+        controllerState
+    }
+
     def buildablesToString(buildables: List[Set[String]]): String = {
         val sb = new StringBuilder()
         buildables.foreach(set => {
@@ -182,8 +187,8 @@ class Controller extends Publisher {
             set.foreach {
                 street =>
                     sb.append(street)
-                      .append(" (" + getFieldByName(street).get.asInstanceOf[Street].houseCost + "€)")
-                      .append("   ")
+                        .append(" (" + getFieldByName(street).get.asInstanceOf[Street].houseCost + "€)")
+                        .append("   ")
             }
             sb.append("\n")
         })
@@ -199,4 +204,20 @@ class Controller extends Publisher {
             )
         )
     }
+
+    def getUndoManager(): UndoManager = {
+        undoManager
+    }
+
+    def getBuildStatus: BuildStatus = {
+        buildStatus
+    }
+
+    def getCurrentDice: (Int, Int) = {
+        currentDice
+    }
 }
+
+class UpdateInfo extends Event
+
+class UpdateGui extends Event

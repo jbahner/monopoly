@@ -1,26 +1,27 @@
 package de.htwg.se.monopoly.view
 
 import de.htwg.se.monopoly.controller.GameStatus._
-import de.htwg.se.monopoly.controller.{Controller, GameStatus, UpdateInfo}
+import de.htwg.se.monopoly.controller.controllerBaseImpl.{Controller, UpdateInfo}
+import de.htwg.se.monopoly.controller.{GameStatus, IController}
 
 import scala.swing.Reactor
 
-class Tui(controller: Controller) extends Reactor {
+class Tui(controller: IController) extends Reactor {
     listenTo(controller);
     playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer.get.getDetails)
 
 
     def processInput(input: String) = {
 
-        controller.controllerState match {
+        controller.getControllerState() match {
 
             case START_OF_TURN => {
                 input match {
 
                     case "r" => controller.rollDice()
                     case "q" | null => System.exit(0)
-                    case "u" => controller.undoManager.undoStep()
-                    case "re" => controller.undoManager.redoStep()
+                    case "u" => controller.getUndoManager.undoStep()
+                    case "re" => controller.getUndoManager.redoStep()
                     case other => error("Wrong input: " + other)
                 }
             }
@@ -29,8 +30,8 @@ class Tui(controller: Controller) extends Reactor {
                 input match {
                     case "y" | "Y" => controller.buy()
                     case "n" | "N" =>
-                    case "u" => controller.undoManager.undoStep()
-                    case "re" => controller.undoManager.redoStep()
+                    case "u" => controller.getUndoManager.undoStep()
+                    case "re" => controller.getUndoManager.redoStep()
                     case _ => userInput("Y / N")
                 }
 
@@ -43,8 +44,8 @@ class Tui(controller: Controller) extends Reactor {
                         controller.publish(new UpdateInfo)
                         controller.nextPlayer()
                     }
-                    case "u" => controller.undoManager.undoStep()
-                    case "re" => controller.undoManager.redoStep()
+                    case "u" => controller.getUndoManager.undoStep()
+                    case "re" => controller.getUndoManager.redoStep()
                     case other => {
                         val args = other.split("_")
                         if (args.length != 2) {
