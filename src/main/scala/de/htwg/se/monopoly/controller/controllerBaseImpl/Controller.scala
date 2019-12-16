@@ -20,7 +20,7 @@ class Controller extends IController with Publisher {
 
     var board: Board = _
     var currentDice: (Int, Int) = _
-    var currentGameMessageString: String = _
+    var currentGameMessage: String = _
 
     def setUp() = {
         undoManager.doStep(new SetupCommand(Set("Player1", "Player2"), this))
@@ -110,55 +110,55 @@ class Controller extends IController with Publisher {
 
     def catCurrentGameMessage(): String = {
         controllerState match {
-            case START_OF_TURN => currentGameMessageString = userInputString("\"r\" to roll, \"q\" to quit, \"u\" to undo or \"re\" to redo!")
-                currentGameMessageString
-            case ROLLED => currentGameMessageString = infoString("Rolled: " + currentDice._1 + " and " + currentDice._2 + "\n")
-                currentGameMessageString
-            case PASSED_GO => currentGameMessageString += infoString("Received 200€ by passing Go\n")
-                currentGameMessageString
-            case NEW_FIELD => currentGameMessageString = infoString("New Field: " + getCurrentField.getName + "\n")
-                currentGameMessageString
-            case ALREADY_BOUGHT => currentGameMessageString += infoString("You already own this street\n")
-                currentGameMessageString
+            case START_OF_TURN => currentGameMessage = userInputString("\"r\" to roll, \"q\" to quit, \"u\" to undo or \"re\" to redo!")
+                currentGameMessage
+            case ROLLED => currentGameMessage = infoString("Rolled: " + currentDice._1 + " and " + currentDice._2 + "\n")
+                currentGameMessage
+            case PASSED_GO => currentGameMessage += infoString("Received 200€ by passing Go\n")
+                currentGameMessage
+            case NEW_FIELD => currentGameMessage = infoString("New Field: " + getCurrentField.getName + "\n")
+                currentGameMessage
+            case ALREADY_BOUGHT => currentGameMessage += infoString("You already own this street\n")
+                currentGameMessage
             case CAN_BUY =>
                 val field: Buyable = getCurrentField.asInstanceOf[Buyable]
-                currentGameMessageString += userInputString("Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice) + "\n")
-                currentGameMessageString
+                currentGameMessage += userInputString("Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice) + "\n")
+                currentGameMessage
             case BOUGHT_BY_OTHER => {
                 val field = getCurrentField.asInstanceOf[Buyable]
-                currentGameMessageString += infoString("Field already bought by " + getBuyer(field).get.name + ".\n" +
+                currentGameMessage += infoString("Field already bought by " + getBuyer(field).get.name + ".\n" +
                     "You must pay " + RentContext.rentStrategy.executeStrategy(field) + " rent!\n")
-                currentGameMessageString
+                currentGameMessage
             }
             case CAN_BUILD =>
                 buildStatus match {
                     case BuildStatus.DEFAULT => val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer.get)
-                        currentGameMessageString += userInputString("You can build on: \n" + buildablesToString(wholeGroups) +
+                        currentGameMessage += userInputString("You can build on: \n" + buildablesToString(wholeGroups) +
                             "\nType the name of the street and the amount of houses you want to build. Press \"q\" to quit, \"u\" to undo or \"re\" to redo.\n")
-                        currentGameMessageString
-                    case BuildStatus.BUILT => currentGameMessageString = infoString("Successfully built!\n")
-                        currentGameMessageString
-                    case BuildStatus.INVALID_ARGS => currentGameMessageString
-                    case BuildStatus.NOT_OWN => currentGameMessageString = errorString("You don't own this street!")
-                        currentGameMessageString
-                    case BuildStatus.TOO_MANY_HOUSES => currentGameMessageString += errorString("There can only be 5 houses on a street\n")
-                        currentGameMessageString
-                    case BuildStatus.MISSING_MONEY => currentGameMessageString += errorString("You don't have enough money!\n")
-                        currentGameMessageString
+                        currentGameMessage
+                    case BuildStatus.BUILT => currentGameMessage = infoString("Successfully built!\n")
+                        currentGameMessage
+                    case BuildStatus.INVALID_ARGS => currentGameMessage
+                    case BuildStatus.NOT_OWN => currentGameMessage = errorString("You don't own this street!")
+                        currentGameMessage
+                    case BuildStatus.TOO_MANY_HOUSES => currentGameMessage += errorString("There can only be 5 houses on a street\n")
+                        currentGameMessage
+                    case BuildStatus.MISSING_MONEY => currentGameMessage += errorString("You don't have enough money!\n")
+                        currentGameMessage
                     //TODO delete if not needed
                     //case BuildStatus.DONE => currentGameMessageString = ""
                     //    currentGameMessageString
                 }
-            case DONE => currentGameMessageString = turnString(getCurrentPlayer.get.name + " ended his turn.\n\n")
-                currentGameMessageString
-            case NEXT_PLAYER => currentGameMessageString = turnString("Next player: " + getCurrentPlayer.get.name + "\n") + playerInfoString(getCurrentPlayer.get.getDetails)
-                currentGameMessageString
-            case MISSING_MONEY => currentGameMessageString = "You do not have enough money!"
-                currentGameMessageString
-            case BOUGHT => currentGameMessageString = infoString("Successfully bought the street")
-                currentGameMessageString
-            case NOTHING => currentGameMessageString = ""
-                currentGameMessageString
+            case DONE => currentGameMessage = turnString(getCurrentPlayer.get.name + " ended his turn.\n\n")
+                currentGameMessage
+            case NEXT_PLAYER => currentGameMessage = turnString("Next player: " + getCurrentPlayer.get.name + "\n") + playerInfoString(getCurrentPlayer.get.getDetails)
+                currentGameMessage
+            case MISSING_MONEY => currentGameMessage = "You do not have enough money!"
+                currentGameMessage
+            case BOUGHT => currentGameMessage = infoString("Successfully bought the street")
+                currentGameMessage
+            case NOTHING => currentGameMessage = ""
+                currentGameMessage
         }
     }
 
@@ -172,8 +172,8 @@ class Controller extends IController with Publisher {
 
     def errorString(message: String): String = Console.BOLD + Console.RED + message + Console.RESET
 
-    def getCurrentGameMessage(): String = {
-        currentGameMessageString
+    def getCurrentGameMessage: String = {
+        currentGameMessage
     }
 
     def getControllerState(): GameStatus = {

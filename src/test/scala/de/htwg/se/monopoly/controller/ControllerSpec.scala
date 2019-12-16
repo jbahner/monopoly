@@ -11,7 +11,7 @@ import play.api.libs.json.Json
 
 class ControllerSpec extends WordSpec with Matchers {
     "A controller" should {
-        val controller = new Controller()
+        val controller: IController = new Controller()
         val fields = List(ActionField("Go"), Street("Street1", 50, Array(1, 2, 3, 4, 5), houseCost = 25), Street("Street2", 50, Array(1, 2, 3, 4, 5), houseCost = 25), Street("Street3", 50, Array(2, 4, 6, 8, 10), houseCost = 25))
         val player1 = Player("player1", 1500, fields.head, Set(), new FieldIterator(fields))
         val player2 = Player("player2", 1500, fields.head, Set(), new FieldIterator(fields))
@@ -27,8 +27,8 @@ class ControllerSpec extends WordSpec with Matchers {
             val player2JSON = player2.getJSON
             val json = Json.parse(
                 "{ \"board\" : { \"state\" : \"START_OF_TURN\",  \"current_player\" : \"player1\", \"players\" : [ " +
-                  player1JSON.toString + ", " + player2JSON.toString() + " ]}}")
-            controller.getJSON() shouldEqual (json)
+                    player1JSON.toString + ", " + player2JSON.toString() + " ]}}")
+            controller.getJSON shouldEqual (json)
         }
         "get the correct buyer" in {
             controller.board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
@@ -42,12 +42,12 @@ class ControllerSpec extends WordSpec with Matchers {
         "roll the dice correctly" in {
             controller.board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
             controller.rollDice()
-            controller.currentDice._1 should (be >= 1 and be <= 6)
-            controller.currentDice._2 should (be >= 1 and be <= 6)
+            controller.getCurrentDice._1 should (be >= 1 and be <= 6)
+            controller.getCurrentDice._2 should (be >= 1 and be <= 6)
         }
         "walk correctly when processing the roll" in {
             controller.board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
-            val dice: (Int, Int) = (1,2)
+            val dice: (Int, Int) = (1, 2)
             controller.getUndoManager.doStep(WalkCommand(dice, controller))
             // TODO dostep seems not to be working
             //controller.board.playerIt.list.head.currentField should be(fields((dice._1 + dice._2) % fields.size))
@@ -148,7 +148,7 @@ class ControllerSpec extends WordSpec with Matchers {
     }
 
     "A controller" should {
-        val controller = new Controller()
+        val controller: IController = new Controller()
 
         val s1 = Street("Street1", 50, Array(1, 2, 3, 4, 5), houseCost = 25)
         val s2 = Street("Street2", 50, Array(1, 2, 3, 4, 5), houseCost = 25)
@@ -183,7 +183,7 @@ class ControllerSpec extends WordSpec with Matchers {
         val fields = List(ActionField("Go"), s1, s2, s3, s4)
 
         val player1 = Player("player1", 1500, fields(1), Set(s1, s2, s3), new FieldIterator(fields))
-        val controller = new Controller()
+        val controller: IController = new Controller()
 
         controller.board = Board(fields, player1, new PlayerIterator(Array(player1)))
 
@@ -267,7 +267,7 @@ class ControllerSpec extends WordSpec with Matchers {
     // This one is cheated but I wanted the coverage to be increased
     // since this method will be here for quite a while
     "A controller" should {
-        val controller = new Controller
+        val controller: IController = new Controller
 
         "use the test setUp correctly" in {
             controller.setUp()

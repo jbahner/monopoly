@@ -11,7 +11,7 @@ import javax.swing.{BorderFactory, ImageIcon}
 import scala.swing._
 import scala.swing.event._
 
-class Gui(controller: IController) extends Frame {
+class Gui(controller: IController) extends Frame with IUi {
 
     //TODO
     // - show how much houses are on which street
@@ -82,7 +82,7 @@ class Gui(controller: IController) extends Frame {
 
         val buttonList = new util.ArrayList[Button]()
 
-        controller.getControllerState() match {
+        controller.getControllerState match {
             case GameStatus.START_OF_TURN =>
                 buttonList.add(new Button("Roll Dice") {
                     reactions += {
@@ -104,7 +104,7 @@ class Gui(controller: IController) extends Frame {
     }
 
     def generateBuildButtons(): GridPanel = {
-        controller.getControllerState() match {
+        controller.getControllerState match {
             case GameStatus.CAN_BUILD => new GridPanel(controller.getCurrentPlayer().get.bought.size, 1) {
                 if (controller.getCurrentPlayer().isDefined)
                     controller.getCurrentPlayer().get.bought.toSeq.sortBy(_.getName)
@@ -209,7 +209,7 @@ class Gui(controller: IController) extends Frame {
     }
 
     def getCurrentGameMessage(): String = {
-        controller.getControllerState() match {
+        controller.getControllerState match {
             case GameStatus.START_OF_TURN => "  " + controller.getCurrentPlayer().get.name + "'s turn.\nIt is your start of the turn!\nRoll the dice.  "
             case GameStatus.CAN_BUILD =>
                 controller.getBuildStatus match {
@@ -226,4 +226,5 @@ class Gui(controller: IController) extends Frame {
         sys.exit(0)
     }
 
+    def processInput(input: String): Unit = {}
 }
