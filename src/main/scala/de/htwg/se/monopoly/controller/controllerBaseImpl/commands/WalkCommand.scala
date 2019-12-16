@@ -1,13 +1,14 @@
 package de.htwg.se.monopoly.controller.controllerBaseImpl.commands
 
 import de.htwg.se.monopoly.controller.GameStatus._
+import de.htwg.se.monopoly.controller.IController
 import de.htwg.se.monopoly.controller.controllerBaseImpl.{Controller, UpdateInfo}
 import de.htwg.se.monopoly.model.boardComponent.{Board, Buyable}
 import de.htwg.se.monopoly.util.{Command, GeneralUtil}
 
-case class WalkCommand(dice: (Int, Int), controller: Controller) extends Command{
+case class WalkCommand(dice: (Int, Int), controller: IController) extends Command{
     private val backupBoard: Board = controller.board.copy(fields = controller.board.fields, playerIt = controller.board.playerIt.copy)
-    private val backupGameString: String = controller.currentGameMessageString
+    private val backupGameString: String = controller.getCurrentGameMessage
     override def doStep(): Unit = {
         controller.controllerState = ROLLED
         controller.catCurrentGameMessage()
@@ -44,7 +45,7 @@ case class WalkCommand(dice: (Int, Int), controller: Controller) extends Command
     override def undoStep(): Unit = {
         controller.board = backupBoard
         controller.controllerState = START_OF_TURN
-        controller.currentGameMessageString = backupGameString
+        controller.currentGameMessage = backupGameString
         controller.updateCurrentPlayerInfo()
         controller.publish(new UpdateInfo)
     }

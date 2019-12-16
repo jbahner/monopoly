@@ -2,7 +2,7 @@ package de.htwg.se.monopoly.controller
 
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.GameStatus
-import de.htwg.se.monopoly.model.boardComponent.{Buyable, Field}
+import de.htwg.se.monopoly.model.boardComponent.{Board, Buyable, Field}
 import de.htwg.se.monopoly.model.playerComponent.Player
 import de.htwg.se.monopoly.util.UndoManager
 import play.api.libs.json.JsValue
@@ -13,6 +13,9 @@ trait IController extends Publisher {
 
     var controllerState: GameStatus
     var buildStatus: BuildStatus
+    var board:Board
+    var currentGameMessage: String
+    var currentDice: (Int, Int)
 
     def setUp()
 
@@ -48,13 +51,13 @@ trait IController extends Publisher {
 
     def errorString(message: String): String
 
-    def getCurrentGameMessage(): String
+    def getCurrentGameMessage: String
 
     def buildablesToString(buildables: List[Set[String]]): String
 
-    def getJSON(): JsValue
+    def getJSON: JsValue
 
-    def getControllerState(): GameStatus
+    def getControllerState: GameStatus
 
     def getUndoManager: UndoManager
 

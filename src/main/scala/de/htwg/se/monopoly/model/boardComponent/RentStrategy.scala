@@ -1,5 +1,6 @@
 package de.htwg.se.monopoly.model.boardComponent
 
+import de.htwg.se.monopoly.controller.IController
 import de.htwg.se.monopoly.controller.controllerBaseImpl.Controller
 import de.htwg.se.monopoly.util.GeneralUtil
 
@@ -7,7 +8,7 @@ trait RentStrategy {
     def executeStrategy(buyable: Buyable): Int
 }
 
-case class StreetRentStrategy(controller: Controller, street: Street) extends RentStrategy {
+case class StreetRentStrategy(controller: IController, street: Street) extends RentStrategy {
     override def executeStrategy(buyable: Buyable): Int = {
         if (street.numHouses == 0 && GeneralUtil.hasWholeGroup(controller.getBuyer(street.asInstanceOf[Buyable]).get, street.getName))
             street.rentCosts(street.numHouses) * 2
@@ -16,17 +17,17 @@ case class StreetRentStrategy(controller: Controller, street: Street) extends Re
     }
 }
 
-case class BuildingRentStrategy(controller: Controller, building: Building) extends RentStrategy {
+case class BuildingRentStrategy(controller: IController, building: Building) extends RentStrategy {
     override def executeStrategy(buyable: Buyable): Int = {
         if (GeneralUtil.hasWholeGroup(controller.getBuyer(building.asInstanceOf[Buyable]).get, building.getName))
-            (controller.currentDice._1 + controller.currentDice._2) * 10
+            (controller.getCurrentDice._1 + controller.getCurrentDice._2) * 10
         else
-            (controller.currentDice._1 + controller.currentDice._2) * 4
+            (controller.getCurrentDice._1 + controller.getCurrentDice._2) * 4
     }
 }
 
 object RentContext {
-    var controller: Controller = _
+    var controller: IController = _
 
     lazy val rentStrategy: RentStrategy = {
         controller.getCurrentField match {

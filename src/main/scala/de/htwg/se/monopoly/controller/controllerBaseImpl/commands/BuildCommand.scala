@@ -7,7 +7,7 @@ import de.htwg.se.monopoly.util.Command
 
 case class BuildCommand(street: Street, amount: Int, controller: Controller) extends Command {
   private val backupBoard: Board = controller.board.copy(fields = controller.board.fields, playerIt = controller.board.playerIt.copy)
-  private val backupGameString: String = controller.currentGameMessageString
+  private val backupGameString: String = controller.currentGameMessage
 
   override def doStep(): Unit = {
     controller.board = controller.board.replaceField(field = street, newField = street.buyHouses(amount))

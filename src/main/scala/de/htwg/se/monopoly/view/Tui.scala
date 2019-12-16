@@ -1,21 +1,21 @@
 package de.htwg.se.monopoly.view
 
 import de.htwg.se.monopoly.controller.GameStatus._
-import de.htwg.se.monopoly.controller.controllerBaseImpl.{Controller, UpdateInfo}
+import de.htwg.se.monopoly.controller.controllerBaseImpl.UpdateInfo
 import de.htwg.se.monopoly.controller.{GameStatus, IController}
 
 import scala.swing.Reactor
 
-class Tui(controller: IController) extends Reactor {
-    listenTo(controller);
-    playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer.get.getDetails)
+class Tui(controller: IController) extends Reactor with IUi{
+    listenTo(controller)
+    playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer().get.getDetails)
 
 
-    def processInput(input: String) = {
+    def processInput(input: String): Unit = {
 
-        controller.getControllerState() match {
+        controller.getControllerState match {
 
-            case START_OF_TURN => {
+            case START_OF_TURN =>
                 input match {
 
                     case "r" => controller.rollDice()
@@ -24,7 +24,6 @@ class Tui(controller: IController) extends Reactor {
                     case "re" => controller.getUndoManager.redoStep()
                     case other => error("Wrong input: " + other)
                 }
-            }
 
             case CAN_BUY =>
                 input match {
@@ -38,15 +37,14 @@ class Tui(controller: IController) extends Reactor {
             case CAN_BUILD =>
                 controller.buildStatus = GameStatus.BuildStatus.DEFAULT
                 input match {
-                    case "q" => {
+                    case "q" =>
                         controller.buildStatus = GameStatus.BuildStatus.DONE
                         controller.controllerState = GameStatus.DONE
                         controller.publish(new UpdateInfo)
                         controller.nextPlayer()
-                    }
                     case "u" => controller.getUndoManager.undoStep()
                     case "re" => controller.getUndoManager.redoStep()
-                    case other => {
+                    case other =>
                         val args = other.split("_")
                         if (args.length != 2) {
                             userInput("Invalid argument for street or amount of houses!\n" +
@@ -56,7 +54,6 @@ class Tui(controller: IController) extends Reactor {
                         else {
                             controller.buildHouses(args(0), args(1).toInt)
                         }
-                    }
                 }
             case DONE => controller.nextPlayer()
 
