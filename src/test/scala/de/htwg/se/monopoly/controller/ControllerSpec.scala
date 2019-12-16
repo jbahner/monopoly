@@ -20,7 +20,7 @@ class ControllerSpec extends WordSpec with Matchers {
             controller.getCurrentField should be(fields.head)
         }
         "get the correct current player" in {
-            controller.getCurrentPlayer should be(player1)
+            controller.getCurrentPlayer.get should be(player1)
         }
         "have a JSON representation" in {
             val player1JSON = player1.getJSON
@@ -159,9 +159,9 @@ class ControllerSpec extends WordSpec with Matchers {
         val player2 = Player("player2", 1500, fields.head, Set(s1, s2, s3), new FieldIterator(fields))
         controller.board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
         "declare the next player" in {
-            controller.getCurrentPlayer should be(player1)
+            controller.getCurrentPlayer.get should be(player1)
             controller.nextPlayer()
-            controller.getCurrentPlayer should be(player2)
+            controller.getCurrentPlayer.get should be(player2)
         }
         "state should be CAN_BUILD" in {
             //controller.processRoll(1, 2)
