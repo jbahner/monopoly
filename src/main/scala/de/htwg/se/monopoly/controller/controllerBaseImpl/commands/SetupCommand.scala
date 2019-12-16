@@ -1,6 +1,6 @@
-package de.htwg.se.monopoly.controller.commands
+package de.htwg.se.monopoly.controller.controllerBaseImpl.commands
 
-import de.htwg.se.monopoly.controller.Controller
+import de.htwg.se.monopoly.controller.controllerBaseImpl.Controller
 import de.htwg.se.monopoly.model.boardComponent.{ActionField, Board, Field, Street}
 import de.htwg.se.monopoly.model.playerComponent.Player
 import de.htwg.se.monopoly.util.{Command, FieldIterator, PlayerIterator}

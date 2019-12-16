@@ -1,6 +1,6 @@
 package de.htwg.se.monopoly.model.boardComponent
 
-import de.htwg.se.monopoly.controller.Controller
+import de.htwg.se.monopoly.controller.controllerBaseImpl.Controller
 import de.htwg.se.monopoly.util.GeneralUtil
 
 trait RentStrategy {

@@ -1,7 +1,7 @@
-package de.htwg.se.monopoly.controller.commands
+package de.htwg.se.monopoly.controller.controllerBaseImpl.commands
 
-import de.htwg.se.monopoly.controller.{Controller, UpdateInfo}
 import de.htwg.se.monopoly.controller.GameStatus._
+import de.htwg.se.monopoly.controller.controllerBaseImpl.{Controller, UpdateInfo}
 import de.htwg.se.monopoly.model.boardComponent.{Board, Street}
 import de.htwg.se.monopoly.util.Command
 

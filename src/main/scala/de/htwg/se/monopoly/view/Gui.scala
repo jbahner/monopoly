@@ -3,16 +3,15 @@ package de.htwg.se.monopoly.view
 import java.awt.Color
 import java.util
 
-import de.htwg.se.monopoly.controller.{Controller, GameStatus, UpdateGui, UpdateInfo}
-import de.htwg.se.monopoly.model.boardComponent.{Building, Field, RentContext, Street}
-import javax.imageio.ImageIO
-import javax.swing.{BorderFactory, ImageIcon, JLabel}
+import de.htwg.se.monopoly.controller.{GameStatus, IController}
+import de.htwg.se.monopoly.controller.controllerBaseImpl.{Controller, UpdateGui, UpdateInfo}
+import de.htwg.se.monopoly.model.boardComponent.{Building, Field, Street}
+import javax.swing.{BorderFactory, ImageIcon}
 
-import scala.reflect.io.File
 import scala.swing._
 import scala.swing.event._
 
-class Gui(controller: Controller) extends Frame {
+class Gui(controller: IController) extends Frame {
 
     //TODO
     // - show how much houses are on which street
@@ -68,10 +67,10 @@ class Gui(controller: Controller) extends Frame {
                     controller.publish(new UpdateInfo)
                 })
                 contents += new MenuItem(Action("Undo") {
-                    controller.undoManager.undoStep()
+                    controller.getUndoManager.undoStep()
                 })
                 contents += new MenuItem(Action("Redo") {
-                    controller.undoManager.redoStep()
+                    controller.getUndoManager.redoStep()
                 })
             }
         }
@@ -83,7 +82,7 @@ class Gui(controller: Controller) extends Frame {
 
         val buttonList = new util.ArrayList[Button]()
 
-        controller.controllerState match {
+        controller.getControllerState() match {
             case GameStatus.START_OF_TURN =>
                 buttonList.add(new Button("Roll Dice") {
                     reactions += {
@@ -105,7 +104,7 @@ class Gui(controller: Controller) extends Frame {
     }
 
     def generateBuildButtons(): GridPanel = {
-        controller.controllerState match {
+        controller.getControllerState() match {
             case GameStatus.CAN_BUILD => new GridPanel(controller.getCurrentPlayer().get.bought.size, 1) {
                 if (controller.getCurrentPlayer().isDefined)
                     controller.getCurrentPlayer().get.bought.toSeq.sortBy(_.getName)
@@ -210,11 +209,11 @@ class Gui(controller: Controller) extends Frame {
     }
 
     def getCurrentGameMessage(): String = {
-        controller.controllerState match {
+        controller.getControllerState() match {
             case GameStatus.START_OF_TURN => "  " + controller.getCurrentPlayer().get.name + "'s turn.\nIt is your start of the turn!\nRoll the dice.  "
             case GameStatus.CAN_BUILD =>
-                controller.buildStatus match {
-                    case GameStatus.BuildStatus.DEFAULT => "  Your rolled a " + controller.currentDice + ".\nYour new Field is " + controller.getCurrentField.getName + ".  "
+                controller.getBuildStatus match {
+                    case GameStatus.BuildStatus.DEFAULT => "  Your rolled a " + controller.getCurrentDice + ".\nYour new Field is " + controller.getCurrentField.getName + ".  "
                     case GameStatus.BuildStatus.BUILT => "  Sucessfully build house.  "
                     case _ => "  Un catched BuildStatus  "
                 }

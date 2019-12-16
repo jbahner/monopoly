@@ -1,7 +1,8 @@
 package de.htwg.se.monopoly.controller
 
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus
-import de.htwg.se.monopoly.controller.commands.WalkCommand
+import de.htwg.se.monopoly.controller.controllerBaseImpl.Controller
+import de.htwg.se.monopoly.controller.controllerBaseImpl.commands.WalkCommand
 import de.htwg.se.monopoly.model.boardComponent._
 import de.htwg.se.monopoly.model.playerComponent.Player
 import de.htwg.se.monopoly.util.{FieldIterator, GeneralUtil, PlayerIterator}
@@ -47,13 +48,13 @@ class ControllerSpec extends WordSpec with Matchers {
         "walk correctly when processing the roll" in {
             controller.board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
             val dice: (Int, Int) = (1,2)
-            controller.undoManager.doStep(WalkCommand(dice, controller))
+            controller.getUndoManager.doStep(WalkCommand(dice, controller))
             // TODO dostep seems not to be working
             //controller.board.playerIt.list.head.currentField should be(fields((dice._1 + dice._2) % fields.size))
-            controller.undoManager.undoStep()
+            controller.getUndoManager.undoStep()
             // TODO incorrect
             // controller.board.playerIt.list.head.currentField should be(fields.head)
-            controller.undoManager.redoStep()
+            controller.getUndoManager.redoStep()
             //controller.currentDice should be(dice)
             // TODO check why this is always Street 2
             //controller.board.playerIt.list.head.currentField should be(fields((dice._1 + dice._2) % fields.size))
@@ -64,11 +65,11 @@ class ControllerSpec extends WordSpec with Matchers {
             controller.buy()
             controller.getCurrentPlayer.get.bought should contain(controller.getCurrentField)
             controller.getCurrentPlayer.get.money should be(buyer.money - fields(1).asInstanceOf[Street].getPrice)
-            controller.undoManager.undoStep()
+            controller.getUndoManager.undoStep()
             controller.controllerState should be(GameStatus.CAN_BUY)
             controller.getCurrentPlayer.get.bought should be(empty)
             controller.getCurrentPlayer.get.money should be(buyer.money)
-            controller.undoManager.redoStep()
+            controller.getUndoManager.redoStep()
             controller.getCurrentPlayer.get.bought should contain(controller.getCurrentField)
             controller.getCurrentPlayer.get.money should be(buyer.money - fields(1).asInstanceOf[Street].getPrice)
         }
@@ -105,14 +106,14 @@ class ControllerSpec extends WordSpec with Matchers {
             val builder = Player("builder", 1500, fields(1), groupFields.toSet, new FieldIterator(groupFields))
             controller.board = Board(groupFields, builder, new PlayerIterator(Array(builder)))
             controller.buildHouses(groupFields.head.getName, 2)
-            controller.buildStatus should be(BuildStatus.BUILT)
+            controller.getBuildStatus should be(BuildStatus.BUILT)
             controller.board.fields.head.asInstanceOf[Street].numHouses should be(2)
-            controller.undoManager.undoStep()
+            controller.getUndoManager.undoStep()
             controller.controllerState should be(GameStatus.CAN_BUILD)
-            controller.buildStatus should be(BuildStatus.DEFAULT)
+            controller.getBuildStatus should be(BuildStatus.DEFAULT)
             controller.board.fields.head.asInstanceOf[Street].numHouses should be(0)
-            controller.undoManager.redoStep()
-            controller.buildStatus should be(BuildStatus.BUILT)
+            controller.getUndoManager.redoStep()
+            controller.getBuildStatus should be(BuildStatus.BUILT)
             controller.board.fields.head.asInstanceOf[Street].numHouses should be(2)
         }
         "not build houses" when {
@@ -120,28 +121,28 @@ class ControllerSpec extends WordSpec with Matchers {
                 val builder = Player("builder", 1500, fields.head, Set(), new FieldIterator(fields))
                 controller.board = Board(fields, builder, new PlayerIterator(Array(builder)))
                 controller.buildHouses(fields.head.getName, 1)
-                controller.buildStatus should be(BuildStatus.INVALID_ARGS)
+                controller.getBuildStatus should be(BuildStatus.INVALID_ARGS)
             }
             "the player does not own the street" in {
                 val streets = List(fields(1).asInstanceOf[Street].setBought(), fields(2).asInstanceOf[Street].setBought(), fields(3).asInstanceOf[Street].setBought())
                 val builder = Player("builder", 1500, streets(1), Set(), new FieldIterator(streets))
                 controller.board = Board(streets, builder, new PlayerIterator(Array(builder)))
                 controller.buildHouses(streets.head.getName, 1)
-                controller.buildStatus should be(BuildStatus.NOT_OWN)
+                controller.getBuildStatus should be(BuildStatus.NOT_OWN)
             }
             "the amount of houses cannot be built" in {
                 val streets = List(fields(1).asInstanceOf[Street].setBought(), fields(2).asInstanceOf[Street].setBought(), fields(3).asInstanceOf[Street].setBought())
                 val builder = Player("builder", 1500, streets(1), streets.toSet, new FieldIterator(streets))
                 controller.board = Board(streets, builder, new PlayerIterator(Array(builder)))
                 controller.buildHouses(streets.head.getName, 6)
-                controller.buildStatus should be(BuildStatus.TOO_MANY_HOUSES)
+                controller.getBuildStatus should be(BuildStatus.TOO_MANY_HOUSES)
             }
             "the player does not have enough money" in {
                 val streets = List(fields(1).asInstanceOf[Street].setBought(), fields(2).asInstanceOf[Street].setBought(), fields(3).asInstanceOf[Street].setBought())
                 val builder = Player("builder", 1, streets(1), streets.toSet, new FieldIterator(streets))
                 controller.board = Board(streets, builder, new PlayerIterator(Array(builder)))
                 controller.buildHouses(streets.head.getName, 3)
-                controller.buildStatus should be(BuildStatus.MISSING_MONEY)
+                controller.getBuildStatus should be(BuildStatus.MISSING_MONEY)
             }
         }
     }
@@ -165,7 +166,7 @@ class ControllerSpec extends WordSpec with Matchers {
         "state should be CAN_BUILD" in {
             //controller.processRoll(1, 2)
             controller.currentDice = (1, 2)
-            controller.undoManager.doStep(WalkCommand((1, 2), controller))
+            controller.getUndoManager.doStep(WalkCommand((1, 2), controller))
             controller.controllerState should be(GameStatus.CAN_BUILD)
         }
         "concat buildables to String" in {
