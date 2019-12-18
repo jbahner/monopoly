@@ -1,8 +1,7 @@
-package de.htwg.se.monopoly.model.boardComponent
+package de.htwg.se.monopoly.util
 
 import de.htwg.se.monopoly.controller.IController
-import de.htwg.se.monopoly.controller.controllerBaseImpl.Controller
-import de.htwg.se.monopoly.util.GeneralUtil
+import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Building, Buyable, Street}
 
 trait RentStrategy {
     def executeStrategy(buyable: Buyable): Int

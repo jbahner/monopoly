@@ -1,6 +1,6 @@
 package de.htwg.se.monopoly.util
 
-import de.htwg.se.monopoly.model.playerComponent.Player
+import de.htwg.se.monopoly.model.playerComponent.IPlayer
 
 object GeneralUtil {
 
@@ -11,15 +11,15 @@ object GeneralUtil {
         Set("Street7", "Street8", "Street9"))
 
 
-    def hasWholeGroup(player: Player, street: String): Boolean = {
+    def hasWholeGroup(player: IPlayer, street: String): Boolean = {
         val group = groupList.find(g => g.contains(street)).get
-        group.subsetOf(player.bought.flatMap(street => street.getName).asInstanceOf[Set[String]])
+        group.subsetOf(player.getBought.flatMap(street => street.getName).asInstanceOf[Set[String]])
     }
 
-    def getWholeGroups(player: Player): List[Set[String]] = {
+    def getWholeGroups(player: IPlayer): List[Set[String]] = {
         var list: List[Set[String]] = List()
         groupList.foreach(group => {
-            if (group.subsetOf(player.bought.map(street => street.getName))) {
+            if (group.subsetOf(player.getBought.map(street => street.getName))) {
                 list = list :+ group
             }
         })

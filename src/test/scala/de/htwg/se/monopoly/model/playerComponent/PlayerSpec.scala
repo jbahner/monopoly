@@ -1,6 +1,7 @@
 package de.htwg.se.monopoly.model.playerComponent
 
-import de.htwg.se.monopoly.model.boardComponent.{ActionField, Street}
+import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{ActionField, Street}
+import de.htwg.se.monopoly.model.playerComponent.playerBaseImpl.Player
 import de.htwg.se.monopoly.util.FieldIterator
 import org.scalatest._
 import play.api.libs.json.Json
@@ -14,17 +15,17 @@ class PlayerSpec extends WordSpec with Matchers {
             val fields = List(go, street1, street2)
             val player = Player("name", 1500, fields.head, Set(), new FieldIterator(fields))
             "have a name" in {
-                player.name should be("name")
+                player.getName should be("name")
             }
             "have money" in {
-                player.money should be(1500)
+                player.getMoney should be(1500)
             }
             "have a String representation" in {
                 player.toString should be("name, money: 1500")
             }
             "have a String representation with details" in {
                 val testPlayer = Player("player", 1500, fields.head, Set(street1), new FieldIterator(fields))
-                testPlayer.getDetails should include(player.money.toString)
+                testPlayer.getDetails should include(player.getMoney.toString)
                 testPlayer.getDetails should include(street1.getName)
                 testPlayer.getDetails should include(fields.head.getName)
             }
@@ -45,14 +46,14 @@ class PlayerSpec extends WordSpec with Matchers {
             }
 
             "stand on the first field" in {
-                player.currentField should be(fields.head)
+                player.getCurrentField should be(fields.head)
             }
             "have no bought streets" in {
-                player.bought.size should be (0)
+                player.getBought.size should be (0)
                 player.listStreets shouldEqual("")
             }
             "only be equal to a player with the same name" in {
-                player.equals(Player(player.name, 0, fields.head, Set(), new FieldIterator(fields))) should be(true)
+                player.equals(Player(player.getName, 0, fields.head, Set(), new FieldIterator(fields))) should be(true)
                 player.equals(Player("Maddin", 0, fields.head, Set(), new FieldIterator(fields))) should be(false)
             }
         }
@@ -64,12 +65,12 @@ class PlayerSpec extends WordSpec with Matchers {
             val player = Player("name", 1500, fields.head, Set(), new FieldIterator(fields))
             "stand on the correct field" in {
                 val (movedPlayer, _) = player.walk(1)
-                movedPlayer.currentField should be(fields(1))
+                movedPlayer.getCurrentField should be(fields(1))
             }
             "earn 200 when passing Go" in {
                 val (movedPlayer, passedGo) = player.walk(4)
                 passedGo should be(true)
-                movedPlayer.money should be(1700)
+                movedPlayer.getMoney should be(1700)
             }
 
         }

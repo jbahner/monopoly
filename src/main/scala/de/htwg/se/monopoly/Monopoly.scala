@@ -9,7 +9,7 @@ import scala.io.StdIn.readLine
 object Monopoly {
 
     val controller: IController = new Controller()
-    controller.setUp()
+    controller.setUp
     val tui: IUi = new Tui(controller)
     val gui: IUi = new Gui(controller)
 

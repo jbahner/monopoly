@@ -2,8 +2,8 @@ package de.htwg.se.monopoly.controller.controllerBaseImpl.commands
 
 import de.htwg.se.monopoly.controller.GameStatus.{BOUGHT, _}
 import de.htwg.se.monopoly.controller.controllerBaseImpl.{Controller, UpdateInfo}
-import de.htwg.se.monopoly.model.boardComponent.{Board, Building, Buyable, Street}
-import de.htwg.se.monopoly.model.playerComponent.Player
+import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Board, Building, Buyable, Street}
+import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.Command
 
 case class BuyCommand(buyable: Buyable, controller: Controller) extends Command {
@@ -17,8 +17,8 @@ case class BuyCommand(buyable: Buyable, controller: Controller) extends Command 
       case building: Building => newField = building.copy(isBought = true)
     }
     val currentPlayer = controller.getCurrentPlayer
-    val newPlayer: Player = currentPlayer.get.copy(money = currentPlayer.get.money - newField.getPrice,
-      bought = currentPlayer.get.bought + newField)
+    val newPlayer: IPlayer = currentPlayer.get.copy(money = currentPlayer.get.getMoney - newField.getPrice,
+      bought = currentPlayer.get.getBought + newField)
     controller.board = controller.board.replacePlayer(currentPlayer.get, newPlayer).copy(currentPlayer = newPlayer)
     controller.board = controller.board.replaceField(buyable, newField)
     controller.controllerState = BOUGHT

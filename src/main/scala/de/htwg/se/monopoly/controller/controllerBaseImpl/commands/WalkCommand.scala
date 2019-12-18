@@ -2,8 +2,8 @@ package de.htwg.se.monopoly.controller.controllerBaseImpl.commands
 
 import de.htwg.se.monopoly.controller.GameStatus._
 import de.htwg.se.monopoly.controller.IController
-import de.htwg.se.monopoly.controller.controllerBaseImpl.{Controller, UpdateInfo}
-import de.htwg.se.monopoly.model.boardComponent.{Board, Buyable}
+import de.htwg.se.monopoly.controller.controllerBaseImpl.UpdateInfo
+import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Board, Buyable}
 import de.htwg.se.monopoly.util.{Command, GeneralUtil}
 
 case class WalkCommand(dice: (Int, Int), controller: IController) extends Command{
@@ -11,24 +11,24 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
     private val backupGameString: String = controller.getCurrentGameMessage
     override def doStep(): Unit = {
         controller.controllerState = ROLLED
-        controller.catCurrentGameMessage()
+        controller.catCurrentGameMessage
         println("DICE: " + dice)
         val player = controller.board.currentPlayer
         val (newPlayer, passedGo) = player.walk(dice._1 + dice._2)
 
         if (passedGo) {
             controller.controllerState = PASSED_GO
-            controller.catCurrentGameMessage()
+            controller.catCurrentGameMessage
         }
 
         controller.board = controller.board.replacePlayer(player, newPlayer)
         controller.controllerState = NEW_FIELD
-        controller.catCurrentGameMessage()
+        controller.catCurrentGameMessage
 
         val newField = controller.getCurrentField
         // Action return ALREADY_BOUGHT, CAN_BUY or BOUGHT_BY_OTHER
         controller.controllerState = newField.action(newPlayer)
-        controller.catCurrentGameMessage()
+        controller.catCurrentGameMessage
 
         controller.controllerState match {
             case BOUGHT_BY_OTHER =>
@@ -46,7 +46,7 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
         controller.board = backupBoard
         controller.controllerState = START_OF_TURN
         controller.currentGameMessage = backupGameString
-        controller.updateCurrentPlayerInfo()
+        controller.updateCurrentPlayerInfo
         controller.publish(new UpdateInfo)
     }
 

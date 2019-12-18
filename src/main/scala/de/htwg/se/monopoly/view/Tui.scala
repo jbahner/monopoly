@@ -8,7 +8,7 @@ import scala.swing.Reactor
 
 class Tui(controller: IController) extends Reactor with IUi{
     listenTo(controller)
-    playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer().get.getDetails)
+    playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer.get.getDetails)
 
 
     def processInput(input: String): Unit = {
@@ -18,7 +18,7 @@ class Tui(controller: IController) extends Reactor with IUi{
             case START_OF_TURN =>
                 input match {
 
-                    case "r" => controller.rollDice()
+                    case "r" => controller.rollDice
                     case "q" | null => System.exit(0)
                     case "u" => controller.getUndoManager.undoStep()
                     case "re" => controller.getUndoManager.redoStep()
@@ -27,7 +27,7 @@ class Tui(controller: IController) extends Reactor with IUi{
 
             case CAN_BUY =>
                 input match {
-                    case "y" | "Y" => controller.buy()
+                    case "y" | "Y" => controller.buy
                     case "n" | "N" =>
                     case "u" => controller.getUndoManager.undoStep()
                     case "re" => controller.getUndoManager.redoStep()
@@ -41,7 +41,7 @@ class Tui(controller: IController) extends Reactor with IUi{
                         controller.buildStatus = GameStatus.BuildStatus.DONE
                         controller.controllerState = GameStatus.DONE
                         controller.publish(new UpdateInfo)
-                        controller.nextPlayer()
+                        controller.nextPlayer
                     case "u" => controller.getUndoManager.undoStep()
                     case "re" => controller.getUndoManager.redoStep()
                     case other =>
@@ -55,13 +55,13 @@ class Tui(controller: IController) extends Reactor with IUi{
                             controller.buildHouses(args(0), args(1).toInt)
                         }
                 }
-            case DONE => controller.nextPlayer()
+            case DONE => controller.nextPlayer
 
         }
     }
 
     reactions += {
-        case event: UpdateInfo => info(controller.catCurrentGameMessage())
+        case event: UpdateInfo => info(controller.catCurrentGameMessage)
     }
 
     def turn(message: String): Unit = {

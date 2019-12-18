@@ -1,11 +1,11 @@
 package de.htwg.se.monopoly.util
 
-import de.htwg.se.monopoly.model.playerComponent.Player
+import de.htwg.se.monopoly.model.playerComponent.IPlayer
 
-class PlayerIterator(players: Array[Player], startIdx : Int = 0) extends Iterator[Player] {
+class PlayerIterator(players: Array[IPlayer], startIdx : Int = 0) extends Iterator[IPlayer] {
     private var current = startIdx
 
-    override def next(): Player = {
+    override def next(): IPlayer = {
         current += 1
         if (!hasNext)
             throw new NoSuchElementException
@@ -18,9 +18,9 @@ class PlayerIterator(players: Array[Player], startIdx : Int = 0) extends Iterato
         players(current) != null
     }
 
-    def replace(player: Player, newPlayer: Player) = players(players.indexOf(player)) = newPlayer
+    def replace(player: IPlayer, newPlayer: IPlayer) = players(players.indexOf(player)) = newPlayer
 
-    def list : List[Player] = players.toList
+    def list : List[IPlayer] = players.toList
 
     def currentIdx = current
 

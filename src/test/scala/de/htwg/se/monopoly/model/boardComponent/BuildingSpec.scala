@@ -1,7 +1,9 @@
 package de.htwg.se.monopoly.model.boardComponent
 
 import de.htwg.se.monopoly.controller.GameStatus
-import de.htwg.se.monopoly.model.playerComponent.Player
+import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.Building
+import de.htwg.se.monopoly.model.playerComponent.playerBaseImpl
+import de.htwg.se.monopoly.model.playerComponent.playerBaseImpl.Player
 import de.htwg.se.monopoly.util.FieldIterator
 import org.scalatest.{Matchers, WordSpec}
 

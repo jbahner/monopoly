@@ -2,8 +2,9 @@ package de.htwg.se.monopoly.controller
 
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.GameStatus
-import de.htwg.se.monopoly.model.boardComponent.{Board, Buyable, Field}
-import de.htwg.se.monopoly.model.playerComponent.Player
+import de.htwg.se.monopoly.model.boardComponent.Field
+import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Board, Buyable}
+import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.UndoManager
 import play.api.libs.json.JsValue
 
@@ -17,19 +18,19 @@ trait IController extends Publisher {
     var currentGameMessage: String
     var currentDice: (Int, Int)
 
-    def setUp()
+    def setUp: Unit
 
-    def getBuyer(buyable: Buyable): Option[Player]
+    def getBuyer(buyable: Buyable): Option[IPlayer]
 
-    def rollDice(): Unit
+    def rollDice: Unit
 
-    def nextPlayer(): Unit
+    def nextPlayer: Unit
 
-    def updateCurrentPlayerInfo(): Unit
+    def updateCurrentPlayerInfo: Unit
 
-    def payRent(currentPlayer: Player, field: Buyable, receiver: Player)
+    def payRent(currentPlayer: IPlayer, field: Buyable, receiver: IPlayer)
 
-    def buy(): Unit
+    def buy: Unit
 
     def getFieldByName(name: String): Option[Field]
 
@@ -37,9 +38,9 @@ trait IController extends Publisher {
 
     def getCurrentField: Field
 
-    def getCurrentPlayer(): Option[Player]
+    def getCurrentPlayer: Option[IPlayer]
 
-    def catCurrentGameMessage(): String
+    def catCurrentGameMessage: String
 
     def turnString(message: String): String
 

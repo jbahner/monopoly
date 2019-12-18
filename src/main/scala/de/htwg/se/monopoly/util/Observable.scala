@@ -1,7 +1,5 @@
 package de.htwg.se.monopoly.util
 
-import de.htwg.se.monopoly.controller.GameStatus.GameStatus
-
 trait Observer {
     def update(): Unit
 }

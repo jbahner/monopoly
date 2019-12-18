@@ -3,9 +3,10 @@ package de.htwg.se.monopoly.view
 import java.awt.Color
 import java.util
 
+import de.htwg.se.monopoly.controller.controllerBaseImpl.{UpdateGui, UpdateInfo}
 import de.htwg.se.monopoly.controller.{GameStatus, IController}
-import de.htwg.se.monopoly.controller.controllerBaseImpl.{Controller, UpdateGui, UpdateInfo}
-import de.htwg.se.monopoly.model.boardComponent.{Building, Field, Street}
+import de.htwg.se.monopoly.model.boardComponent.Field
+import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Building, Street}
 import javax.swing.{BorderFactory, ImageIcon}
 
 import scala.swing._
@@ -50,7 +51,7 @@ class Gui(controller: IController) extends Frame with IUi {
         new MenuBar {
             contents += new Menu("File") {
                 contents += new MenuItem(Action("New Game") {
-                    controller.setUp()
+                    controller.setUp
                 })
                 contents += new MenuItem(Action("Load") {
                     print("Not implemented yet")
@@ -86,13 +87,13 @@ class Gui(controller: IController) extends Frame with IUi {
             case GameStatus.START_OF_TURN =>
                 buttonList.add(new Button("Roll Dice") {
                     reactions += {
-                        case _: ButtonClicked => controller.rollDice()
+                        case _: ButtonClicked => controller.rollDice
                     }
                 })
             case GameStatus.CAN_BUILD =>
                 buttonList.add(new Button("End Turn") {
                     reactions += {
-                        case _: ButtonClicked => controller.nextPlayer()
+                        case _: ButtonClicked => controller.nextPlayer
                     }
                 })
             case _ =>
@@ -105,9 +106,9 @@ class Gui(controller: IController) extends Frame with IUi {
 
     def generateBuildButtons(): GridPanel = {
         controller.getControllerState match {
-            case GameStatus.CAN_BUILD => new GridPanel(controller.getCurrentPlayer().get.bought.size, 1) {
-                if (controller.getCurrentPlayer().isDefined)
-                    controller.getCurrentPlayer().get.bought.toSeq.sortBy(_.getName)
+            case GameStatus.CAN_BUILD => new GridPanel(controller.getCurrentPlayer.get.getBought.size, 1) {
+                if (controller.getCurrentPlayer.isDefined)
+                    controller.getCurrentPlayer.get.getBought.toSeq.sortBy(_.getName)
                         .foreach(bought => contents += generateBuildButton(bought.getName))
             }
             case _ => new GridPanel(1, 1)
@@ -155,13 +156,13 @@ class Gui(controller: IController) extends Frame with IUi {
                 curField match {
                     case street: Street =>
                         contents += new Label(
-                            if (curField.asInstanceOf[Street].isBought) "Bought by " + controller.getBuyer(curField.asInstanceOf[Street]).get.name
+                            if (curField.asInstanceOf[Street].isBought) "Bought by " + controller.getBuyer(curField.asInstanceOf[Street]).get.getName
                             else "Not owned")
                         contents += new Label("Current Rent: " + curField.asInstanceOf[Street].rentCosts(curField.asInstanceOf[Street].numHouses))
                         contents += new Label("Houses: " + curField.asInstanceOf[Street].numHouses.toString)
                     case building: Building =>
                         contents += new Label(
-                            if (curField.asInstanceOf[Building].isBought) "Bought by " + controller.getBuyer(curField.asInstanceOf[Building]).get.name
+                            if (curField.asInstanceOf[Building].isBought) "Bought by " + controller.getBuyer(curField.asInstanceOf[Building]).get.getName
                             else "Not owned")
                     case _ =>
                 }
@@ -202,15 +203,15 @@ class Gui(controller: IController) extends Frame with IUi {
 
         new GridPanel(10, 1) {
             contents += new Label("")
-            contents += new Label("  " + controller.getCurrentPlayer().get.name + "    ")
-            contents += new Label(controller.getCurrentPlayer().get.money + " €")
+            contents += new Label("  " + controller.getCurrentPlayer.get.getName + "    ")
+            contents += new Label(controller.getCurrentPlayer.get.getMoney + " €")
             contents += new Label("")
         }
     }
 
     def getCurrentGameMessage(): String = {
         controller.getControllerState match {
-            case GameStatus.START_OF_TURN => "  " + controller.getCurrentPlayer().get.name + "'s turn.\nIt is your start of the turn!\nRoll the dice.  "
+            case GameStatus.START_OF_TURN => "  " + controller.getCurrentPlayer.get.getName + "'s turn.\nIt is your start of the turn!\nRoll the dice.  "
             case GameStatus.CAN_BUILD =>
                 controller.getBuildStatus match {
                     case GameStatus.BuildStatus.DEFAULT => "  Your rolled a " + controller.getCurrentDice + ".\nYour new Field is " + controller.getCurrentField.getName + ".  "

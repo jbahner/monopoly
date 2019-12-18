@@ -1,8 +1,9 @@
 package de.htwg.se.monopoly.controller.controllerBaseImpl.commands
 
 import de.htwg.se.monopoly.controller.controllerBaseImpl.Controller
-import de.htwg.se.monopoly.model.boardComponent.{ActionField, Board, Field, Street}
-import de.htwg.se.monopoly.model.playerComponent.Player
+import de.htwg.se.monopoly.model.boardComponent.Field
+import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{ActionField, Board, Street}
+import de.htwg.se.monopoly.model.playerComponent.{IPlayer, playerBaseImpl}
 import de.htwg.se.monopoly.util.{Command, FieldIterator, PlayerIterator}
 
 class SetupCommand(playerNames: Set[String], controller: Controller) extends Command {
@@ -17,15 +18,15 @@ class SetupCommand(playerNames: Set[String], controller: Controller) extends Com
                 houseCost = 25 * i,
                 isBought = true)
 
-        val players = playerNames.map(p => Player(name = p, money = 1500, currentField = fields.head, bought = Set(), fieldIt = new FieldIterator(fields))).toArray
+        val players = playerNames.map(p => playerBaseImpl.Player(name = p, money = 1500, currentField = fields.head, bought = Set(), fieldIt = new FieldIterator(fields))).toArray
 
         // For paying rent testing purposes
         for (i <- 1 to 6) {
-            players(0) = players(0).copy(bought = players(0).bought + fields(i).asInstanceOf[Street])
+            players(0) = players(0).copy(bought = players(0).getBought + fields(i).asInstanceOf[Street])
         }
         for (i <- 7 to 9)
-            players(1) = players(1).copy(bought = players(1).bought + fields(i).asInstanceOf[Street])
-        controller.board = Board(fields, players(0), new PlayerIterator(players))
+            players(1) = players(1).copy(bought = players(1).getBought + fields(i).asInstanceOf[Street])
+        controller.board = Board(fields, players(0), new PlayerIterator(players.asInstanceOf[Array[IPlayer]]))
     }
 
     // This is only for testing purposes
