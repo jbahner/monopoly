@@ -22,7 +22,7 @@ class Controller extends IController with Publisher {
     var currentDice: (Int, Int) = _
     var currentGameMessage: String = _
 
-    def setUp(): Unit = {
+    def setUp: Unit = {
         undoManager.doStep(new SetupCommand(Set("Player1", "Player2"), this))
         controllerState = START_OF_TURN
         publish(new UpdateInfo)

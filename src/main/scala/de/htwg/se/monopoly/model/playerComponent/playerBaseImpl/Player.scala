@@ -55,6 +55,7 @@ case class  Player(name: String, money: Int, currentField: Field, bought: Set[IB
     def copy(name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator): Player =
         Player(name,money,currentField,bought,fieldIt)
 
+
     override def getCurrentField: Field = currentField
 
     override def getFieldIt: FieldIterator = fieldIt
