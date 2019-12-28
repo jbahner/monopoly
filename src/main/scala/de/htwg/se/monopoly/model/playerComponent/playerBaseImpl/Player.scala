@@ -8,14 +8,20 @@ import play.api.libs.json.{JsNumber, JsValue, Json}
 
 case class  Player(name: String, money: Int, currentField: Field, bought: Set[Buyable], fieldIt: FieldIterator) extends IPlayer {
 
-    override def walk(steps: Int): (IPlayer, Boolean) = {
+    override def walk(steps: Int, overGo: Boolean = true): (IPlayer, Boolean) = {
         var passedGo = false
-        var field: Field = null
+        var field: Field = currentField
         for (_ <- 0 until steps) {
             field = fieldIt.next()
             if (field.getName.equals("Go")) passedGo = true
         }
-        (this.copy(money = money + (if (passedGo) 200 else 0), currentField = field), passedGo)
+        // 0 steps only for move cards, just to be sure
+        if(steps == 0 && field.getName.equals("Go"))
+            passedGo = true
+        if(overGo && passedGo)
+            (this.copy(money = money + (if (passedGo) 200 else 0), currentField = field), passedGo)
+        else
+            (this.copy(currentField = field), false)
     }
 
     override def toString: String = name + ", money: " + money
@@ -59,4 +65,8 @@ case class  Player(name: String, money: Int, currentField: Field, bought: Set[Bu
     override def getCurrentField: Field = currentField
 
     override def getFieldIt: FieldIterator = fieldIt
+
+    override def adjustMoney(amount: Int): IPlayer = this.copy(money = money + amount)
+
+    override def stepsUntil(fieldName: String): Int = fieldIt.stepsUntil(fieldName)
 }

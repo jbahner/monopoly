@@ -18,5 +18,15 @@ case class FieldIterator(fields: List[Field]) extends Iterator[Field] {
         fields(current) != null
     }
 
+    def stepsUntil(fieldName: String): Int = {
+        if(!fields.map(f => f.getName).contains(fieldName))
+            return -1
+        val fieldIdx = fields.map(f => f.getName).indexOf(fieldName)
+        if(fieldIdx < current)
+            fields.size - current + fieldIdx
+        else
+            fieldIdx - current
+    }
+
     def replace(field: Field, newField: Field) = this.copy(fields =fields.updated(fields.indexOf(field), newField))
 }

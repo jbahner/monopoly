@@ -9,7 +9,11 @@ import play.api.libs.json.JsValue
 trait IPlayer {
     this: Player =>
 
-    def walk(steps: Int): (IPlayer, Boolean)
+    def walk(steps: Int, overGo: Boolean = true): (IPlayer, Boolean)
+
+    def adjustMoney(amount: Int) : IPlayer
+
+    def stepsUntil(fieldName: String) : Int
 
     def toString: String
 
