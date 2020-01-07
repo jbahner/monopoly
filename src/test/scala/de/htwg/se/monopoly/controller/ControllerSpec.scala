@@ -272,7 +272,7 @@ class ControllerSpec extends WordSpec with Matchers {
         val controller: IController = new Controller
 
         "use the test setUp correctly" in {
-            controller.setUp
+            controller.setUp("fields.json")
             controller.board.currentPlayer shouldBe a[IPlayer]
         }
     }

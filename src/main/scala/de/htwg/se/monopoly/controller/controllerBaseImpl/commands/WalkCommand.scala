@@ -12,7 +12,6 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
     override def doStep(): Unit = {
         controller.controllerState = ROLLED
         controller.catCurrentGameMessage
-        println("DICE: " + dice)
         val player = controller.board.currentPlayer
         val (newPlayer, passedGo) = player.walk(dice._1 + dice._2)
 

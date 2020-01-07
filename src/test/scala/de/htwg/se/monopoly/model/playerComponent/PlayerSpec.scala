@@ -52,6 +52,13 @@ class PlayerSpec extends WordSpec with Matchers {
                 player.getBought.size should be (0)
                 player.listStreets shouldEqual("")
             }
+            "have the correct number of steps until another field" in {
+                player.stepsUntil(fields.tail.last.getName) should be(fields.length - 1)
+            }
+            "be able to adjust its money" in {
+                player.adjustMoney(100).getMoney should be(player.money + 100)
+                player.adjustMoney(-100).getMoney should be(player.money - 100)
+            }
             "only be equal to a player with the same name" in {
                 player.equals(Player(player.getName, 0, fields.head, Set(), new FieldIterator(fields))) should be(true)
                 player.equals(Player("Maddin", 0, fields.head, Set(), new FieldIterator(fields))) should be(false)

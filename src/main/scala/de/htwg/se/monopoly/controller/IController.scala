@@ -18,7 +18,7 @@ trait IController extends Publisher {
     var currentGameMessage: String
     var currentDice: (Int, Int)
 
-    def setUp: Unit
+    def setUp(fieldFile: String): Unit
 
     def getBuyer(buyable: Buyable): Option[IPlayer]
 

@@ -4,7 +4,7 @@ import de.htwg.se.monopoly.controller.GameStatus.{BOUGHT, _}
 import de.htwg.se.monopoly.controller.controllerBaseImpl.{Controller, UpdateInfo}
 import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Board, Building, Buyable, Street}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
-import de.htwg.se.monopoly.util.Command
+import de.htwg.se.monopoly.util.{Command, GeneralUtil}
 
 case class BuyCommand(buyable: Buyable, controller: Controller) extends Command {
   private val backupBoard: Board = controller.board.copy(fields = controller.board.fields, playerIt = controller.board.playerIt.copy)
@@ -22,7 +22,15 @@ case class BuyCommand(buyable: Buyable, controller: Controller) extends Command 
     controller.board = controller.board.replacePlayer(currentPlayer.get, newPlayer).copy(currentPlayer = newPlayer)
     controller.board = controller.board.replaceField(buyable, newField)
     controller.controllerState = BOUGHT
+    controller.catCurrentGameMessage
     controller.publish(new UpdateInfo)
+    if (GeneralUtil.getWholeGroups(newPlayer) != Nil) {
+      controller.controllerState = CAN_BUILD
+      controller.buildStatus = BuildStatus.DEFAULT
+    } else {
+      controller.controllerState = DONE
+      controller.catCurrentGameMessage
+    }
   }
 
   override def undoStep(): Unit = {

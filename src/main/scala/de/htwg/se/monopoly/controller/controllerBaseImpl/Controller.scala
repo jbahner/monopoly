@@ -5,7 +5,7 @@ import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
 import de.htwg.se.monopoly.controller.IController
 import de.htwg.se.monopoly.controller.controllerBaseImpl.commands.{BuildCommand, BuyCommand, SetupCommand, WalkCommand}
 import de.htwg.se.monopoly.model.boardComponent._
-import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Board, Buyable, Street}
+import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Board, Buyable, CardStack, Street}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.{GeneralUtil, RentContext, UndoManager}
 import play.api.libs.json.{JsValue, Json}
@@ -16,6 +16,11 @@ import scala.swing.event.Event
 class Controller extends IController with Publisher {
     RentContext.controller = this
     val undoManager = new UndoManager
+    // JSON: mortgage = price / 2
+    // mortgagecost = mortgage + 10%
+    // distinguish station and works maybe (instead of Building)
+    val chanceStack = new CardStack(List())
+    val communityStack = new CardStack(List())
     var controllerState: GameStatus = START_OF_TURN
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
 
@@ -23,8 +28,8 @@ class Controller extends IController with Publisher {
     var currentDice: (Int, Int) = _
     var currentGameMessage: String = _
 
-    def setUp(): Unit = {
-        undoManager.doStep(new SetupCommand(Set("Player1", "Player2"), this))
+    def setUp(fieldFile: String): Unit = {
+        undoManager.doStep(new SetupCommand(fieldFile, Set("Player1", "Player2"), this))
         controllerState = START_OF_TURN
         publish(new UpdateInfo)
     }
@@ -77,6 +82,7 @@ class Controller extends IController with Publisher {
             return
         }
         undoManager.doStep(BuyCommand(currentField, this))
+        publish(new UpdateInfo)
 
     }
 

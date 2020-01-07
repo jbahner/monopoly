@@ -51,7 +51,7 @@ class Gui(controller: IController) extends Frame with IUi {
         new MenuBar {
             contents += new Menu("File") {
                 contents += new MenuItem(Action("New Game") {
-                    controller.setUp
+                    controller.setUp("fields.json")
                 })
                 contents += new MenuItem(Action("Load") {
                     print("Not implemented yet")

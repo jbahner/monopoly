@@ -56,7 +56,6 @@ class Tui(controller: IController) extends Reactor with IUi{
                         }
                 }
             case DONE => controller.nextPlayer
-
         }
     }
 
