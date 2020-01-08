@@ -22,11 +22,11 @@ class StreetSpec extends WordSpec with Matchers {
         }
         "be buyable" in {
             val boughtStreet = street.setBought()
-            boughtStreet.isBought should be (true)
+            boughtStreet.getIsBought should be (true)
         }
         "be able to build houses" in {
             val houseStreet = street.buyHouses(3)
-            houseStreet.numHouses should be (3)
+            houseStreet.getNumHouses should be (3)
         }
         "have a JSON representation" in {
             val json = Json.parse("""{ "name" : "streetName", "houses" : 0 }""")

@@ -1,14 +1,23 @@
 package de.htwg.se.monopoly.model.boardComponent
-import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Board, Buyable}
+
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
+import de.htwg.se.monopoly.util.PlayerIterator
 
 trait IBoard {
 
     def nextPlayer(): IPlayer
 
-    def nextPlayerTurn(): Board
+    def nextPlayerTurn(): IBoard
 
-    def replacePlayer(player: IPlayer, newPlayer: IPlayer): Board
+    def replacePlayer(player: IPlayer, newPlayer: IPlayer): IBoard
 
-    def replaceField(field: Buyable, newField: Buyable): Board
+    def replaceField(field: IBuyable, newField: IBuyable): IBoard
+
+    def getPlayerIt: PlayerIterator
+
+    def getFields: List[Field]
+
+    def getCurrentPlayer: IPlayer
+
+    def copy(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator): IBoard
 }

@@ -2,8 +2,7 @@ package de.htwg.se.monopoly.controller
 
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.GameStatus
-import de.htwg.se.monopoly.model.boardComponent.Field
-import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Board, Buyable}
+import de.htwg.se.monopoly.model.boardComponent.{Field, IBoard, IBuyable}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.UndoManager
 import play.api.libs.json.JsValue
@@ -14,13 +13,16 @@ trait IController extends Publisher {
 
     var controllerState: GameStatus
     var buildStatus: BuildStatus
-    var board:Board
     var currentGameMessage: String
     var currentDice: (Int, Int)
 
+    def getBoard: IBoard
+
+    def setBoard(board: IBoard): Unit
+
     def setUp: Unit
 
-    def getBuyer(buyable: Buyable): Option[IPlayer]
+    def getBuyer(buyable: IBuyable): Option[IPlayer]
 
     def rollDice: Unit
 
@@ -28,7 +30,7 @@ trait IController extends Publisher {
 
     def updateCurrentPlayerInfo: Unit
 
-    def payRent(currentPlayer: IPlayer, field: Buyable, receiver: IPlayer)
+    def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer)
 
     def buy: Unit
 

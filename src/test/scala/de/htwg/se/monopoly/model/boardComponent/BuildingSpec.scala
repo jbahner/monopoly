@@ -22,7 +22,7 @@ class BuildingSpec extends WordSpec with Matchers {
             }
             "be buyable" in {
                 val boughtBuilding = building.setBought()
-                boughtBuilding.isBought should be(true)
+                boughtBuilding.getIsBought should be(true)
             }
             "get the correct action" should {
                 "can buy" in {

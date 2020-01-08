@@ -3,17 +3,20 @@ package de.htwg.se.monopoly.controller.controllerBaseImpl.commands
 import de.htwg.se.monopoly.controller.GameStatus._
 import de.htwg.se.monopoly.controller.IController
 import de.htwg.se.monopoly.controller.controllerBaseImpl.UpdateInfo
-import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Board, Buyable}
+import de.htwg.se.monopoly.model.boardComponent.{IBoard, IBuyable}
 import de.htwg.se.monopoly.util.{Command, GeneralUtil}
 
-case class WalkCommand(dice: (Int, Int), controller: IController) extends Command{
-    private val backupBoard: Board = controller.board.copy(fields = controller.board.fields, playerIt = controller.board.playerIt.copy)
+case class WalkCommand(dice: (Int, Int), controller: IController) extends Command {
+    private val backupBoard: IBoard = controller.getBoard.copy(controller.getBoard.getFields,
+        controller.getBoard.getCurrentPlayer,
+        controller.getBoard.getPlayerIt)
     private val backupGameString: String = controller.getCurrentGameMessage
+
     override def doStep(): Unit = {
         controller.controllerState = ROLLED
         controller.catCurrentGameMessage
         println("DICE: " + dice)
-        val player = controller.board.currentPlayer
+        val player = controller.getBoard.getCurrentPlayer
         val (newPlayer, passedGo) = player.walk(dice._1 + dice._2)
 
         if (passedGo) {
@@ -21,7 +24,7 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
             controller.catCurrentGameMessage
         }
 
-        controller.board = controller.board.replacePlayer(player, newPlayer)
+        controller.setBoard(controller.getBoard.replacePlayer(player, newPlayer))
         controller.controllerState = NEW_FIELD
         controller.catCurrentGameMessage
 
@@ -32,7 +35,8 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
 
         controller.controllerState match {
             case BOUGHT_BY_OTHER =>
-                controller.payRent(controller.getCurrentPlayer.get, controller.getCurrentField.asInstanceOf[Buyable], controller.getBuyer(controller.getCurrentField.asInstanceOf[Buyable]).get)
+                controller.payRent(controller.getCurrentPlayer.get, controller.getCurrentField.asInstanceOf[IBuyable],
+                    controller.getBuyer(controller.getCurrentField.asInstanceOf[IBuyable]).get)
             case _ =>
         }
 
@@ -43,7 +47,7 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
     }
 
     override def undoStep(): Unit = {
-        controller.board = backupBoard
+        controller.setBoard(backupBoard)
         controller.controllerState = START_OF_TURN
         controller.currentGameMessage = backupGameString
         controller.updateCurrentPlayerInfo

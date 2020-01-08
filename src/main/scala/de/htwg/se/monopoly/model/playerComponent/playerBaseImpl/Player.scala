@@ -1,12 +1,11 @@
 package de.htwg.se.monopoly.model.playerComponent.playerBaseImpl
 
-import de.htwg.se.monopoly.model.boardComponent.Field
-import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Buyable, Street}
+import de.htwg.se.monopoly.model.boardComponent.{Field, IBuyable, IStreet}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.FieldIterator
 import play.api.libs.json.{JsNumber, JsValue, Json}
 
-case class  Player(name: String, money: Int, currentField: Field, bought: Set[Buyable], fieldIt: FieldIterator) extends IPlayer {
+case class  Player(name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator) extends IPlayer {
 
     override def walk(steps: Int): (IPlayer, Boolean) = {
         var passedGo = false
@@ -27,8 +26,8 @@ case class  Player(name: String, money: Int, currentField: Field, bought: Set[Bu
         bought.foreach(field => {
             sb.append("\n%-10s%s".format("", field.getName))
             field match {
-                case street: Street =>
-                    sb.append("\thouses: %d".format(street.numHouses))
+                case street: IStreet =>
+                    sb.append("\thouses: %d".format(street.getNumHouses))
                 case _ =>
             }
         })
@@ -44,17 +43,17 @@ case class  Player(name: String, money: Int, currentField: Field, bought: Set[Bu
             "name" -> name,
             "money" -> JsNumber(money),
             "current_field" -> currentField.getName,
-            "bought_fields" -> bought.filter(b => b.isInstanceOf[Street]).map(s => s.asInstanceOf[Street].getJSON).toList)
+            "bought_fields" -> bought.filter(b => b.isInstanceOf[IStreet]).map(s => s.asInstanceOf[IStreet].getJSON).toList)
     }
 
-    override def getBought: Set[Buyable] = bought
+    override def getBought: Set[IBuyable] = bought
 
     override def getMoney: Int = money
 
     override def getName: String = name
 
-    def copy(name: String, money: Int, currentField: Field, bought: Set[Buyable], fieldIt: FieldIterator): Player =
-        new Player(name,money,currentField,bought,fieldIt)
+    def copy(name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator): Player =
+        Player(name,money,currentField,bought,fieldIt)
 
     override def getCurrentField: Field = currentField
 

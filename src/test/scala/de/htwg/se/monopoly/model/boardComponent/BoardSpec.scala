@@ -1,7 +1,6 @@
 package de.htwg.se.monopoly.model.boardComponent
 
 import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{ActionField, Board, Buyable, Street}
-import de.htwg.se.monopoly.model.playerComponent.playerBaseImpl
 import de.htwg.se.monopoly.model.playerComponent.playerBaseImpl.Player
 import de.htwg.se.monopoly.util.{FieldIterator, PlayerIterator}
 import org.scalatest.{Matchers, WordSpec}
@@ -25,29 +24,29 @@ class BoardSpec extends WordSpec with Matchers {
             board.currentPlayer should be(player1)
         }
         "switch to the next player" in {
-            var board = boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
-            board = board.copy(currentPlayer = board.nextPlayer)
-            board.currentPlayer should be(player2)
+            var board: IBoard = boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
+            board = board.copy(board.getFields, board.nextPlayer(), board.getPlayerIt)
+            board.getCurrentPlayer should be(player2)
         }
         "be able to replace a player" in {
-            var board = boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
+            var board: IBoard = boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
             val newPlayer = Player("newPlayer", 50, fields.head, Set(), new FieldIterator(fields))
-            board = board.replacePlayer(board.currentPlayer, newPlayer)
-            board.currentPlayer should be(newPlayer)
+            board = board.replacePlayer(board.getCurrentPlayer, newPlayer)
+            board.getCurrentPlayer should be(newPlayer)
             board = boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
         }
         "be able to replace a field" in {
-            var board = boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
+            var board: IBoard = boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
             val newField = Street("NewField", 1000, Array(0, 0, 0, 0, 0), 1000)
-            board = board.replaceField(fields(1).asInstanceOf[Buyable], newField)
-            board.fields(1) should be(newField)
+            board = board.replaceField(fields(1).asInstanceOf[IBuyable], newField)
+            board.getFields(1) should be(newField)
         }
         "be able to replace a field that belongs to a player" in {
-            var board = boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
+            var board: IBoard = boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
             val newField = Street("street1", 1000, Array(0, 0, 0, 0, 0), 1000)
-            board = board.replacePlayer(player1, player1.copy(bought = player1.getBought + fields(1).asInstanceOf[Buyable]))
-            board = board.replaceField(board.fields(1).asInstanceOf[Buyable], newField)
-            board.currentPlayer.getBought.contains(newField) should be(true)
+            board = board.replacePlayer(player1, player1.copy(bought = player1.getBought + fields(1).asInstanceOf[IBuyable]))
+            board = board.replaceField(board.getFields(1).asInstanceOf[IBuyable], newField)
+            board.getCurrentPlayer.getBought.contains(newField) should be(true)
         }
     }
 }

@@ -4,8 +4,7 @@ import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
 import de.htwg.se.monopoly.controller.IController
 import de.htwg.se.monopoly.controller.controllerBaseImpl.commands.{BuildCommand, BuyCommand, SetupCommand, WalkCommand}
-import de.htwg.se.monopoly.model.boardComponent._
-import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Board, Buyable, Street}
+import de.htwg.se.monopoly.model.boardComponent.{Field, IBoard, IBuyable, IStreet}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.{GeneralUtil, RentContext, UndoManager}
 import play.api.libs.json.{JsValue, Json}
@@ -19,7 +18,7 @@ class Controller extends IController with Publisher {
     var controllerState: GameStatus = START_OF_TURN
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
 
-    var board: Board = _
+    var board: IBoard = _
     var currentDice: (Int, Int) = _
     var currentGameMessage: String = _
 
@@ -29,9 +28,13 @@ class Controller extends IController with Publisher {
         publish(new UpdateInfo)
     }
 
-    def getBuyer(buyable: Buyable): Option[IPlayer] = {
-        val players = board.playerIt.list
+    def getBuyer(buyable: IBuyable): Option[IPlayer] = {
+        val players = board.getPlayerIt.list
         players.find(p => p.getBought.contains(buyable))
+    }
+
+    def setBoard(board: IBoard): Unit = {
+        this.board = board
     }
 
     def rollDice: Unit = {
@@ -56,7 +59,7 @@ class Controller extends IController with Publisher {
         publish(new UpdateGui)
     }
 
-    def payRent(currentPlayer: IPlayer, field: Buyable, receiver: IPlayer): Unit = {
+    def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer): Unit = {
         val payAmount = RentContext.rentStrategy.executeStrategy(field)
         if (currentPlayer.getMoney < payAmount) {
             controllerState = MISSING_MONEY
@@ -70,43 +73,43 @@ class Controller extends IController with Publisher {
 
     def buy: Unit = {
         val currentPlayer = getCurrentPlayer
-        val currentField = getCurrentField.asInstanceOf[Buyable]
+        val currentField = getCurrentField
         if (currentPlayer.get.getMoney < currentField.getPrice) {
             controllerState = MISSING_MONEY
             publish(new UpdateInfo)
             return
         }
-        undoManager.doStep(BuyCommand(currentField, this))
+        undoManager.doStep(BuyCommand(currentField.asInstanceOf[IBuyable], this))
 
     }
 
     def getFieldByName(name: String): Option[Field] = {
-        board.fields.find(field => field.getName.equals(name))
+        board.getFields.find(field => field.getName.equals(name))
     }
 
     def buildHouses(streetName: String, amount: Int): Unit = {
         val field = getFieldByName(streetName)
-        if (field.isEmpty || !field.get.isInstanceOf[Street]) {
+        if (field.isEmpty || !field.get.isInstanceOf[IStreet]) {
             buildStatus = BuildStatus.INVALID_ARGS
             return
         }
-        val street = field.get.asInstanceOf[Street]
+        val street = field.get.asInstanceOf[IStreet]
         val buyer = getBuyer(street)
         if (buyer.isEmpty || !buyer.get.equals(getCurrentPlayer.get))
             buildStatus = BuildStatus.NOT_OWN
-        else if (street.numHouses + amount > 5)
+        else if (street.getNumHouses + amount > 5)
             buildStatus = BuildStatus.TOO_MANY_HOUSES
-        else if (getCurrentPlayer.get.getMoney < street.houseCost * amount)
+        else if (getCurrentPlayer.get.getMoney < street.getHouseCost * amount)
             buildStatus = BuildStatus.MISSING_MONEY
         else
             undoManager.doStep(BuildCommand(street, amount, this))
         publish(new UpdateInfo)
     }
 
-    def getCurrentField: Field = board.currentPlayer.getCurrentField
+    def getCurrentField: Field = board.getCurrentPlayer.getCurrentField
 
     def getCurrentPlayer: Option[IPlayer] = {
-        Option(board.currentPlayer)
+        Option(board.getCurrentPlayer)
     }
 
     def catCurrentGameMessage: String = {
@@ -122,11 +125,11 @@ class Controller extends IController with Publisher {
             case ALREADY_BOUGHT => currentGameMessage += infoString("You already own this street\n")
                 currentGameMessage
             case CAN_BUY =>
-                val field: Buyable = getCurrentField.asInstanceOf[Buyable]
+                val field: IBuyable = getCurrentField.asInstanceOf[IBuyable]
                 currentGameMessage += userInputString("Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice) + "\n")
                 currentGameMessage
             case BOUGHT_BY_OTHER =>
-                val field = getCurrentField.asInstanceOf[Buyable]
+                val field = getCurrentField.asInstanceOf[IBuyable]
                 currentGameMessage += infoString("Field already bought by " + getBuyer(field).get.getName + ".\n" +
                     "You must pay " + RentContext.rentStrategy.executeStrategy(field) + " rent!\n")
                 currentGameMessage
@@ -159,6 +162,7 @@ class Controller extends IController with Publisher {
                 currentGameMessage
             case NOTHING => currentGameMessage = ""
                 currentGameMessage
+            case _ => ""
         }
     }
 
@@ -187,7 +191,7 @@ class Controller extends IController with Publisher {
             set.foreach {
                 street =>
                     sb.append(street)
-                        .append(" (" + getFieldByName(street).get.asInstanceOf[Street].houseCost + "€)")
+                        .append(" (" + getFieldByName(street).get.asInstanceOf[IStreet].getHouseCost + "€)")
                         .append("   ")
             }
             sb.append("\n")
@@ -200,7 +204,7 @@ class Controller extends IController with Publisher {
             "board" -> Json.obj(
                 "state" -> controllerState.toString,
                 "current_player" -> getCurrentPlayer.get.getName,
-                "players" -> board.playerIt.list.map(p => p.getJSON).toList
+                "players" -> board.getPlayerIt.list.map(p => p.getJSON).toList
             )
         )
     }
@@ -216,6 +220,8 @@ class Controller extends IController with Publisher {
     def getCurrentDice: (Int, Int) = {
         currentDice
     }
+
+    def getBoard: IBoard = board
 }
 
 class UpdateInfo extends Event

@@ -1,10 +1,11 @@
 package de.htwg.se.monopoly.model.boardComponent.boardBaseImpl
 
 import de.htwg.se.monopoly.controller.GameStatus._
-import de.htwg.se.monopoly.model.boardComponent.Field
+import de.htwg.se.monopoly.model.boardComponent.{Field, IBuyable}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 
-abstract class Buyable(name: String, price: Int, isBought: Boolean = false) extends Field(name) {
+abstract class Buyable(name: String, price: Int, isBought: Boolean = false) extends IBuyable {
+
     override def action(player: IPlayer): GameStatus = {
         if (isBought) {
             if (player.getBought.contains(this)) ALREADY_BOUGHT
@@ -13,5 +14,5 @@ abstract class Buyable(name: String, price: Int, isBought: Boolean = false) exte
         else CAN_BUY
     }
 
-    def getPrice: Int = price
+    override def getPrice: Int = price
 }
