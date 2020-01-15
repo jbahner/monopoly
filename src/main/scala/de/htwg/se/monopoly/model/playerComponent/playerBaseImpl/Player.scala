@@ -5,7 +5,7 @@ import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.FieldIterator
 import play.api.libs.json.{JsNumber, JsValue, Json}
 
-case class  Player(name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator) extends IPlayer {
+case class Player (name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator) extends IPlayer {
 
     override def walk(steps: Int): (IPlayer, Boolean) = {
         var passedGo = false
@@ -53,7 +53,7 @@ case class  Player(name: String, money: Int, currentField: Field, bought: Set[IB
     override def getName: String = name
 
     def copy(name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator): Player =
-        Player(name,money,currentField,bought,fieldIt)
+        Player(name, money, currentField, bought, fieldIt)
 
 
     override def getCurrentField: Field = currentField

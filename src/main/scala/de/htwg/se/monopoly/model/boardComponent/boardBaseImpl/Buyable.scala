@@ -1,9 +1,11 @@
 package de.htwg.se.monopoly.model.boardComponent.boardBaseImpl
 
+import com.google.inject.Inject
 import de.htwg.se.monopoly.controller.GameStatus._
-import de.htwg.se.monopoly.model.boardComponent.{Field, IBuyable}
+import de.htwg.se.monopoly.model.boardComponent.IBuyable
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 
+@Inject
 abstract class Buyable(name: String, price: Int, isBought: Boolean = false) extends IBuyable {
 
     override def action(player: IPlayer): GameStatus = {

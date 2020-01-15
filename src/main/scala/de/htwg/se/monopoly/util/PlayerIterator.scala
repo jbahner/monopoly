@@ -2,7 +2,7 @@ package de.htwg.se.monopoly.util
 
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 
-class PlayerIterator(players: Array[IPlayer], startIdx: Int = 0) extends Iterator[IPlayer] {
+case class PlayerIterator(players: Array[IPlayer], startIdx: Int = 0) extends Iterator[IPlayer] {
     private var current = startIdx
 
     override def next(): IPlayer = {

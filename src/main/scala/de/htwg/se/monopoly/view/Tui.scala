@@ -6,7 +6,7 @@ import de.htwg.se.monopoly.controller.{GameStatus, IController}
 
 import scala.swing.Reactor
 
-class Tui(controller: IController) extends Reactor with IUi{
+class Tui(controller: IController) extends Reactor with IUi {
     listenTo(controller)
     playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer.get.getDetails)
 
@@ -48,7 +48,7 @@ class Tui(controller: IController) extends Reactor with IUi{
                         val args = other.split("_")
                         if (args.length != 2) {
                             userInput("Invalid argument for street or amount of houses!\n" +
-                              "<street name>_<amount of houses>")
+                                "<street name>_<amount of houses>")
                             controller.buildStatus = GameStatus.BuildStatus.INVALID_ARGS
                         }
                         else {

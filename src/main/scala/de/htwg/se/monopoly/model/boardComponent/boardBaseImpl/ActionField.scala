@@ -1,10 +1,11 @@
 package de.htwg.se.monopoly.model.boardComponent.boardBaseImpl
 
+import com.google.inject.Inject
 import de.htwg.se.monopoly.controller.GameStatus.{GameStatus, NOTHING}
 import de.htwg.se.monopoly.model.boardComponent.IActionField
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 
-case class ActionField(name: String) extends IActionField {
+case class ActionField @Inject()(name: String) extends IActionField {
 
     override def action(player: IPlayer): GameStatus = {
         name match {

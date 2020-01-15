@@ -1,9 +1,8 @@
-package de.htwg.se.monopoly.controller.controllerBaseImpl.commands
+package de.htwg.se.monopoly.controller
 
-import de.htwg.se.monopoly.controller.GameStatus.{BOUGHT, _}
-import de.htwg.se.monopoly.controller.IController
-import de.htwg.se.monopoly.controller.controllerBaseImpl.{Controller, UpdateInfo}
-import de.htwg.se.monopoly.model.boardComponent.{Field, IBoard, IBuilding, IBuyable, IStreet}
+import de.htwg.se.monopoly.controller.GameStatus.{BOUGHT, CAN_BUY}
+import de.htwg.se.monopoly.controller.controllerBaseImpl.UpdateInfo
+import de.htwg.se.monopoly.model.boardComponent.{IBoard, IBuilding, IBuyable, IStreet}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.Command
 

@@ -1,5 +1,6 @@
 package de.htwg.se.monopoly.controller
 
+import com.google.inject.Injector
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.GameStatus
 import de.htwg.se.monopoly.model.boardComponent.{Field, IBoard, IBuyable}
@@ -11,6 +12,7 @@ import scala.swing.Publisher
 
 trait IController extends Publisher {
 
+    val injector: Injector
     var controllerState: GameStatus
     var buildStatus: BuildStatus
     var currentGameMessage: String
@@ -66,5 +68,5 @@ trait IController extends Publisher {
 
     def getBuildStatus: BuildStatus
 
-    def getCurrentDice:(Int, Int)
+    def getCurrentDice: (Int, Int)
 }

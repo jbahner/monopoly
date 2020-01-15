@@ -5,13 +5,13 @@ import de.htwg.se.monopoly.model.boardComponent.IStreet
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import play.api.libs.json.{JsObject, Json}
 
-case class Street(name: String, price: Int, rentCosts: Array[Int], houseCost : Int, numHouses : Int = 0, isBought:Boolean = false) extends IStreet {
+case class Street (name: String, price: Int, rentCosts: Array[Int], houseCost: Int, numHouses: Int = 0, isBought: Boolean = false) extends IStreet {
 
-    def buyHouses(amount : Int) : IStreet = {
+    def buyHouses(amount: Int): IStreet = {
         this.copy(numHouses = numHouses + amount)
     }
 
-    def setBought() : IStreet = this.copy(isBought = true)
+    def setBought(): IStreet = this.copy(isBought = true)
 
     def getJSON: JsObject = Json.obj("name" -> name, "houses" -> numHouses)
 

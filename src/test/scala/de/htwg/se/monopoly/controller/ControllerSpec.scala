@@ -2,7 +2,6 @@ package de.htwg.se.monopoly.controller
 
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus
 import de.htwg.se.monopoly.controller.controllerBaseImpl.Controller
-import de.htwg.se.monopoly.controller.controllerBaseImpl.commands.WalkCommand
 import de.htwg.se.monopoly.model.boardComponent.{IBuyable, boardBaseImpl}
 import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl._
 import de.htwg.se.monopoly.model.playerComponent.playerBaseImpl.Player

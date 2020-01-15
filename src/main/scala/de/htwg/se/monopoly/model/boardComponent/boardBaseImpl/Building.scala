@@ -4,8 +4,7 @@ import de.htwg.se.monopoly.controller.GameStatus.{ALREADY_BOUGHT, BOUGHT_BY_OTHE
 import de.htwg.se.monopoly.model.boardComponent.IBuilding
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 
-case class Building(name: String, price: Int, isBought :Boolean = false) extends IBuilding
-{
+case class Building (name: String, price: Int, isBought: Boolean = false) extends IBuilding {
     def setBought(): IBuilding = this.copy(isBought = true)
 
     def getName: String = name

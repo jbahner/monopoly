@@ -1,9 +1,10 @@
 package de.htwg.se.monopoly.controller.controllerBaseImpl
 
+import com.google.inject.{Guice, Injector}
+import de.htwg.se.monopoly.MonopolyModule
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
-import de.htwg.se.monopoly.controller.IController
-import de.htwg.se.monopoly.controller.controllerBaseImpl.commands.{BuildCommand, BuyCommand, SetupCommand, WalkCommand}
+import de.htwg.se.monopoly.controller.{GameStatus => _, _}
 import de.htwg.se.monopoly.model.boardComponent.{Field, IBoard, IBuyable, IStreet}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.{GeneralUtil, RentContext, UndoManager}
@@ -13,6 +14,9 @@ import scala.swing.Publisher
 import scala.swing.event.Event
 
 class Controller extends IController with Publisher {
+
+    val injector: Injector = Guice.createInjector(new MonopolyModule)
+
     RentContext.controller = this
     val undoManager = new UndoManager
     var controllerState: GameStatus = START_OF_TURN

@@ -12,8 +12,10 @@ object GameStatus extends Enumeration {
     )
 
     def message(gameStatus: GameStatus): String = map(gameStatus)
+
     object BuildStatus extends Enumeration {
         type BuildStatus = Value
         val DEFAULT, DONE, INVALID_ARGS, NOT_OWN, MISSING_MONEY, BUILT, TOO_MANY_HOUSES = Value
     }
+
 }

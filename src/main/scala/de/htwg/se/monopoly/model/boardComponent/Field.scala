@@ -5,7 +5,7 @@ import de.htwg.se.monopoly.model.playerComponent.IPlayer
 
 trait Field {
 
-    def action(player: IPlayer) : GameStatus
+    def action(player: IPlayer): GameStatus
 
     def getName: String
 
