@@ -5,6 +5,8 @@ import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.FieldIterator
 import play.api.libs.json.{JsNumber, JsValue, Json}
 
+import scala.xml.Elem
+
 case class Player (name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator) extends IPlayer {
 
     override def walk(steps: Int): (IPlayer, Boolean) = {
@@ -59,4 +61,23 @@ case class Player (name: String, money: Int, currentField: Field, bought: Set[IB
     override def getCurrentField: Field = currentField
 
     override def getFieldIt: FieldIterator = fieldIt
+
+    override def toXml(): Elem = {
+        <player>
+            <name>{name}</name>
+            <money>{money}</money>
+            <current-field>{currentField.nameToXml()}</current-field>
+            <bought>{ for {
+                boughtField <- bought
+            } yield boughtField.nameToXml()}</bought>
+            {fieldIt.toXml()}
+        </player>
+
+    }
+
+    override def nameToXml(): Elem = {
+        <player>
+        <name>{name}</name>
+        </player>
+    }
 }

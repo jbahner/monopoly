@@ -11,6 +11,7 @@ import de.htwg.se.monopoly.util.UndoManager
 import play.api.libs.json.JsValue
 
 import scala.swing.Publisher
+import scala.xml.Elem
 
 class MockController extends IController with Publisher {
     val injector: Injector = Guice.createInjector(new MonopolyModule)
@@ -73,4 +74,8 @@ class MockController extends IController with Publisher {
     def getBuildStatus: BuildStatus = ???
 
     def getCurrentDice: (Int, Int) = ???
+
+    override def toXml(): Elem = ???
+
+    override def saveGame(): Unit = ???
 }

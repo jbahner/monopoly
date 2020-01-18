@@ -5,6 +5,8 @@ import de.htwg.se.monopoly.model.playerComponent.playerBaseImpl.Player
 import de.htwg.se.monopoly.util.FieldIterator
 import play.api.libs.json.JsValue
 
+import scala.xml.Elem
+
 trait IPlayer {
     this: Player =>
 
@@ -31,4 +33,8 @@ trait IPlayer {
     def getCurrentField: Field
 
     override def getFieldIt: FieldIterator
+
+    def toXml(): Elem
+
+    def nameToXml(): Elem
 }

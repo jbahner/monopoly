@@ -9,6 +9,7 @@ import de.htwg.se.monopoly.util.UndoManager
 import play.api.libs.json.JsValue
 
 import scala.swing.Publisher
+import scala.xml.Elem
 
 trait IController extends Publisher {
 
@@ -69,4 +70,8 @@ trait IController extends Publisher {
     def getBuildStatus: BuildStatus
 
     def getCurrentDice: (Int, Int)
+
+    def toXml(): Elem
+
+    def saveGame()
 }

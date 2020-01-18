@@ -57,7 +57,7 @@ class Gui(controller: IController) extends Frame with IUi {
                     print("Not implemented yet")
                 })
                 contents += new MenuItem(Action("Save") {
-                    print("Not implemented yet")
+                    controller.saveGame()
                 })
                 contents += new MenuItem(Action("Exit") {
                     closeOperation()

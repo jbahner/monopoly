@@ -2,6 +2,8 @@ package de.htwg.se.monopoly.model.boardComponent
 
 import play.api.libs.json.JsObject
 
+import scala.xml.Elem
+
 trait IStreet extends IBuyable {
 
     def buyHouses(amount: Int): IStreet
@@ -28,4 +30,9 @@ trait IStreet extends IBuyable {
     def getNumHouses: Int
 
     def getIsBought: Boolean
+
+    def toXml(): Elem
+
+    def nameToXml(): Elem
+
 }

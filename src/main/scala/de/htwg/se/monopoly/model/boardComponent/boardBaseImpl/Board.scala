@@ -4,6 +4,8 @@ import de.htwg.se.monopoly.model.boardComponent.{Field, IBoard, IBuyable}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.PlayerIterator
 
+import scala.xml.Elem
+
 case class Board (fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator) extends IBoard {
 
     override def nextPlayer(): IPlayer = playerIt.next()
@@ -45,4 +47,14 @@ case class Board (fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerI
 
     def getPlayerIt: PlayerIterator = playerIt
 
+    def toXml(): Elem = {
+        <board>
+            <fields>{for {
+                field <- fields
+            } yield field.toXml()}</fields>
+            <current-player>{currentPlayer.nameToXml()}</current-player>
+            <player-iterator>{playerIt.toXml()}</player-iterator>
+        </board>
+
+    }
 }

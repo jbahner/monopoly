@@ -7,15 +7,19 @@ import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
 import de.htwg.se.monopoly.controller.{GameStatus => _, _}
 import de.htwg.se.monopoly.model.boardComponent.{Field, IBoard, IBuyable, IStreet}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
+import de.htwg.se.monopoly.util.fileIo.IFileIo
 import de.htwg.se.monopoly.util.{GeneralUtil, RentContext, UndoManager}
 import play.api.libs.json.{JsValue, Json}
 
 import scala.swing.Publisher
 import scala.swing.event.Event
+import scala.xml.Elem
 
 class Controller extends IController with Publisher {
 
     val injector: Injector = Guice.createInjector(new MonopolyModule)
+
+    private val fileIo = injector.getInstance(classOf[IFileIo])
 
     RentContext.controller = this
     val undoManager = new UndoManager
@@ -23,7 +27,7 @@ class Controller extends IController with Publisher {
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
 
     var board: IBoard = _
-    var currentDice: (Int, Int) = _
+    var currentDice: (Int, Int) = (0, 0)
     var currentGameMessage: String = _
 
     def setUp: Unit = {
@@ -135,13 +139,13 @@ class Controller extends IController with Publisher {
             case BOUGHT_BY_OTHER =>
                 val field = getCurrentField.asInstanceOf[IBuyable]
                 currentGameMessage += infoString("Field already bought by " + getBuyer(field).get.getName + ".\n" +
-                    "You must pay " + RentContext.rentStrategy.executeStrategy(field) + " rent!\n")
+                  "You must pay " + RentContext.rentStrategy.executeStrategy(field) + " rent!\n")
                 currentGameMessage
             case CAN_BUILD =>
                 buildStatus match {
                     case BuildStatus.DEFAULT => val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer.get)
                         currentGameMessage += userInputString("You can build on: \n" + buildablesToString(wholeGroups) +
-                            "\nType the name of the street and the amount of houses you want to build. Press \"q\" to quit, \"u\" to undo or \"re\" to redo.\n")
+                          "\nType the name of the street and the amount of houses you want to build. Press \"q\" to quit, \"u\" to undo or \"re\" to redo.\n")
                         currentGameMessage
                     case BuildStatus.BUILT => currentGameMessage = infoString("Successfully built!\n")
                         currentGameMessage
@@ -195,8 +199,8 @@ class Controller extends IController with Publisher {
             set.foreach {
                 street =>
                     sb.append(street)
-                        .append(" (" + getFieldByName(street).get.asInstanceOf[IStreet].getHouseCost + "€)")
-                        .append("   ")
+                      .append(" (" + getFieldByName(street).get.asInstanceOf[IStreet].getHouseCost + "€)")
+                      .append("   ")
             }
             sb.append("\n")
         })
@@ -226,6 +230,38 @@ class Controller extends IController with Publisher {
     }
 
     def getBoard: IBoard = board
+
+    def unstyleString(input: String): String = {
+        input.replaceAll("\\[..", "")
+    }
+
+    def saveGame() = {
+        fileIo.save(this)
+    }
+
+    def toXml(): Elem = {
+        //left out classes:
+        //  injector,
+        //  RentContext
+        //  UndoManager
+        <controller>
+            <game-status>
+                {controllerState}
+            </game-status>
+            <build-status>
+                {buildStatus}
+            </build-status>
+            <board>
+                {board.toXml()}
+            </board>
+            <current-dice>
+                {currentDice._1 + "," + currentDice._2}
+            </current-dice>
+            <current-game-message>
+                {unstyleString(currentGameMessage)}
+            </current-game-message>
+        </controller>
+    }
 }
 
 class UpdateInfo extends Event

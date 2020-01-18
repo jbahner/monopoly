@@ -1,5 +1,7 @@
 package de.htwg.se.monopoly.model.boardComponent
 
+import scala.xml.Elem
+
 
 trait IBuilding extends IBuyable {
 
@@ -10,4 +12,9 @@ trait IBuilding extends IBuyable {
     def copy(name: String = IBuilding.this.getName, price: Int = IBuilding.this.getPrice, isBought: Boolean = IBuilding.this.getIsBought): IBuilding
 
     def getIsBought: Boolean
+
+    def toXml(): Elem
+
+    def nameToXml(): Elem
+
 }

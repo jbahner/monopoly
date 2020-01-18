@@ -2,6 +2,8 @@ package de.htwg.se.monopoly.util
 
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 
+import scala.xml.Elem
+
 case class PlayerIterator(players: Array[IPlayer], startIdx: Int = 0) extends Iterator[IPlayer] {
     private var current = startIdx
 
@@ -31,4 +33,13 @@ case class PlayerIterator(players: Array[IPlayer], startIdx: Int = 0) extends It
     def currentIdx = current
 
     def copy = new PlayerIterator(players = players.clone(), startIdx = current)
+
+    def toXml(): Elem = {
+        <player-iterator>
+            <players>
+                {for { player <- players} yield player.toXml()}
+            </players>
+            <start-idx>{startIdx}</start-idx>
+        </player-iterator>
+    }
 }

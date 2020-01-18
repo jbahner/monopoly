@@ -4,6 +4,8 @@ import de.htwg.se.monopoly.controller.GameStatus.{ALREADY_BOUGHT, BOUGHT_BY_OTHE
 import de.htwg.se.monopoly.model.boardComponent.IBuilding
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 
+import scala.xml.Elem
+
 case class Building (name: String, price: Int, isBought: Boolean = false) extends IBuilding {
     def setBought(): IBuilding = this.copy(isBought = true)
 
@@ -23,4 +25,19 @@ case class Building (name: String, price: Int, isBought: Boolean = false) extend
     }
 
     def getPrice: Int = price
+
+    override def toXml(): Elem = {
+        <building>
+            <name>name</name>
+            <price>{price}</price>
+            <is-bought>{isBought}</is-bought>
+        </building>
+
+    }
+
+    override def nameToXml(): Elem = {
+        <building>
+            <name>name</name>
+        </building>
+    }
 }

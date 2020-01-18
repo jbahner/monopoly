@@ -5,6 +5,8 @@ import de.htwg.se.monopoly.model.boardComponent.IStreet
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import play.api.libs.json.{JsObject, Json}
 
+import scala.xml.Elem
+
 case class Street (name: String, price: Int, rentCosts: Array[Int], houseCost: Int, numHouses: Int = 0, isBought: Boolean = false) extends IStreet {
 
     def buyHouses(amount: Int): IStreet = {
@@ -36,5 +38,22 @@ case class Street (name: String, price: Int, rentCosts: Array[Int], houseCost: I
             else BOUGHT_BY_OTHER
         }
         else CAN_BUY
+    }
+
+    override def toXml(): Elem = {
+        <street>
+            <name>{name}</name>
+            <price>{price}</price>
+            <rent-cost>{rentCosts.map(cost => cost)}</rent-cost>
+            <house-cost>{houseCost}</house-cost>
+            <num-houses>{numHouses}</num-houses>
+            <is-bought>{isBought}</is-bought>
+        </street>
+    }
+
+    override def nameToXml(): Elem = {
+        <street>
+            <name>{name}</name>
+        </street>
     }
 }

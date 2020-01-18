@@ -3,6 +3,8 @@ package de.htwg.se.monopoly.model.boardComponent
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.PlayerIterator
 
+import scala.xml.Elem
+
 trait IBoard {
 
     def nextPlayer(): IPlayer
@@ -20,4 +22,6 @@ trait IBoard {
     def getCurrentPlayer: IPlayer
 
     def copy(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator): IBoard
+
+    def toXml(): Elem
 }
