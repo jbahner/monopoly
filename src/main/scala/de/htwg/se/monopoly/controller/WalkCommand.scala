@@ -28,6 +28,7 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
         controller.catCurrentGameMessage
 
         val newField = controller.getCurrentField
+        print("FIELD: " + newField.getName)
         // Action return ALREADY_BOUGHT, CAN_BUY or BOUGHT_BY_OTHER
         controller.controllerState = newField.action(newPlayer)
         controller.catCurrentGameMessage
@@ -39,10 +40,10 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
             case _ =>
         }
 
-        if (GeneralUtil.getWholeGroups(newPlayer) != Nil) {
+        /*if (GeneralUtil.getWholeGroups(newPlayer) != Nil) {
             controller.controllerState = CAN_BUILD
             controller.buildStatus = BuildStatus.DEFAULT
-        }
+        }*/
     }
 
     override def undoStep(): Unit = {

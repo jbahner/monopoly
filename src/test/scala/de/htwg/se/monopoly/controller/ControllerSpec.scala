@@ -1,5 +1,6 @@
 package de.htwg.se.monopoly.controller
 
+import de.htwg.se.monopoly
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus
 import de.htwg.se.monopoly.controller.controllerBaseImpl.Controller
 import de.htwg.se.monopoly.model.boardComponent.{IBuyable, boardBaseImpl}
@@ -169,7 +170,7 @@ class ControllerSpec extends WordSpec with Matchers {
         "state should be CAN_BUILD" in {
             //controller.processRoll(1, 2)
             controller.currentDice = (1, 2)
-            controller.getUndoManager.doStep(WalkCommand((1, 2), controller))
+            controller.getUndoManager.doStep(monopoly.controller.WalkCommand((1, 2), controller))
             controller.controllerState should be(GameStatus.CAN_BUILD)
         }
         "concat buildables to String" in {
@@ -273,7 +274,7 @@ class ControllerSpec extends WordSpec with Matchers {
         val controller: IController = new Controller
 
         "use the test setUp correctly" in {
-            controller.setUp
+            controller.setUp()
             controller.getBoard.getCurrentPlayer shouldBe a[IPlayer]
         }
     }

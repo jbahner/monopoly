@@ -12,7 +12,7 @@ object Monopoly {
     val injector: Injector = Guice.createInjector(new MonopolyModule)
 
     val controller: IController = injector.getInstance(classOf[IController])
-    controller.setUp
+    controller.setUp()
 
     val tui: IUi = new Tui(controller)
     val gui: IUi = new Gui(controller)

@@ -23,7 +23,7 @@ trait IController extends Publisher {
 
     def setBoard(board: IBoard): Unit
 
-    def setUp: Unit
+    def setUp(fieldField : String = "fields.json"): Unit
 
     def getBuyer(buyable: IBuyable): Option[IPlayer]
 

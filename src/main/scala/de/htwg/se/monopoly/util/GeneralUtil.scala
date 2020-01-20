@@ -8,12 +8,6 @@ import scala.swing.Color
 
 object GeneralUtil {
 
-    //TODO this needs to be somewhere else
-    val groupList: List[Set[String]] = List(
-        Set("Street1", "Street2", "Street3"),
-        Set("Street4", "Street5", "Street6"),
-        Set("Street7", "Street8", "Street9"))
-
     val standardColor: Color = new Color(242, 180, 114)
 
     val groupColors: Map[Int, Color] = Map(
@@ -26,6 +20,7 @@ object GeneralUtil {
         6 -> new Color(59, 186, 45),
         7 -> new Color(27, 116, 171)
     )
+    var groupList: List[Set[String]] = List()
 
     def hasWholeGroup(player: IPlayer, street: String): Boolean = {
         val group = groupList.find(g => g.contains(street)).get

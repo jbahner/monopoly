@@ -5,9 +5,9 @@ import java.util
 
 import de.htwg.se.monopoly.controller.controllerBaseImpl.{UpdateGui, UpdateInfo}
 import de.htwg.se.monopoly.controller.{GameStatus, IController}
-import de.htwg.se.monopoly.model.boardComponent.Field
-import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Building, Street}
 import de.htwg.se.monopoly.util.GeneralUtil
+import de.htwg.se.monopoly.model.boardComponent.{Field, IBuyable}
+import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Building, Buyable, Street}
 import javax.swing.{BorderFactory, ImageIcon}
 
 import scala.swing._
@@ -52,7 +52,7 @@ class Gui(controller: IController) extends Frame with IUi {
         new MenuBar {
             contents += new Menu("File") {
                 contents += new MenuItem(Action("New Game") {
-                    controller.setUp
+                    controller.setUp()
                 })
                 contents += new MenuItem(Action("Load") {
                     print("Not implemented yet")
@@ -97,6 +97,14 @@ class Gui(controller: IController) extends Frame with IUi {
                         case _: ButtonClicked => controller.nextPlayer
                     }
                 })
+            case GameStatus.CAN_BUY =>
+                buttonList.add(new Button("Yes") {
+                    reactions += {
+                        case _: ButtonClicked => controller.buy
+                    }
+                })
+                //buttonList.add
+                //}
             case _ =>
         }
 
@@ -219,8 +227,12 @@ class Gui(controller: IController) extends Frame with IUi {
                     case GameStatus.BuildStatus.BUILT => "  Sucessfully build house.  "
                     case _ => "  Un catched BuildStatus  "
                 }
-
-            case _ => "------ ERROR ------"
+            case GameStatus.CAN_BUY =>
+                "Do you want to buy " + controller.getCurrentField.getName + " for " + controller.getCurrentField.asInstanceOf[IBuyable].getPrice + " ?"
+            case GameStatus.BOUGHT => "Successfully bought " + controller.getCurrentField.getName
+            case GameStatus.DONE =>
+                controller.getCurrentPlayer.get.getName + " ended his turn"
+            case _ => controller.getCurrentGameMessage /*"------ ERROR ------" + controller.getControllerState*/
         }
     }
 

@@ -1,9 +1,10 @@
 package de.htwg.se.monopoly.controller.controllerBaseImpl
 
 import com.google.inject.{Guice, Injector}
-import de.htwg.se.monopoly.MonopolyModule
+import de.htwg.se.monopoly.{MonopolyModule}
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
+import de.htwg.se.monopoly.controller.{BuyCommand, SetupCommand, WalkCommand}
 import de.htwg.se.monopoly.controller.{GameStatus => _, _}
 import de.htwg.se.monopoly.model.boardComponent.{Field, IBoard, IBuyable, IStreet}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
@@ -30,8 +31,8 @@ class Controller extends IController with Publisher {
     var currentDice: (Int, Int) = (0, 0)
     var currentGameMessage: String = _
 
-    def setUp: Unit = {
-        undoManager.doStep(new SetupCommand(Set("Player1", "Player2"), this))
+    def setUp(fieldFile: String): Unit = {
+        undoManager.doStep(new SetupCommand(fieldFile, Set("Player1", "Player2"), this))
         controllerState = START_OF_TURN
         publish(new UpdateInfo)
     }
@@ -51,6 +52,15 @@ class Controller extends IController with Publisher {
         catCurrentGameMessage
         undoManager.doStep(WalkCommand(currentDice, this))
         publish(new UpdateInfo)
+        if (GeneralUtil.getWholeGroups(getCurrentPlayer.get) != Nil) {
+            controllerState = CAN_BUILD
+            buildStatus = BuildStatus.DEFAULT
+            publish(new UpdateInfo)
+        } else {
+            controllerState = DONE
+            publish(new UpdateInfo)
+        }
+
     }
 
     def nextPlayer: Unit = {
@@ -88,7 +98,7 @@ class Controller extends IController with Publisher {
             return
         }
         undoManager.doStep(BuyCommand(currentField.asInstanceOf[IBuyable], this))
-
+        publish(new UpdateInfo)
     }
 
     def getFieldByName(name: String): Option[Field] = {

@@ -24,7 +24,7 @@ class MockController extends IController with Publisher {
 
     def setBoard(board: IBoard): Unit = ???
 
-    def setUp: Unit = {
+    def setUp(fieldFile : String): Unit = {
         print("THIS IS A MOCK IMPLEMENTATION\n")
         throw new Exception("MOCK IMPLEMENTATION")
     }

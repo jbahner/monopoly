@@ -55,6 +55,7 @@ class Tui(controller: IController) extends Reactor with IUi {
                             controller.buildHouses(args(0), args(1).toInt)
                         }
                 }
+            case BOUGHT =>
             case DONE => controller.nextPlayer
 
         }

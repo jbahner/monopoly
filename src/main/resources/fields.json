@@ -1,0 +1,259 @@
+{
+  "numFields": 40,
+  "fields": [
+    {
+      "name": "Go",
+      "type": "ActionField"
+    },
+    {
+      "name": "Badstraße",
+      "type": "Street",
+      "group": 1,
+      "price": 60,
+      "rent": [2, 10, 30, 90, 160, 250],
+      "buildcost": 50
+    },
+    {
+      "name": "Gemeinschaftsfeld",
+      "type": "ActionField"
+    },
+    {
+      "name": "Turmstraße",
+      "type": "Street",
+      "group": 1,
+      "price": 60,
+      "rent": [4, 20, 60, 180, 320, 450],
+      "buildcost": 50
+    },
+    {
+      "name": "Einkommenssteuer",
+      "type": "ActionField"
+    },
+    {
+      "name": "Südbahnhof",
+      "type": "Building",
+      "price": 200
+    },
+    {
+      "name": "Chausseestraße",
+      "type": "Street",
+      "group": 2,
+      "price": 100,
+      "rent": [6, 30, 90, 270, 400, 550],
+      "buildcost": 50
+    },
+    {
+      "name": "Ereignisfeld",
+      "type": "ActionField"
+    },
+    {
+      "name": "Elisenstraße",
+      "type": "Street",
+      "group": 2,
+      "price": 100,
+      "rent": [6, 30, 90, 270, 400, 550],
+      "buildcost": 50
+    },
+    {
+      "name": "Poststraße",
+      "type": "Street",
+      "group": 2,
+      "price": 120,
+      "rent": [8, 40, 100, 300, 450, 600],
+      "buildcost": 50
+    },
+    {
+      "name": "Gefängnis",
+      "type": "ActionField"
+    },
+    {
+      "name": "Seestraße",
+      "type": "Street",
+      "group": 3,
+      "price": 140,
+      "rent": [10, 50, 150, 450, 625, 750],
+      "buildcost": 100
+    },
+    {
+      "name": "Elektrizitätswerk",
+      "type": "Building",
+      "price": 150
+    },
+    {
+      "name": "Hafenstraße",
+      "type": "Street",
+      "group": 3,
+      "price": 140,
+      "rent": [10, 50, 150, 450, 625, 750],
+      "buildcost": 100
+    },
+    {
+      "name": "Neue Straße",
+      "type": "Street",
+      "group": 3,
+      "price": 160,
+      "rent": [12, 60, 180, 500, 700, 900],
+      "buildcost": 100
+    },
+    {
+      "name": "Westbahnhof",
+      "type": "Building",
+      "price": 200
+    },
+    {
+      "name": "Münchner Straße",
+      "type": "Street",
+      "group": 4,
+      "price": 180,
+      "rent": [14, 70, 200, 550, 750, 900],
+      "buildcost": 100
+    },
+    {
+      "name": "Ereignisfeld",
+      "type": "ActionField"
+    },
+    {
+      "name": "Wiener Straße",
+      "type": "Street",
+      "group": 4,
+      "price": 180,
+      "rent": [14, 70, 200, 550, 750, 900],
+      "buildcost": 100
+    },
+    {
+      "name": "Berliner Straße",
+      "type": "Street",
+      "group": 4,
+      "price": 200,
+      "rent": [16, 80, 220, 600, 800, 1000],
+      "buildcost": 100
+    },
+    {
+      "name": "Frei Parken",
+      "type": "ActionField"
+    },
+    {
+      "name": "Theaterstraße",
+      "type": "Street",
+      "group": 5,
+      "price": 220,
+      "rent": [18, 90, 250, 700, 875, 1050],
+      "buildcost": 150
+    },
+    {
+      "name": "Ereignisfeld",
+      "type": "ActionField"
+    },
+    {
+      "name": "Museumsstraße",
+      "type": "Street",
+      "group": 5,
+      "price": 220,
+      "rent": [18, 90, 250, 700, 875, 1050],
+      "buildcost": 150
+    },
+    {
+      "name": "Opernplatz",
+      "type": "Street",
+      "group": 5,
+      "price": 240,
+      "rent": [20, 100, 300, 750, 925, 1100],
+      "buildcost": 150
+    },
+    {
+      "name": "Nordbahnhof",
+      "type": "Building",
+      "price": 200
+    },
+    {
+      "name": "Lessingstraße",
+      "type": "Street",
+      "group": 6,
+      "price": 260,
+      "rent": [22, 110, 330, 800, 975, 1150],
+      "buildcost": 150
+    },
+    {
+      "name": "Schillerstraße",
+      "type": "Street",
+      "group": 6,
+      "price": 260,
+      "rent": [22, 110, 330, 800, 975, 1150],
+      "buildcost": 150
+    },
+    {
+      "name": "Wasserwerk",
+      "type": "Building",
+      "price": 150
+    },
+    {
+      "name": "Goethestraße",
+      "type": "Street",
+      "group": 6,
+      "price": 280,
+      "rent": [24, 120, 360, 850, 1025, 1200],
+      "buildcost": 150
+    },
+    {
+      "name": "Ins Gefängnis",
+      "type": "ActionField"
+    },
+    {
+      "name": "Rathausplatz",
+      "type": "Street",
+      "group": 7,
+      "price": 300,
+      "rent": [26, 130, 390, 900, 1100, 1275],
+      "buildcost": 200
+    },
+    {
+      "name": "Hauptstraße",
+      "type": "Street",
+      "group": 7,
+      "price": 300,
+      "rent": [26, 130, 390, 900, 1100, 1275],
+      "buildcost": 200
+    },
+    {
+      "name": "Gemeinschaftsfeld",
+      "type": "ActionField"
+    },
+    {
+      "name": "Bahnhofstraße",
+      "type": "Street",
+      "group": 7,
+      "price": 320,
+      "rent": [28, 150, 450, 1000, 1200, 1400],
+      "buildcost": 200
+    },
+    {
+      "name": "Hauptbahnhof",
+      "type": "Building",
+      "price": 200
+    },
+    {
+      "name": "Ereignisfeld",
+      "type": "ActionField"
+    },
+    {
+      "name": "Parkstraße",
+      "type": "Street",
+      "group": 8,
+      "price": 350,
+      "rent": [35, 175, 500, 1100, 1300, 1500],
+      "buildcost": 200
+    },
+    {
+      "name": "Zusatzsteuer",
+      "type": "ActionField"
+    },
+    {
+      "name": "Schlossallee",
+      "type": "Street",
+      "group": 8,
+      "price": 400,
+      "rent": [50, 200, 600, 1400, 1700, 2000],
+      "buildcost": 200
+    }
+  ]
+}

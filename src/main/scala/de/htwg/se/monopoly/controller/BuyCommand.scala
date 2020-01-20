@@ -23,7 +23,6 @@ case class BuyCommand(buyable: IBuyable, controller: IController) extends Comman
             .copy(controller.getBoard.getFields, newPlayer, controller.getBoard.getPlayerIt))
         controller.setBoard(controller.getBoard.replaceField(buyable, newField))
         controller.controllerState = BOUGHT
-        controller.publish(new UpdateInfo)
     }
 
     override def undoStep(): Unit = {
