@@ -7,6 +7,7 @@ import de.htwg.se.monopoly.controller.controllerBaseImpl.{UpdateGui, UpdateInfo}
 import de.htwg.se.monopoly.controller.{GameStatus, IController}
 import de.htwg.se.monopoly.model.boardComponent.Field
 import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Building, Street}
+import de.htwg.se.monopoly.util.GeneralUtil
 import javax.swing.{BorderFactory, ImageIcon}
 
 import scala.swing._
@@ -138,14 +139,14 @@ class Gui(controller: IController) extends Frame with IUi {
     }
 
     def generateCenterCurrentFieldDetails(): GridPanel = {
+        val curField: Field = controller.getCurrentField
+        val group = GeneralUtil.groupList.find(s => s.contains(curField.getName))
         new GridPanel(2, 1) {
-            val curField: Field = controller.getCurrentField
-
 
             contents += new GridPanel(7, 1) {
                 contents += new Label("Current Field") {
                     font = (new Font(font.getFontName, font.getStyle, 20))
-                    background = Color.CYAN
+                    background = if(group.isDefined) GeneralUtil.groupColors(GeneralUtil.groupList.indexOf(group.get)) else GeneralUtil.standardColor
                     opaque = true
                 }
 
@@ -191,7 +192,7 @@ class Gui(controller: IController) extends Frame with IUi {
         new GridPanel(7, 1) {
             contents += new Label("Game Info") {
                 font = (new Font(font.getFontName, font.getStyle, 20))
-                background = Color.CYAN
+                background = GeneralUtil.standardColor
                 opaque = true
             }
             currentMsg.foreach(cutMsg => this.contents += new Label(cutMsg))
@@ -214,7 +215,7 @@ class Gui(controller: IController) extends Frame with IUi {
             case GameStatus.START_OF_TURN => "  " + controller.getCurrentPlayer.get.getName + "'s turn.\nIt is your start of the turn!\nRoll the dice.  "
             case GameStatus.CAN_BUILD =>
                 controller.getBuildStatus match {
-                    case GameStatus.BuildStatus.DEFAULT => "  Your rolled a " + controller.getCurrentDice + ".\nYour new Field is " + controller.getCurrentField.getName + ".  "
+                    case GameStatus.BuildStatus.DEFAULT => "  Your rolled " + controller.getCurrentDice._1 + " and " + controller.getCurrentDice._2 + ".\nYour new Field is " + controller.getCurrentField.getName + ".  "
                     case GameStatus.BuildStatus.BUILT => "  Sucessfully build house.  "
                     case _ => "  Un catched BuildStatus  "
                 }
