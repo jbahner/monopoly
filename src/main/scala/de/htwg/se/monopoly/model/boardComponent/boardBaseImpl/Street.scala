@@ -15,7 +15,7 @@ case class Street(name: String, price: Int, rentCosts: Array[Int], houseCost: In
 
     def setBought(): IStreet = this.copy(isBought = true)
 
-    def getJSON: JsObject = Json.obj("name" -> name, "houses" -> numHouses)
+    def getJSON: JsObject = Json.obj("name" -> name, "houses" -> numHouses, "houseCost" -> houseCost)
 
     def getName: String = name
 
