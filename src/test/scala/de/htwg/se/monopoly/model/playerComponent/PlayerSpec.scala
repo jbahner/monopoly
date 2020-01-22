@@ -41,7 +41,7 @@ class PlayerSpec extends WordSpec with Matchers {
                 val player2 = player.copy(bought = Set(s1, s2))
                 val json = Json.parse(
                     """{ "name" : "name", "money" : 1500, "current_field" : "Go",
-                      |"bought_fields" : [ { "name" : "Street1", "houses" : 3}, { "name" : "Street2", "houses" : 4 } ]}""".stripMargin)
+                      |"bought_fields" : [ { "name" : "Street1", "houses" : 3, "houseCost": 25}, { "name" : "Street2", "houses" : 4, "houseCost" : 50 } ]}""".stripMargin)
                 player2.getJSON shouldEqual(json)
             }
 

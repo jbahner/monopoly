@@ -29,12 +29,12 @@ class StreetSpec extends WordSpec with Matchers {
             houseStreet.getNumHouses should be (3)
         }
         "have a JSON representation" in {
-            val json = Json.parse("""{ "name" : "streetName", "houses" : 0 }""")
+            val json = Json.parse("""{ "name" : "streetName", "houses" : 0, "houseCost" : 50 }""")
             street.getJSON shouldEqual(json)
         }
         "have a JSON representation with correct houses" in {
             val street2 = street.copy(isBought = true, numHouses = 3)
-            val json = Json.parse("""{ "name" : "streetName", "houses" : 3 }""")
+            val json = Json.parse("""{ "name" : "streetName", "houses" : 3, "houseCost" : 50 }""")
             street2.getJSON shouldEqual(json)
         }
         "get the correct action" should {
