@@ -5,18 +5,17 @@ import java.util
 
 import de.htwg.se.monopoly.controller.controllerBaseImpl.{CatGuiMessage, UpdateGui, UpdateInfo}
 import de.htwg.se.monopoly.controller.{GameStatus, IController}
-import de.htwg.se.monopoly.model.boardComponent.{Field, IBuyable}
 import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Building, Street}
+import de.htwg.se.monopoly.model.boardComponent.{Field, IBuyable}
 import de.htwg.se.monopoly.util.RentContext
 import javax.swing.{BorderFactory, ImageIcon}
-import play.api.libs.json.Json
 
 import scala.swing._
 import scala.swing.event._
 
 class Gui(controller: IController) extends Frame with IUi {
 
-    var bufferedMessage : String = ""
+    var bufferedMessage: String = ""
 
     val windowDimension = new Dimension(800, 400)
     val menuBarDimension = new Dimension(1000, 30)
@@ -54,7 +53,14 @@ class Gui(controller: IController) extends Frame with IUi {
                     controller.setUp
                 })
                 contents += new MenuItem(Action("Load") {
-                    controller.loadGame()
+                    import javax.swing.JFileChooser
+                    var chooser = new JFileChooser();
+                    chooser.setCurrentDirectory(new java.io.File("."));
+
+                    if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                        controller.loadGame(chooser.getSelectedFile.getAbsolutePath)
+                    }
+                    
                 })
                 contents += new MenuItem(Action("Save") {
                     controller.saveGame()
@@ -231,7 +237,7 @@ class Gui(controller: IController) extends Frame with IUi {
             case GameStatus.ROLLED =>
                 bufferedMessage = "  Rolled " + controller.getCurrentDice._1 + " and " + controller.getCurrentDice._2 + "  \n"
             case GameStatus.NEW_FIELD =>
-                bufferedMessage = bufferedMessage +  "  Your new Field is " + controller.getCurrentField.getName + ".  \n"
+                bufferedMessage = bufferedMessage + "  Your new Field is " + controller.getCurrentField.getName + ".  \n"
             case GameStatus.ALREADY_BOUGHT =>
                 bufferedMessage = bufferedMessage + "  You already own this street.  \n"
             case GameStatus.BOUGHT_BY_OTHER =>

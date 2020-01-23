@@ -79,7 +79,7 @@ class MockController extends IController with Publisher {
 
     override def saveGame(): Unit = ???
 
-    override def loadGame(): Unit = ???
+    override def loadGame(path: String): Unit = ???
 
     override def unstyleString(input: String): String = ???
 

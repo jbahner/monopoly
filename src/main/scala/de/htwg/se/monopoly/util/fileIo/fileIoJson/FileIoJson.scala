@@ -13,8 +13,8 @@ import play.api.libs.json.{JsValue, Json}
 import scala.io.Source
 
 class FileIoJson extends IFileIo{
-    override def load(): (IBoard, GameStatus, BuildStatus) = {
-        val source = Source.fromFile(getClass.getClassLoader.getResource("save-game.json").getPath)
+    override def load(path: String): (IBoard, GameStatus, BuildStatus) = {
+        val source = Source.fromFile(path.replace(".xml", ".json"))
         val json = Json.parse(source.getLines.mkString)
         source.close
         var fields = List[Field]()

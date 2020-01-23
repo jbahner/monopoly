@@ -14,8 +14,8 @@ import de.htwg.se.monopoly.util.fileIo.IFileIo
 import scala.xml.{Node, NodeSeq, PrettyPrinter}
 
 class FileIoXml extends IFileIo {
-    def load(): (IBoard, GameStatus, BuildStatus) = {
-        val file = scala.xml.XML.loadFile(getClass.getClassLoader.getResource("save-game.xml").getPath)
+    def load(path: String): (IBoard, GameStatus, BuildStatus) = {
+        val file = scala.xml.XML.loadFile(path.replace(".json", ".xml"))
         var fields = List[Field]()
         (file \ "board" \ "fields").head.child.foreach(f => {
             f.label match {

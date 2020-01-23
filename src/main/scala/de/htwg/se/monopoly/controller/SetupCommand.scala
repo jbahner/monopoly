@@ -7,7 +7,7 @@ import de.htwg.se.monopoly.util.{Command, FieldIterator, PlayerIterator}
 
 class SetupCommand(playerNames: Set[String], controller: IController) extends Command {
     override def doStep(): Unit = {
-        controller.loadGame()
+        controller.loadGame(getClass.getClassLoader.getResource("save-game.json").getPath)
     }
 
     override def undoStep(): Unit = controller.setBoard(null)

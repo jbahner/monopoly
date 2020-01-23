@@ -241,8 +241,8 @@ class Controller extends IController with Publisher {
         fileIo.save(this)
     }
 
-    def loadGame(): Unit = {
-        val (lBoard, lControllerState, lBuildStatus) = fileIo.load()
+    def loadGame(path: String = "save-game"): Unit = {
+        val (lBoard, lControllerState, lBuildStatus) = fileIo.load(path)
         board = lBoard
         controllerState = lControllerState
         buildStatus = lBuildStatus

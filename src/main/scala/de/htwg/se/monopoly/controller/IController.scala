@@ -79,5 +79,5 @@ trait IController extends Publisher {
 
     def saveGame()
 
-    def loadGame()
+    def loadGame(path: String = "save-game")
 }
