@@ -3,21 +3,20 @@ package de.htwg.se.monopoly.view
 import java.awt.Color
 import java.util
 
-import de.htwg.se.monopoly.controller.controllerBaseImpl.{UpdateGui, UpdateInfo}
+import de.htwg.se.monopoly.controller.controllerBaseImpl.{CatGuiMessage, UpdateGui, UpdateInfo}
 import de.htwg.se.monopoly.controller.{GameStatus, IController}
-import de.htwg.se.monopoly.model.boardComponent.Field
+import de.htwg.se.monopoly.model.boardComponent.{Field, IBuyable}
 import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{Building, Street}
+import de.htwg.se.monopoly.util.RentContext
 import javax.swing.{BorderFactory, ImageIcon}
+import play.api.libs.json.Json
 
 import scala.swing._
 import scala.swing.event._
 
 class Gui(controller: IController) extends Frame with IUi {
 
-    //TODO
-    // - show how much houses are on which street
-    // - wrap text output in own labels per line to make mupltiple lines in gui passible
-    // - make auto setup an extra command -- set up game with custom player names and -count
+    var bufferedMessage : String = ""
 
     val windowDimension = new Dimension(800, 400)
     val menuBarDimension = new Dimension(1000, 30)
@@ -33,6 +32,7 @@ class Gui(controller: IController) extends Frame with IUi {
     reactions += {
         case event: UpdateInfo => redraw()
         case event: UpdateGui => redraw()
+        case event: CatGuiMessage => catMessage()
     }
 
     def redraw(): Unit = {
@@ -54,7 +54,7 @@ class Gui(controller: IController) extends Frame with IUi {
                     controller.setUp
                 })
                 contents += new MenuItem(Action("Load") {
-                    print("Not implemented yet")
+                    controller.loadGame()
                 })
                 contents += new MenuItem(Action("Save") {
                     controller.saveGame()
@@ -79,8 +79,6 @@ class Gui(controller: IController) extends Frame with IUi {
 
     def redrawButtons(): FlowPanel = {
         // Customizing the buttons
-        //TODO check which buttons need to be added
-
         val buttonList = new util.ArrayList[Button]()
 
         controller.getControllerState match {
@@ -210,16 +208,38 @@ class Gui(controller: IController) extends Frame with IUi {
     }
 
     def getCurrentGameMessage(): String = {
+        var msg = ""
         controller.getControllerState match {
-            case GameStatus.START_OF_TURN => "  " + controller.getCurrentPlayer.get.getName + "'s turn.\nIt is your start of the turn!\nRoll the dice.  "
+            case GameStatus.START_OF_TURN =>
+                msg = "  " + controller.getCurrentPlayer.get.getName + "'s turn.\nIt is your start of the turn!\nRoll the dice.  "
+                bufferedMessage = ""
             case GameStatus.CAN_BUILD =>
                 controller.getBuildStatus match {
-                    case GameStatus.BuildStatus.DEFAULT => "  Your rolled a " + controller.getCurrentDice + ".\nYour new Field is " + controller.getCurrentField.getName + ".  "
-                    case GameStatus.BuildStatus.BUILT => "  Sucessfully build house.  "
-                    case _ => "  Un catched BuildStatus  "
+                    case GameStatus.BuildStatus.DEFAULT => msg = bufferedMessage
+                    case GameStatus.BuildStatus.BUILT => msg = "  Successfully built house.  "
+                    case _ => msg = "  Uncaught BuildStatus  " + controller.getControllerState
                 }
+            case GameStatus.BOUGHT_BY_OTHER =>
+            case _ => "------ ERROR ------: " + controller.getControllerState
+        }
 
-            case _ => "------ ERROR ------"
+        msg
+    }
+
+    def catMessage(): Unit = {
+        controller.getControllerState match {
+            case GameStatus.ROLLED =>
+                bufferedMessage = "  Rolled " + controller.getCurrentDice._1 + " and " + controller.getCurrentDice._2 + "  \n"
+            case GameStatus.NEW_FIELD =>
+                bufferedMessage = bufferedMessage +  "  Your new Field is " + controller.getCurrentField.getName + ".  \n"
+            case GameStatus.ALREADY_BOUGHT =>
+                bufferedMessage = bufferedMessage + "  You already own this street.  \n"
+            case GameStatus.BOUGHT_BY_OTHER =>
+                val curField = controller.getCurrentField.asInstanceOf[IBuyable]
+                bufferedMessage = bufferedMessage + "  Field already bought by " + controller.getBuyer(curField).get.getName + "\nYou must pay " + RentContext.rentStrategy.executeStrategy(curField) + "€ rent  "
+            case GameStatus.PASSED_GO =>
+                bufferedMessage = bufferedMessage + "  Earned 200€ for passing Go.  \n"
+            case GameStatus.NOTHING =>
         }
     }
 

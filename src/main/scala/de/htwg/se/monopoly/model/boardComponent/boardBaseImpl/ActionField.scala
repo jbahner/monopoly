@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import de.htwg.se.monopoly.controller.GameStatus.{GameStatus, NOTHING}
 import de.htwg.se.monopoly.model.boardComponent.IActionField
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
+import play.api.libs.json.{JsObject, Json}
 
 import scala.xml.Elem
 
@@ -27,8 +28,18 @@ case class ActionField @Inject()(name: String) extends IActionField {
                 {name}
             </name>
         </action-field>
+    }
 
+    override def toJson(): JsObject = {
+        Json.obj(
+            "field" -> Json.obj(
+                "type" -> "action-field",
+                "name" -> name
+            )
+        )
     }
 
     override def nameToXml(): Elem = toXml()
+
+    override def nameToJson(): JsObject = toJson()
 }

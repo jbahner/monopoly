@@ -1,11 +1,12 @@
 package de.htwg.se.monopoly.util
 
 import de.htwg.se.monopoly.model.boardComponent.Field
+import play.api.libs.json.{JsObject, Json}
 
 import scala.xml.Elem
 
 case class FieldIterator(fields: List[Field]) extends Iterator[Field] {
-    private var current = 0
+    var current = 0
 
     override def next(): Field = {
         current += 1
@@ -24,10 +25,13 @@ case class FieldIterator(fields: List[Field]) extends Iterator[Field] {
 
     def toXml(): Elem = {
         <field-iterator>
-            <fields>
-                {for { field <- fields} yield field.nameToXml()}
-            </fields>
             <current-idx>{current}</current-idx>
         </field-iterator>
+    }
+
+    def toJson(): JsObject = {
+        Json.obj(
+            "current-idx" -> current
+        )
     }
 }

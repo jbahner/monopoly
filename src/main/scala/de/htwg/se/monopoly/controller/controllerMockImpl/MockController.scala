@@ -8,7 +8,7 @@ import de.htwg.se.monopoly.controller.IController
 import de.htwg.se.monopoly.model.boardComponent.{Field, IBoard, IBuyable}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.UndoManager
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsObject, JsValue}
 
 import scala.swing.Publisher
 import scala.xml.Elem
@@ -78,4 +78,10 @@ class MockController extends IController with Publisher {
     override def toXml(): Elem = ???
 
     override def saveGame(): Unit = ???
+
+    override def loadGame(): Unit = ???
+
+    override def unstyleString(input: String): String = ???
+
+    override def toJson(): JsObject = ???
 }

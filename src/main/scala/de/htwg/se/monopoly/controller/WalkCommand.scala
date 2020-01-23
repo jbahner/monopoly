@@ -1,7 +1,7 @@
 package de.htwg.se.monopoly.controller
 
 import de.htwg.se.monopoly.controller.GameStatus._
-import de.htwg.se.monopoly.controller.controllerBaseImpl.UpdateInfo
+import de.htwg.se.monopoly.controller.controllerBaseImpl.{CatGuiMessage, UpdateInfo}
 import de.htwg.se.monopoly.model.boardComponent.{IBoard, IBuyable}
 import de.htwg.se.monopoly.util.{Command, GeneralUtil}
 
@@ -14,23 +14,26 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
     override def doStep(): Unit = {
         controller.controllerState = ROLLED
         controller.catCurrentGameMessage
-        println("DICE: " + dice)
+        controller.publish(new CatGuiMessage)
         val player = controller.getBoard.getCurrentPlayer
         val (newPlayer, passedGo) = player.walk(dice._1 + dice._2)
 
         if (passedGo) {
             controller.controllerState = PASSED_GO
             controller.catCurrentGameMessage
+            controller.publish(new CatGuiMessage)
         }
 
         controller.setBoard(controller.getBoard.replacePlayer(player, newPlayer))
         controller.controllerState = NEW_FIELD
         controller.catCurrentGameMessage
+        controller.publish(new CatGuiMessage)
 
         val newField = controller.getCurrentField
         // Action return ALREADY_BOUGHT, CAN_BUY or BOUGHT_BY_OTHER
         controller.controllerState = newField.action(newPlayer)
         controller.catCurrentGameMessage
+        controller.publish(new CatGuiMessage)
 
         controller.controllerState match {
             case BOUGHT_BY_OTHER =>

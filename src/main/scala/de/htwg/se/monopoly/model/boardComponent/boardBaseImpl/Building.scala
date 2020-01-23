@@ -3,6 +3,7 @@ package de.htwg.se.monopoly.model.boardComponent.boardBaseImpl
 import de.htwg.se.monopoly.controller.GameStatus.{ALREADY_BOUGHT, BOUGHT_BY_OTHER, CAN_BUY, GameStatus}
 import de.htwg.se.monopoly.model.boardComponent.IBuilding
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
+import play.api.libs.json.{JsObject, Json, Writes}
 
 import scala.xml.Elem
 
@@ -39,5 +40,24 @@ case class Building (name: String, price: Int, isBought: Boolean = false) extend
         <building>
             <name>name</name>
         </building>
+    }
+
+    override def toJson(): JsObject = {
+        Json.obj(
+            "building" -> Json.obj(
+                "name" -> name,
+                "price" -> price,
+                "is-bought" -> isBought
+            )
+        )
+    }
+
+    override def nameToJson(): JsObject = {
+        Json.obj(
+            "field" -> Json.obj(
+                "type" -> "building",
+                "name" -> name
+            )
+        )
     }
 }

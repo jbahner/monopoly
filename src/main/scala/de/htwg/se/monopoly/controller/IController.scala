@@ -6,7 +6,7 @@ import de.htwg.se.monopoly.controller.GameStatus.GameStatus
 import de.htwg.se.monopoly.model.boardComponent.{Field, IBoard, IBuyable}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.UndoManager
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsObject, JsValue}
 
 import scala.swing.Publisher
 import scala.xml.Elem
@@ -71,7 +71,13 @@ trait IController extends Publisher {
 
     def getCurrentDice: (Int, Int)
 
+    def unstyleString(input: String): String
+
     def toXml(): Elem
 
+    def toJson(): JsObject
+
     def saveGame()
+
+    def loadGame()
 }

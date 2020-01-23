@@ -7,9 +7,10 @@ import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, _}
 import de.htwg.se.monopoly.controller.{GameStatus => _, _}
 import de.htwg.se.monopoly.model.boardComponent.{Field, IBoard, IBuyable, IStreet}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
+import de.htwg.se.monopoly.model.playerComponent.playerBaseImpl.Player
 import de.htwg.se.monopoly.util.fileIo.IFileIo
 import de.htwg.se.monopoly.util.{GeneralUtil, RentContext, UndoManager}
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 
 import scala.swing.Publisher
 import scala.swing.event.Event
@@ -38,7 +39,8 @@ class Controller extends IController with Publisher {
 
     def getBuyer(buyable: IBuyable): Option[IPlayer] = {
         val players = board.getPlayerIt.list
-        players.find(p => p.getBought.contains(buyable))
+        val player = players.find(p => p.getBought.contains(buyable))
+        player
     }
 
     def setBoard(board: IBoard): Unit = {
@@ -76,7 +78,7 @@ class Controller extends IController with Publisher {
             board.replacePlayer(currentPlayer, currentPlayer.copy(money = currentPlayer.getMoney - payAmount))
             board.replacePlayer(receiver, receiver.copy(money = receiver.getMoney + payAmount))
         }
-        publish(new UpdateGui)
+        //publish(new UpdateGui)
     }
 
     def buy: Unit = {
@@ -239,6 +241,15 @@ class Controller extends IController with Publisher {
         fileIo.save(this)
     }
 
+    def loadGame(): Unit = {
+        val (lBoard, lControllerState, lBuildStatus) = fileIo.load()
+        board = lBoard
+        controllerState = lControllerState
+        buildStatus = lBuildStatus
+        currentGameMessage = ""
+        publish(new UpdateInfo)
+    }
+
     def toXml(): Elem = {
         //left out classes:
         //  injector,
@@ -251,9 +262,7 @@ class Controller extends IController with Publisher {
             <build-status>
                 {buildStatus}
             </build-status>
-            <board>
-                {board.toXml()}
-            </board>
+            {board.toXml()}
             <current-dice>
                 {currentDice._1 + "," + currentDice._2}
             </current-dice>
@@ -262,8 +271,22 @@ class Controller extends IController with Publisher {
             </current-game-message>
         </controller>
     }
+
+    def toJson(): JsObject = {
+        Json.obj(
+            "controller" -> Json.obj(
+                "game-status" -> controllerState,
+                "build-status" -> buildStatus,
+                "board" -> board.toJson(),
+                "current-dice" -> Json.toJson(currentDice._1 + "," + currentDice._2),
+                "current-game-message" -> unstyleString(currentGameMessage)
+            )
+        )
+    }
 }
 
 class UpdateInfo extends Event
 
 class UpdateGui extends Event
+
+class CatGuiMessage extends Event

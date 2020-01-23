@@ -2,6 +2,7 @@ package de.htwg.se.monopoly.model.boardComponent
 
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.PlayerIterator
+import play.api.libs.json.JsObject
 
 import scala.xml.Elem
 
@@ -24,4 +25,6 @@ trait IBoard {
     def copy(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator): IBoard
 
     def toXml(): Elem
+
+    def toJson(): JsObject
 }

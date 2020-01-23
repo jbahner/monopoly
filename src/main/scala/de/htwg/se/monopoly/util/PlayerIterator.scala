@@ -1,6 +1,7 @@
 package de.htwg.se.monopoly.util
 
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
+import play.api.libs.json.{JsObject, Json}
 
 import scala.xml.Elem
 
@@ -37,9 +38,19 @@ case class PlayerIterator(players: Array[IPlayer], startIdx: Int = 0) extends It
     def toXml(): Elem = {
         <player-iterator>
             <players>
-                {for { player <- players} yield player.toXml()}
+                {for {player <- players} yield player.toXml()}
             </players>
-            <start-idx>{startIdx}</start-idx>
+            <start-idx>
+                {startIdx}
+            </start-idx>
         </player-iterator>
+    }
+
+    def toJson(): JsObject = {
+        Json.obj(
+            "num-players" -> players.length,
+            "players" -> players.map(p => p.toJson()),
+            "start-idx" -> startIdx
+        )
     }
 }

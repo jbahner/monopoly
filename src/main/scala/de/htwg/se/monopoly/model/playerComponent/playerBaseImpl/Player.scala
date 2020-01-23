@@ -3,11 +3,11 @@ package de.htwg.se.monopoly.model.playerComponent.playerBaseImpl
 import de.htwg.se.monopoly.model.boardComponent.{Field, IBuyable, IStreet}
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.FieldIterator
-import play.api.libs.json.{JsNumber, JsValue, Json}
+import play.api.libs.json.{JsNumber, JsObject, JsValue, Json}
 
 import scala.xml.Elem
 
-case class Player (name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator) extends IPlayer {
+case class Player(name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator) extends IPlayer {
 
     override def walk(steps: Int): (IPlayer, Boolean) = {
         var passedGo = false
@@ -64,20 +64,34 @@ case class Player (name: String, money: Int, currentField: Field, bought: Set[IB
 
     override def toXml(): Elem = {
         <player>
-            <name>{name}</name>
-            <money>{money}</money>
-            <current-field>{currentField.nameToXml()}</current-field>
-            <bought>{ for {
+            <name>
+                {name}
+            </name>
+            <money>
+                {money}
+            </money>
+            <current-field>
+                {currentField.getName}
+            </current-field>
+            <bought>
+                {for {
                 boughtField <- bought
-            } yield boughtField.nameToXml()}</bought>
+            } yield boughtField.nameToXml()}
+            </bought>
             {fieldIt.toXml()}
         </player>
-
     }
 
-    override def nameToXml(): Elem = {
-        <player>
-        <name>{name}</name>
-        </player>
+    override def toJson(): JsObject = {
+        Json.obj(
+            "player" -> Json.obj(
+                "name" -> name,
+                "money" -> money,
+                "current-field" -> currentField.getName,
+                "num-bought" -> bought.size,
+                "bought" -> bought.map(f => f.nameToJson()),
+                "field-iterator" -> fieldIt.toJson()
+            )
+        )
     }
 }
