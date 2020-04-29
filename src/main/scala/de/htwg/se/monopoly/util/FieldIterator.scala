@@ -18,7 +18,7 @@ case class FieldIterator(fields: List[Field]) extends Iterator[Field] {
     override def hasNext: Boolean = {
         if (current >= fields.size)
             current = 0
-        fields(current) != null
+        fields.isDefinedAt(current)
     }
 
     def getCurrent: Field = {

@@ -10,7 +10,7 @@ class SetupCommand(playerNames: Set[String], controller: IController) extends Co
         controller.loadGame(getClass.getClassLoader.getResource("save-game.json").getPath)
     }
 
-    override def undoStep(): Unit = controller.setBoard(null)
+    override def undoStep(): Unit = controller.setBoard(_)
 
     override def redoStep(): Unit = doStep()
 }
