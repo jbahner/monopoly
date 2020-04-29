@@ -21,6 +21,18 @@ case class FieldIterator(fields: List[Field]) extends Iterator[Field] {
         fields(current) != null
     }
 
+    def getCurrent: Field = {
+        fields(current)
+    }
+
+    def walkOverFields(steps: Int): Boolean = {
+        var passedGo = false
+        for (_ <- 0 until steps) {
+            if (this.next().getName.equals("Go")) passedGo = true
+        }
+        passedGo
+    }
+
     def replace(field: Field, newField: Field) = this.copy(fields = fields.updated(fields.indexOf(field), newField))
 
     def toXml(): Elem = {
