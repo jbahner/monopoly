@@ -26,11 +26,11 @@ case class FieldIterator(fields: List[Field]) extends Iterator[Field] {
     }
 
     def walkOverFields(steps: Int): Boolean = {
-        var passedGo = false
-        for (_ <- 0 until steps) {
-            if (this.next().getName.equals("Go")) passedGo = true
+        val walkedOverFields = new Array[Field](steps)
+        for (i <- 0 until steps) {
+            walkedOverFields(i) = this.next()
         }
-        passedGo
+        walkedOverFields.exists(_.getName.equals("Go"))
     }
 
     def replace(field: Field, newField: Field) = this.copy(fields = fields.updated(fields.indexOf(field), newField))
