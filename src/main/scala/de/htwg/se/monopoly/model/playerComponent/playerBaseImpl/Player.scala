@@ -10,14 +10,12 @@ import scala.xml.Elem
 case class Player(name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator) extends IPlayer {
 
     override def walk(steps: Int): (IPlayer, Boolean) = {
-        var passedGo = false
-        var field: Field = null
-        for (_ <- 0 until steps) {
-            field = fieldIt.next()
-            if (field.getName.equals("Go")) passedGo = true
-        }
-        (this.copy(money = money + (if (passedGo) 200 else 0), currentField = field), passedGo)
+        val passedGo = fieldIt.walkOverFields(steps)
+        (this.copy(money = money + (if (passedGo) 200 else 0), currentField = fieldIt.getCurrent), passedGo)
     }
+
+    def copy(name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator): Player =
+        Player(name, money, currentField, bought, fieldIt)
 
     override def toString: String = name + ", money: " + money
 
@@ -54,10 +52,6 @@ case class Player(name: String, money: Int, currentField: Field, bought: Set[IBu
 
     override def getName: String = name
 
-    def copy(name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator): Player =
-        Player(name, money, currentField, bought, fieldIt)
-
-
     override def getCurrentField: Field = currentField
 
     override def getFieldIt: FieldIterator = fieldIt
@@ -77,8 +71,7 @@ case class Player(name: String, money: Int, currentField: Field, bought: Set[IBu
                 {for {
                 boughtField <- bought
             } yield boughtField.nameToXml()}
-            </bought>
-            {fieldIt.toXml()}
+            </bought>{fieldIt.toXml()}
         </player>
     }
 

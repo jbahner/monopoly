@@ -11,6 +11,19 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
         controller.getBoard.getPlayerIt)
     private val backupGameString: String = controller.getCurrentGameMessage
 
+    override def undoStep(): Unit = {
+        controller.setBoard(backupBoard)
+        controller.controllerState = START_OF_TURN
+        controller.currentGameMessage = backupGameString
+        controller.updateCurrentPlayerInfo
+        controller.publish(new UpdateInfo)
+    }
+
+    override def redoStep(): Unit = {
+        doStep()
+        controller.publish(new UpdateInfo)
+    }
+
     override def doStep(): Unit = {
         controller.controllerState = ROLLED
         controller.catCurrentGameMessage
@@ -46,18 +59,5 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
             controller.controllerState = CAN_BUILD
             controller.buildStatus = BuildStatus.DEFAULT
         }
-    }
-
-    override def undoStep(): Unit = {
-        controller.setBoard(backupBoard)
-        controller.controllerState = START_OF_TURN
-        controller.currentGameMessage = backupGameString
-        controller.updateCurrentPlayerInfo
-        controller.publish(new UpdateInfo)
-    }
-
-    override def redoStep(): Unit = {
-        doStep()
-        controller.publish(new UpdateInfo)
     }
 }

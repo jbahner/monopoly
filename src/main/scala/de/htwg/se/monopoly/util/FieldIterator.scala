@@ -8,6 +8,18 @@ import scala.xml.Elem
 case class FieldIterator(fields: List[Field]) extends Iterator[Field] {
     var current = 0
 
+    def getCurrent: Field = {
+        fields(current)
+    }
+
+    def walkOverFields(steps: Int): Boolean = {
+        val walkedOverFields = new Array[Field](steps)
+        for (i <- 0 until steps) {
+            walkedOverFields(i) = this.next()
+        }
+        walkedOverFields.exists(_.getName.equals("Go"))
+    }
+
     override def next(): Field = {
         current += 1
         if (!hasNext)
@@ -18,14 +30,16 @@ case class FieldIterator(fields: List[Field]) extends Iterator[Field] {
     override def hasNext: Boolean = {
         if (current >= fields.size)
             current = 0
-        fields(current) != null
+        fields.isDefinedAt(current)
     }
 
     def replace(field: Field, newField: Field) = this.copy(fields = fields.updated(fields.indexOf(field), newField))
 
     def toXml(): Elem = {
         <field-iterator>
-            <current-idx>{current}</current-idx>
+            <current-idx>
+                {current}
+            </current-idx>
         </field-iterator>
     }
 

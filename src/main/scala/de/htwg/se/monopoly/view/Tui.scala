@@ -48,7 +48,7 @@ class Tui(controller: IController) extends Reactor with IUi {
                         val args = other.split("_")
                         if (args.length != 2) {
                             userInput("Invalid argument for street or amount of houses!\n" +
-                                "<street name>_<amount of houses>")
+                              "<street name>_<amount of houses>")
                             controller.buildStatus = GameStatus.BuildStatus.INVALID_ARGS
                         }
                         else {
@@ -64,6 +64,14 @@ class Tui(controller: IController) extends Reactor with IUi {
         case event: UpdateInfo => info(controller.catCurrentGameMessage)
     }
 
+    def userInput(message: String): Unit = {
+        Console.println(Console.BOLD + Console.YELLOW + message + Console.RESET)
+    }
+
+    def error(message: String): Unit = {
+        Console.println(Console.BOLD + Console.RED + message + Console.RESET)
+    }
+
     def turn(message: String): Unit = {
         Console.println(Console.BOLD + Console.UNDERLINED + Console.GREEN + message + Console.RESET)
     }
@@ -74,13 +82,5 @@ class Tui(controller: IController) extends Reactor with IUi {
 
     def info(message: String): Unit = {
         Console.println(Console.BOLD + Console.BLUE + message + Console.RESET)
-    }
-
-    def userInput(message: String): Unit = {
-        Console.println(Console.BOLD + Console.YELLOW + message + Console.RESET)
-    }
-
-    def error(message: String): Unit = {
-        Console.println(Console.BOLD + Console.RED + message + Console.RESET)
     }
 }

@@ -3,23 +3,23 @@ package de.htwg.se.monopoly.util.fileIo.fileIoJson
 import de.htwg.se.monopoly.controller.GameStatus.BuildStatus.BuildStatus
 import de.htwg.se.monopoly.controller.GameStatus.{BuildStatus, GameStatus}
 import de.htwg.se.monopoly.controller.{GameStatus, IController}
+import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{ActionField, Board, Street}
 import de.htwg.se.monopoly.model.boardComponent.{Field, IBoard, IBuyable}
-import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl.{ActionField, Board, Buyable, Street}
 import de.htwg.se.monopoly.model.playerComponent.playerBaseImpl.Player
-import de.htwg.se.monopoly.util.{FieldIterator, PlayerIterator}
 import de.htwg.se.monopoly.util.fileIo.IFileIo
-import play.api.libs.json.{JsValue, Json}
+import de.htwg.se.monopoly.util.{FieldIterator, PlayerIterator}
+import play.api.libs.json.Json
 
 import scala.io.Source
 
-class FileIoJson extends IFileIo{
+class FileIoJson extends IFileIo {
     override def load(path: String): (IBoard, GameStatus, BuildStatus) = {
         val source = Source.fromFile(path.replace(".xml", ".json"))
         val json = Json.parse(source.getLines.mkString)
         source.close
         var fields = List[Field]()
-        for (i <- 0 until (json \ "controller"\ "board" \ "num-fields").as[Int]) {
-            val f = ((json \ "controller" \ "board" \ "fields")(i) \ "field")
+        for (i <- 0 until (json \ "controller" \ "board" \ "num-fields").as[Int]) {
+            val f = ((json \ "controller" \ "board" \ "fields") (i) \ "field")
             (f \ "type").get.as[String] match {
                 case "action-field" =>
                     fields = fields :+ ActionField((f \ "name").get.as[String])
@@ -36,11 +36,11 @@ class FileIoJson extends IFileIo{
             }
         }
         var players = List[Player]()
-        for (i <- 0 until (json \ "controller"\ "board" \ "player-iterator" \ "num-players").as[Int]) {
-            val p = ((json \ "controller" \ "board" \ "player-iterator" \ "players")(i) \ "player")
+        for (i <- 0 until (json \ "controller" \ "board" \ "player-iterator" \ "num-players").as[Int]) {
+            val p = ((json \ "controller" \ "board" \ "player-iterator" \ "players") (i) \ "player")
             var bought = Set[IBuyable]()
-            for(j <- 0 until (p \ "num-bought").get.as[Int]) {
-                val s = ((p \ "bought")(j) \ "field")
+            for (j <- 0 until (p \ "num-bought").get.as[Int]) {
+                val s = ((p \ "bought") (j) \ "field")
                 bought = bought + fields.find(field => field.getName.equals((s \ "name").get.as[String])).get.asInstanceOf[IBuyable]
             }
             players = players :+ Player(
@@ -55,8 +55,8 @@ class FileIoJson extends IFileIo{
             fields,
             currentPlayer = players.find(p => p.name.equals((json \ "controller" \ "board" \ "current-player").get.as[String])).get,
             playerIt = PlayerIterator(players.toArray, (json \ "controller" \ "board" \ "player-iterator" \ "start-idx").get.as[Int])),
-            GameStatus.revMap((json \ "controller" \ "game-status").get.as[String]),
-            BuildStatus.revMap((json \ "controller" \ "build-status").get.as[String])
+          GameStatus.revMap((json \ "controller" \ "game-status").get.as[String]),
+          BuildStatus.revMap((json \ "controller" \ "build-status").get.as[String])
         )
     }
 

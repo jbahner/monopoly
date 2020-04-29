@@ -15,10 +15,9 @@ import scala.swing.event._
 
 class Gui(controller: IController) extends Frame with IUi {
 
-    var bufferedMessage: String = ""
-
     val windowDimension = new Dimension(800, 400)
     val menuBarDimension = new Dimension(1000, 30)
+    var bufferedMessage: String = ""
 
     listenTo(controller)
     title = "Monopoly+"
@@ -60,7 +59,7 @@ class Gui(controller: IController) extends Frame with IUi {
                     if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                         controller.loadGame(chooser.getSelectedFile.getAbsolutePath)
                     }
-                    
+
                 })
                 contents += new MenuItem(Action("Save") {
                     controller.saveGame()
@@ -81,6 +80,10 @@ class Gui(controller: IController) extends Frame with IUi {
                 })
             }
         }
+    }
+
+    override def closeOperation(): Unit = {
+        sys.exit(0)
     }
 
     def redrawButtons(): FlowPanel = {
@@ -113,7 +116,7 @@ class Gui(controller: IController) extends Frame with IUi {
             case GameStatus.CAN_BUILD => new GridPanel(controller.getCurrentPlayer.get.getBought.size, 1) {
                 if (controller.getCurrentPlayer.isDefined)
                     controller.getCurrentPlayer.get.getBought.toSeq.sortBy(_.getName)
-                        .foreach(bought => contents += generateBuildButton(bought.getName))
+                      .foreach(bought => contents += generateBuildButton(bought.getName))
             }
             case _ => new GridPanel(1, 1)
         }
@@ -203,16 +206,6 @@ class Gui(controller: IController) extends Frame with IUi {
         }
     }
 
-    def generateLeftPanel(): GridPanel = {
-
-        new GridPanel(10, 1) {
-            contents += new Label("")
-            contents += new Label("  " + controller.getCurrentPlayer.get.getName + "    ")
-            contents += new Label(controller.getCurrentPlayer.get.getMoney + " €")
-            contents += new Label("")
-        }
-    }
-
     def getCurrentGameMessage(): String = {
         var msg = ""
         controller.getControllerState match {
@@ -232,6 +225,16 @@ class Gui(controller: IController) extends Frame with IUi {
         msg
     }
 
+    def generateLeftPanel(): GridPanel = {
+
+        new GridPanel(10, 1) {
+            contents += new Label("")
+            contents += new Label("  " + controller.getCurrentPlayer.get.getName + "    ")
+            contents += new Label(controller.getCurrentPlayer.get.getMoney + " €")
+            contents += new Label("")
+        }
+    }
+
     def catMessage(): Unit = {
         controller.getControllerState match {
             case GameStatus.ROLLED =>
@@ -247,10 +250,6 @@ class Gui(controller: IController) extends Frame with IUi {
                 bufferedMessage = bufferedMessage + "  Earned 200€ for passing Go.  \n"
             case GameStatus.NOTHING =>
         }
-    }
-
-    override def closeOperation(): Unit = {
-        sys.exit(0)
     }
 
     def processInput(input: String): Unit = ???

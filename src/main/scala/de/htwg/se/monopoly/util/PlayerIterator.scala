@@ -18,7 +18,7 @@ case class PlayerIterator(players: Array[IPlayer], startIdx: Int = 0) extends It
     override def hasNext: Boolean = {
         if (current >= players.length)
             current = 0
-        players(current) != null
+        players.isDefinedAt(current)
     }
 
     def replace(player: IPlayer, newPlayer: IPlayer): Unit = {

@@ -13,8 +13,8 @@ object GameStatus extends Enumeration {
 
     val revMap: Map[String, GameStatus] = Map[String, GameStatus](
 
-        "START_OF_TURN" ->START_OF_TURN,
-        "ROLLED" ->ROLLED,
+        "START_OF_TURN" -> START_OF_TURN,
+        "ROLLED" -> ROLLED,
         "NEW_FIELD" -> NEW_FIELD,
         "NEXT_PLAYER" -> NEXT_PLAYER,
         "BOUGHT_BY_OTHER" -> BOUGHT_BY_OTHER,

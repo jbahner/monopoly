@@ -9,13 +9,6 @@ case class BuildCommand(street: IStreet, amount: Int, controller: Controller) ex
     private val backupBoard: IBoard = controller.board.copy(controller.board.getFields, controller.board.getCurrentPlayer, controller.board.getPlayerIt)
     private val backupGameString: String = controller.currentGameMessage
 
-    override def doStep(): Unit = {
-        controller.board = controller.board.replaceField(field = street, newField = street.buyHouses(amount))
-        controller.board = controller.board.replacePlayer(controller.getCurrentPlayer.get,
-            controller.getCurrentPlayer.get.copy(money = controller.getCurrentPlayer.get.getMoney - street.getHouseCost * amount))
-        controller.buildStatus = BuildStatus.BUILT
-    }
-
     override def undoStep(): Unit = {
         controller.board = backupBoard
         //controller.currentGameMessageString = backupGameString
@@ -27,5 +20,12 @@ case class BuildCommand(street: IStreet, amount: Int, controller: Controller) ex
     override def redoStep(): Unit = {
         doStep()
         controller.publish(new UpdateInfo)
+    }
+
+    override def doStep(): Unit = {
+        controller.board = controller.board.replaceField(field = street, newField = street.buyHouses(amount))
+        controller.board = controller.board.replacePlayer(controller.getCurrentPlayer.get,
+            controller.getCurrentPlayer.get.copy(money = controller.getCurrentPlayer.get.getMoney - street.getHouseCost * amount))
+        controller.buildStatus = BuildStatus.BUILT
     }
 }

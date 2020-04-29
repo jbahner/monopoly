@@ -2,7 +2,7 @@ package de.htwg.se.monopoly.model.boardComponent
 
 import de.htwg.se.monopoly.controller.GameStatus.GameStatus
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
-import play.api.libs.json.{JsObject, Writes}
+import play.api.libs.json.JsObject
 
 import scala.xml.Elem
 

@@ -22,6 +22,8 @@ case class ActionField @Inject()(name: String) extends IActionField {
 
     def getPrice: Int = ???
 
+    override def nameToXml(): Elem = toXml()
+
     override def toXml(): Elem = {
         <action-field>
             <name>
@@ -29,6 +31,8 @@ case class ActionField @Inject()(name: String) extends IActionField {
             </name>
         </action-field>
     }
+
+    override def nameToJson(): JsObject = toJson()
 
     override def toJson(): JsObject = {
         Json.obj(
@@ -38,8 +42,4 @@ case class ActionField @Inject()(name: String) extends IActionField {
             )
         )
     }
-
-    override def nameToXml(): Elem = toXml()
-
-    override def nameToJson(): JsObject = toJson()
 }

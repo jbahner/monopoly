@@ -7,7 +7,8 @@ import de.htwg.se.monopoly.model.boardComponent.IBoard
 
 trait IFileIo {
 
-    def load(path:String): (IBoard, GameStatus, BuildStatus)
+    def load(path: String): (IBoard, GameStatus, BuildStatus)
+
     def save(controller: IController): Unit
 
 }
