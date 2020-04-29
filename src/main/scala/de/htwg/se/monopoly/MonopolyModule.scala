@@ -21,7 +21,7 @@ class MonopolyModule extends AbstractModule with ScalaModule {
         //bind[IController].to[MockController]
 
         bind[IPlayer].toInstance(Player("", 0, ActionField(""), Set(), FieldIterator(List())))
-        bind[IBoard].toInstance(Board(List(), null, PlayerIterator(Array())))
+        //bind[IBoard].toInstance(Board(List(), null, PlayerIterator(Array())))
         bind[IFileIo].to[FileIoXml]
         //bind[IFileIo].to[FileIoJson]
     }
