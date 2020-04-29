@@ -14,6 +14,9 @@ case class Player(name: String, money: Int, currentField: Field, bought: Set[IBu
         (this.copy(money = money + (if (passedGo) 200 else 0), currentField = fieldIt.getCurrent), passedGo)
     }
 
+    def copy(name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator): Player =
+        Player(name, money, currentField, bought, fieldIt)
+
     override def toString: String = name + ", money: " + money
 
     override def getDetails: String = "%-10s%d\n%-10s%s\n%-10s%s".format("money:", money, "bought:", listStreets, "field:", currentField.getName)
@@ -49,10 +52,6 @@ case class Player(name: String, money: Int, currentField: Field, bought: Set[IBu
 
     override def getName: String = name
 
-    def copy(name: String, money: Int, currentField: Field, bought: Set[IBuyable], fieldIt: FieldIterator): Player =
-        Player(name, money, currentField, bought, fieldIt)
-
-
     override def getCurrentField: Field = currentField
 
     override def getFieldIt: FieldIterator = fieldIt
@@ -72,8 +71,7 @@ case class Player(name: String, money: Int, currentField: Field, bought: Set[IBu
                 {for {
                 boughtField <- bought
             } yield boughtField.nameToXml()}
-            </bought>
-            {fieldIt.toXml()}
+            </bought>{fieldIt.toXml()}
         </player>
     }
 

@@ -3,7 +3,7 @@ package de.htwg.se.monopoly.model.boardComponent.boardBaseImpl
 import de.htwg.se.monopoly.controller.GameStatus.{ALREADY_BOUGHT, BOUGHT_BY_OTHER, CAN_BUY, GameStatus}
 import de.htwg.se.monopoly.model.boardComponent.IStreet
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
-import play.api.libs.json.{JsObject, Json, Writes}
+import play.api.libs.json.{JsObject, Json}
 
 import scala.xml.Elem
 
@@ -13,14 +13,14 @@ case class Street(name: String, price: Int, rentCosts: Array[Int], houseCost: In
         this.copy(numHouses = numHouses + amount)
     }
 
+    def copy(name: String, price: Int, rentCosts: Array[Int], houseCost: Int, numHouses: Int, isBought: Boolean): IStreet =
+        Street(name, price, rentCosts, houseCost, numHouses, isBought)
+
     def setBought(): IStreet = this.copy(isBought = true)
 
     def getJSON: JsObject = Json.obj("name" -> name, "houses" -> numHouses, "houseCost" -> houseCost)
 
     def getName: String = name
-
-    def copy(name: String, price: Int, rentCosts: Array[Int], houseCost: Int, numHouses: Int, isBought: Boolean): IStreet =
-        Street(name, price, rentCosts, houseCost, numHouses, isBought)
 
     def getPrice: Int = price
 

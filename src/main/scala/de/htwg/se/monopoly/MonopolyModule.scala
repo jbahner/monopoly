@@ -3,14 +3,12 @@ package de.htwg.se.monopoly
 import com.google.inject.AbstractModule
 import de.htwg.se.monopoly.controller.IController
 import de.htwg.se.monopoly.controller.controllerBaseImpl.Controller
-import de.htwg.se.monopoly.model.boardComponent._
 import de.htwg.se.monopoly.model.boardComponent.boardBaseImpl._
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.model.playerComponent.playerBaseImpl.Player
+import de.htwg.se.monopoly.util.FieldIterator
 import de.htwg.se.monopoly.util.fileIo.IFileIo
-import de.htwg.se.monopoly.util.fileIo.fileIoJson.FileIoJson
 import de.htwg.se.monopoly.util.fileIo.fileIoXml.FileIoXml
-import de.htwg.se.monopoly.util.{FieldIterator, PlayerIterator}
 import net.codingwell.scalaguice.ScalaModule
 
 class MonopolyModule extends AbstractModule with ScalaModule {

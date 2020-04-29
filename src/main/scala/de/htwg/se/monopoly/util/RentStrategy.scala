@@ -26,8 +26,6 @@ case class BuildingRentStrategy(controller: IController, building: IBuilding) ex
 }
 
 object RentContext {
-    var controller: IController = _
-
     lazy val rentStrategy: RentStrategy = {
         controller.getCurrentField match {
             case street: IStreet => StreetRentStrategy(controller, street)
@@ -35,4 +33,5 @@ object RentContext {
         }
 
     }
+    var controller: IController = _
 }

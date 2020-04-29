@@ -3,7 +3,7 @@ package de.htwg.se.monopoly.model.boardComponent.boardBaseImpl
 import de.htwg.se.monopoly.controller.GameStatus._
 import de.htwg.se.monopoly.model.boardComponent.IBuyable
 import de.htwg.se.monopoly.model.playerComponent.IPlayer
-import play.api.libs.json.{JsObject, Json, Writes}
+import play.api.libs.json.{JsObject, Json}
 
 import scala.xml.Elem
 
@@ -21,9 +21,15 @@ abstract class Buyable(name: String, price: Int, isBought: Boolean = false) exte
 
     override def toXml(): Elem = {
         <buyable>
-            <name>{name}</name>
-            <price>{price}</price>
-            <is-bought>{isBought}</is-bought>
+            <name>
+                {name}
+            </name>
+            <price>
+                {price}
+            </price>
+            <is-bought>
+                {isBought}
+            </is-bought>
         </buyable>
     }
 

@@ -9,20 +9,26 @@ import scala.xml.Elem
 
 case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator) extends IBoard {
 
-    override def nextPlayer(): IPlayer = playerIt.next()
-
     override def nextPlayerTurn(): IBoard = copy(getFields, nextPlayer(), getPlayerIt)
+
+    override def nextPlayer(): IPlayer = playerIt.next()
 
     override def replacePlayer(player: IPlayer, newPlayer: IPlayer): IBoard = {
         playerIt.replace(player, newPlayer)
         copy(getFields, currentPlayer = if (currentPlayer == player) newPlayer else currentPlayer, getPlayerIt)
     }
 
+    def getFields: List[Field] = fields
+
+    def copy(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator): IBoard = Board(fields, currentPlayer, playerIt)
+
+    def getPlayerIt: PlayerIterator = playerIt
+
     def replaceField(field: IBuyable, newField: IBuyable): IBoard = {
         val newPlayers = playerIt.list.map(p => {
             p.copy(fieldIt = p.getFieldIt.replace(field, newField),
-                currentField = if(p.getCurrentField == field) newField else p.getCurrentField,
-                bought = p.getBought.map(f => if(f == field) newField else f))
+                currentField = if (p.getCurrentField == field) newField else p.getCurrentField,
+                bought = p.getBought.map(f => if (f == field) newField else f))
         })
         copy(fields = fields.updated(fields.indexOf(field), newField), currentPlayer = newPlayers.find(p => p.getName == currentPlayer.getName).get,
             playerIt = new PlayerIterator(newPlayers.toArray, playerIt.currentIdx))
@@ -30,13 +36,7 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
 
     def getPlayerit: PlayerIterator = playerIt
 
-    def getFields: List[Field] = fields
-
     def getCurrentPlayer: IPlayer = currentPlayer
-
-    def copy(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator): IBoard = Board(fields, currentPlayer, playerIt)
-
-    def getPlayerIt: PlayerIterator = playerIt
 
     def toXml(): Elem = {
         <board>
