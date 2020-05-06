@@ -10,6 +10,7 @@ import de.htwg.se.monopoly.model.playerComponent.IPlayer
 import de.htwg.se.monopoly.util.fileIo.IFileIo
 import de.htwg.se.monopoly.util.{GeneralUtil, RentContext, UndoManager}
 import play.api.libs.json.{JsObject, JsValue, Json}
+import scala.reflect.runtime.universe._
 
 import scala.swing.Publisher
 import scala.swing.event.Event
@@ -111,13 +112,7 @@ class Controller extends IController with Publisher {
         val sb = new StringBuilder()
         buildables.foreach(set => {
             sb.append("\t")
-            set.foreach {
-                street =>
-                    sb.append(street)
-                      .append(" (" + getFieldByName(street).get.asInstanceOf[IStreet].getHouseCost + "€)")
-                      .append("   ")
-            }
-            sb.append("\n")
+            set.foreach(s => sb.append(s).append(" (").append(getFieldByName(s).get.asInstanceOf[IStreet].getHouseCost).append("€)\n"))
         })
         sb.toString()
     }
