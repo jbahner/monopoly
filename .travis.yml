@@ -3,6 +3,7 @@ scala:
   - 2.12.8
 
 script:
+  - pwd
   - sbt clean coverage test coverageReport
 
 after_success:
