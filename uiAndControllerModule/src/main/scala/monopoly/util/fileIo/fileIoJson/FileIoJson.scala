@@ -2,14 +2,14 @@ package monopoly.util.fileIo.fileIoJson
 
 import boardComponent.IBoard
 import boardComponent.boardBaseImpl.Board
-import playerModule.fieldComponent.fieldBaseImpl.{ActionField, Street}
-import playerModule.fieldComponent.{Field, IBuyable}
 import gamestate.GameStatus
 import gamestate.GameStatus.BuildStatus.BuildStatus
 import gamestate.GameStatus.{BuildStatus, GameStatus}
 import monopoly.controller.IController
 import monopoly.util.fileIo.IFileIo
 import play.api.libs.json.Json
+import playerModule.fieldComponent.fieldBaseImpl.{ActionField, Street}
+import playerModule.fieldComponent.{Field, IBuyable}
 import playerModule.playerComponent.playerBaseImpl.Player
 import playerModule.util.{FieldIterator, PlayerIterator}
 

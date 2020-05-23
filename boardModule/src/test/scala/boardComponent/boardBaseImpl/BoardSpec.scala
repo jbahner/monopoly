@@ -1,9 +1,9 @@
 package boardComponent.boardBaseImpl
 
 import boardComponent.IBoard
+import org.scalatest.{Matchers, WordSpec}
 import playerModule.fieldComponent.IBuyable
 import playerModule.fieldComponent.fieldBaseImpl.{ActionField, Street}
-import org.scalatest.{Matchers, WordSpec}
 import playerModule.playerComponent.playerBaseImpl.Player
 import playerModule.util.{FieldIterator, PlayerIterator}
 

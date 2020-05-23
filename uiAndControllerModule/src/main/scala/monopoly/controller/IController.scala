@@ -2,11 +2,11 @@ package monopoly.controller
 
 import boardComponent.IBoard
 import com.google.inject.Injector
-import playerModule.fieldComponent.{Field, IBuyable}
 import gamestate.GameStatus.BuildStatus.BuildStatus
 import gamestate.GameStatus._
 import monopoly.util.UndoManager
 import play.api.libs.json.{JsObject, JsValue}
+import playerModule.fieldComponent.{Field, IBuyable}
 import playerModule.playerComponent.IPlayer
 
 import scala.swing.Publisher

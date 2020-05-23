@@ -1,10 +1,10 @@
 package monopoly.controller
 
 import boardComponent.IBoard
-import playerModule.fieldComponent.IBuyable
 import gamestate.GameStatus._
 import monopoly.controller.controllerBaseImpl.{CatGuiMessage, UpdateInfo}
 import monopoly.util.{Command, GeneralUtil}
+import playerModule.fieldComponent.IBuyable
 
 
 case class WalkCommand(dice: (Int, Int), controller: IController) extends Command {

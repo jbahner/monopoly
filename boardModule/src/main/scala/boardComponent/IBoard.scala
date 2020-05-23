@@ -1,7 +1,7 @@
 package boardComponent
 
-import playerModule.fieldComponent.{Field, IBuyable}
 import play.api.libs.json.JsObject
+import playerModule.fieldComponent.{Field, IBuyable}
 import playerModule.playerComponent.IPlayer
 import playerModule.util.PlayerIterator
 

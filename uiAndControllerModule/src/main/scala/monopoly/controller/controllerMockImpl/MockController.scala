@@ -2,13 +2,13 @@ package monopoly.controller.controllerMockImpl
 
 import boardComponent.IBoard
 import com.google.inject.{Guice, Injector}
-import playerModule.fieldComponent.{Field, IBuyable}
 import gamestate.GameStatus.BuildStatus.BuildStatus
 import gamestate.GameStatus.GameStatus
 import monopoly.MonopolyModule
 import monopoly.controller.IController
 import monopoly.util.UndoManager
 import play.api.libs.json.{JsObject, JsValue}
+import playerModule.fieldComponent.{Field, IBuyable}
 import playerModule.playerComponent.IPlayer
 
 import scala.swing.Publisher

@@ -1,7 +1,7 @@
 package playerModule.playerComponent
 
-import playerModule.fieldComponent.{Field, IBuyable}
 import play.api.libs.json.{JsObject, JsValue}
+import playerModule.fieldComponent.{Field, IBuyable}
 import playerModule.playerComponent.playerBaseImpl.Player
 import playerModule.util.FieldIterator
 

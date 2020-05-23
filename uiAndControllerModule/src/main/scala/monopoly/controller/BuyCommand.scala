@@ -1,10 +1,10 @@
 package monopoly.controller
 
 import boardComponent.IBoard
-import playerModule.fieldComponent.{IBuilding, IBuyable, IStreet}
 import gamestate.GameStatus._
 import monopoly.controller.controllerBaseImpl.UpdateInfo
 import monopoly.util.Command
+import playerModule.fieldComponent.{IBuilding, IBuyable, IStreet}
 import playerModule.playerComponent.IPlayer
 
 

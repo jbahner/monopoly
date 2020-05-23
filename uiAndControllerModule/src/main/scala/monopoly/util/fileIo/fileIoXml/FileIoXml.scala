@@ -2,13 +2,13 @@ package monopoly.util.fileIo.fileIoXml
 
 import boardComponent.IBoard
 import boardComponent.boardBaseImpl.Board
-import playerModule.fieldComponent.fieldBaseImpl.{ActionField, Street}
-import playerModule.fieldComponent.{Field, IBuyable}
 import gamestate.GameStatus
 import gamestate.GameStatus.BuildStatus.BuildStatus
 import gamestate.GameStatus.GameStatus
 import monopoly.controller.IController
 import monopoly.util.fileIo.IFileIo
+import playerModule.fieldComponent.fieldBaseImpl.{ActionField, Street}
+import playerModule.fieldComponent.{Field, IBuyable}
 import playerModule.playerComponent.playerBaseImpl.Player
 import playerModule.util.{FieldIterator, PlayerIterator}
 

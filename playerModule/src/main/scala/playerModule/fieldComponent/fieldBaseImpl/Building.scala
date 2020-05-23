@@ -1,9 +1,9 @@
 package playerModule.fieldComponent.fieldBaseImpl
 
-import playerModule.fieldComponent.IBuilding
 import gamestate.GameStatus
 import gamestate.GameStatus.GameStatus
 import play.api.libs.json.{JsObject, Json}
+import playerModule.fieldComponent.IBuilding
 import playerModule.playerComponent.IPlayer
 
 import scala.xml.Elem

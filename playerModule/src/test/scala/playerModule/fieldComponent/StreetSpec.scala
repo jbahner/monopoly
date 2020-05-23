@@ -1,9 +1,9 @@
 package playerModule.fieldComponent
 
-import playerModule.fieldComponent.fieldBaseImpl.Street
 import gamestate.GameStatus
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
+import playerModule.fieldComponent.fieldBaseImpl.Street
 import playerModule.playerComponent.playerBaseImpl.Player
 import playerModule.util.FieldIterator
 

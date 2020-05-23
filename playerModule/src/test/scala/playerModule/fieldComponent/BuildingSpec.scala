@@ -1,8 +1,8 @@
 package playerModule.fieldComponent
 
-import playerModule.fieldComponent.fieldBaseImpl.Building
 import gamestate.GameStatus
 import org.scalatest.{Matchers, WordSpec}
+import playerModule.fieldComponent.fieldBaseImpl.Building
 import playerModule.playerComponent.playerBaseImpl.Player
 import playerModule.util.FieldIterator
 

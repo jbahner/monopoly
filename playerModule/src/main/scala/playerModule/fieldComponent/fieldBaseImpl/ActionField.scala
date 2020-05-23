@@ -1,10 +1,10 @@
 package playerModule.fieldComponent.fieldBaseImpl
 
 import com.google.inject.Inject
-import playerModule.fieldComponent.IActionField
 import gamestate.GameStatus
 import gamestate.GameStatus.GameStatus
 import play.api.libs.json.{JsObject, Json}
+import playerModule.fieldComponent.IActionField
 import playerModule.playerComponent.IPlayer
 
 import scala.xml.Elem

@@ -2,14 +2,14 @@ package monopoly.controller.controllerBaseImpl
 
 import boardComponent.IBoard
 import com.google.inject.{Guice, Injector}
-import playerModule.fieldComponent.{Field, IBuyable, IStreet}
 import gamestate.GameStatus.BuildStatus.BuildStatus
 import gamestate.GameStatus.{BuildStatus, GameStatus, _}
 import monopoly.MonopolyModule
-import monopoly.controller.{BuildCommand, BuyCommand, IController, SetupCommand, WalkCommand}
+import monopoly.controller._
 import monopoly.util.fileIo.IFileIo
 import monopoly.util.{GeneralUtil, RentContext, UndoManager}
 import play.api.libs.json.{JsObject, JsValue, Json}
+import playerModule.fieldComponent.{Field, IBuyable, IStreet}
 import playerModule.playerComponent.IPlayer
 
 import scala.swing.Publisher

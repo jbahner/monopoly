@@ -3,7 +3,7 @@ package monopoly
 import com.google.inject.{Guice, Injector}
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
-import view.{Gui, IUi, Tui}
+import monopoly.view.{Gui, IUi, Tui}
 
 import scala.io.StdIn.readLine
 

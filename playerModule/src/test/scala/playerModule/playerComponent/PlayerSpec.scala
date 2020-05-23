@@ -1,8 +1,8 @@
 package playerModule.playerComponent
 
-import playerModule.fieldComponent.fieldBaseImpl.{ActionField, Street}
 import org.scalatest._
 import play.api.libs.json.Json
+import playerModule.fieldComponent.fieldBaseImpl.{ActionField, Street}
 import playerModule.playerComponent.playerBaseImpl.Player
 import playerModule.util.FieldIterator
 
