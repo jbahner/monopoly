@@ -16,3 +16,5 @@ logs/
 project/.sbtserver
 .sbtserver/
 
+save-game.*
+

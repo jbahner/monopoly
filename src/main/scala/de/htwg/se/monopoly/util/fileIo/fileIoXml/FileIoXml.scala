@@ -9,11 +9,16 @@ import de.htwg.se.monopoly.model.playerComponent.playerBaseImpl.Player
 import de.htwg.se.monopoly.util.fileIo.IFileIo
 import de.htwg.se.monopoly.util.{FieldIterator, PlayerIterator}
 
+import scala.util.{Failure, Success, Try}
 import scala.xml.PrettyPrinter
 
 class FileIoXml extends IFileIo {
     def load(path: String): (IBoard, GameStatus, BuildStatus) = {
-        val file = scala.xml.XML.loadFile(path.replace(".json", ".xml"))
+        val f = Try(scala.xml.XML.loadFile(path.replace(".json", ".xml")))
+        val file = f match {
+            case Success(v) => v
+            case Failure(_) => scala.xml.XML.loadFile(getClass.getClassLoader.getResource("save-game.xml").getPath)
+        }
         var fields = List[Field]()
         (file \ "board" \ "fields").head.child.foreach(f => {
             f.label match {

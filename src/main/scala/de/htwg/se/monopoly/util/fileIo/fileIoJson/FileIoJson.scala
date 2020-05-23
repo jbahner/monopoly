@@ -11,10 +11,14 @@ import de.htwg.se.monopoly.util.{FieldIterator, PlayerIterator}
 import play.api.libs.json.Json
 
 import scala.io.Source
+import scala.util.{Failure, Success, Try}
 
 class FileIoJson extends IFileIo {
     override def load(path: String): (IBoard, GameStatus, BuildStatus) = {
-        val source = Source.fromFile(path.replace(".xml", ".json"))
+        val source = Try(Source.fromFile(path.replace(".xml", ".json"))) match {
+            case Success(value) => value
+            case Failure(_) => Source.fromFile(getClass.getClassLoader.getResource("save-game.json").getPath)
+        }
         val json = Json.parse(source.getLines.mkString)
         source.close
         var fields = List[Field]()

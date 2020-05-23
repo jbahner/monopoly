@@ -53,7 +53,7 @@ class Gui(controller: IController) extends Frame with IUi {
                 })
                 contents += new MenuItem(Action("Load") {
                     import javax.swing.JFileChooser
-                    var chooser = new JFileChooser();
+                    val chooser = new JFileChooser();
                     chooser.setCurrentDirectory(new java.io.File("."));
 
                     if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
