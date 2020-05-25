@@ -85,4 +85,6 @@ class MockController extends IController with Publisher {
     override def unstyleString(input: String): String = ???
 
     override def toJson(): JsObject = ???
+
+    override def shutdown(): Unit = ???
 }

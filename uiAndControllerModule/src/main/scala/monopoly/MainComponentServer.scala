@@ -4,15 +4,17 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import com.google.inject.{Guice, Injector}
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
 import monopoly.view.{Gui, IUi, Tui}
 
+import scala.concurrent.Future
 import scala.io.StdIn.readLine
 
-object Monopoly {
+object MainComponentServer {
 
     // Akka Inits
     implicit val system = ActorSystem("my-system")
@@ -55,6 +57,13 @@ object Monopoly {
         // Server Shutdown
         println("Server shutting down")
         controller.shutdown()
+    }
+
+    def requestNextPlayer(): Unit = {
+        val responseFuture: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = "http://localhost:8082/board/next-player"))
+        responseFuture.onComplete(
+            response => println(Unmarshal(response.get).to[String])
+        )
     }
 
 

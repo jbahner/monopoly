@@ -1,22 +1,29 @@
 package monopoly.controller.controllerBaseImpl
 
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 import boardComponent.IBoard
 import com.google.inject.{Guice, Injector}
+import model.fieldComponent.{Field, IBuyable, IStreet}
 import model.gamestate.GameStatus.BuildStatus.BuildStatus
 import model.gamestate.GameStatus.{BuildStatus, GameStatus, _}
-import monopoly.MonopolyModule
+import model.playerComponent.IPlayer
 import monopoly.controller._
 import monopoly.util.fileIo.IFileIo
 import monopoly.util.{GeneralUtil, RentContext, UndoManager}
+import monopoly.{MainComponentServer, MonopolyModule}
 import play.api.libs.json.{JsObject, JsValue, Json}
-import model.fieldComponent.{Field, IBuyable, IStreet}
-import model.playerComponent.IPlayer
 
 import scala.swing.Publisher
 import scala.swing.event.Event
 import scala.xml.Elem
 
 class Controller extends IController with Publisher {
+
+    implicit val system = ActorSystem("Controller-System-Actor")
+    implicit val materializer = ActorMaterializer()
+    // needed for the future flatMap/onComplete in the end
+    implicit val executionContext = system.dispatcher
 
     val injector: Injector = Guice.createInjector(new MonopolyModule)
     val undoManager = new UndoManager
@@ -118,9 +125,11 @@ class Controller extends IController with Publisher {
     }
 
     def nextPlayer: Unit = {
-        board = board.nextPlayerTurn()
-        updateCurrentPlayerInfo
-        publish(new UpdateInfo)
+        MainComponentServer.requestNextPlayer()
+
+//        board = board.nextPlayerTurn()
+//        updateCurrentPlayerInfo
+//        publish(new UpdateInfo)
     }
 
     def updateCurrentPlayerInfo: Unit = {

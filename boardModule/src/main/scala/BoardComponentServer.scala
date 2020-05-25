@@ -12,7 +12,7 @@ object BoardComponentServer {
     def main(args: Array[String]): Unit = {
 
         // Akka Inits
-        implicit val system = ActorSystem("my-system")
+        implicit val system = ActorSystem("Board-Component-System-Actor")
         implicit val materializer = ActorMaterializer()
 
 
@@ -23,15 +23,19 @@ object BoardComponentServer {
                     ContentTypes.`text/html(UTF-8)`,
                     "<html><body>Hello world!</body></html>"))
 
-            case HttpRequest(GET, Uri.Path("/ping"), _, _, _) =>
-                HttpResponse(entity = "PONG!")
+            case HttpRequest(GET, Uri.Path("/board/next-player"), _, _, _) => {
+                println("Route: /board/next-player hast been called!")
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    "Foo and some Bar"))
+            }
 
-            case HttpRequest(GET, Uri.Path("/crash"), _, _, _) =>
-                sys.error("BOOM!")
-
-            case r: HttpRequest =>
-                r.discardEntityBytes() // important to drain incoming HTTP Entity stream
-                HttpResponse(404, entity = "Unknown resource!")
+//            case HttpRequest(GET, Uri.Path("/crash"), _, _, _) =>
+//                sys.error("BOOM!")
+//
+//            case r: HttpRequest =>
+//                r.discardEntityBytes() // important to drain incoming HTTP Entity stream
+//                HttpResponse(404, entity = "Unknown resource!")
         }
 
         val bindingFuture = Http().bindAndHandleSync(requestHandler, "localhost", 8082)
