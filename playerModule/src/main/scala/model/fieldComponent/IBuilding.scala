@@ -1,4 +1,4 @@
-package playerModule.fieldComponent
+package model.fieldComponent
 
 import scala.xml.Elem
 

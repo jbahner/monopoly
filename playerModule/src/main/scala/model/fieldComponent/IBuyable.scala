@@ -1,7 +1,7 @@
-package playerModule.fieldComponent
+package model.fieldComponent
 
-import gamestate.GameStatus.GameStatus
-import playerModule.playerComponent.IPlayer
+import model.gamestate.GameStatus.GameStatus
+import model.playerComponent.IPlayer
 
 import scala.xml.Elem
 

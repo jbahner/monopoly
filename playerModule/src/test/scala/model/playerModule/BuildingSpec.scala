@@ -1,10 +1,10 @@
-package playerModule.fieldComponent
+package model.playerModule
 
-import gamestate.GameStatus
+import model.gamestate.GameStatus
 import org.scalatest.{Matchers, WordSpec}
-import playerModule.fieldComponent.fieldBaseImpl.Building
-import playerModule.playerComponent.playerBaseImpl.Player
-import playerModule.util.FieldIterator
+import model.fieldComponent.fieldBaseImpl.Building
+import model.playerComponent.playerBaseImpl.Player
+import model.util.FieldIterator
 
 class BuildingSpec extends WordSpec with Matchers {
     "A Building" when {

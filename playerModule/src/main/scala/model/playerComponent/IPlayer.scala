@@ -1,9 +1,9 @@
-package playerModule.playerComponent
+package model.playerComponent
 
 import play.api.libs.json.{JsObject, JsValue}
-import playerModule.fieldComponent.{Field, IBuyable}
-import playerModule.playerComponent.playerBaseImpl.Player
-import playerModule.util.FieldIterator
+import model.fieldComponent.{Field, IBuyable}
+import model.playerComponent.playerBaseImpl.Player
+import model.util.FieldIterator
 
 import scala.xml.Elem
 

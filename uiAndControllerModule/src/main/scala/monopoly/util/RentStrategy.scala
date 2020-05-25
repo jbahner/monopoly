@@ -1,7 +1,7 @@
 package monopoly.util
 
 import monopoly.controller.IController
-import playerModule.fieldComponent.{IBuilding, IBuyable, IStreet}
+import model.fieldComponent.{IBuilding, IBuyable, IStreet}
 
 trait RentStrategy {
     def executeStrategy(buyable: IBuyable): Int

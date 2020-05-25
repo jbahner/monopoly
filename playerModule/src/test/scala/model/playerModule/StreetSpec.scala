@@ -1,11 +1,11 @@
-package playerModule.fieldComponent
+package model.playerModule
 
-import gamestate.GameStatus
+import model.fieldComponent.fieldBaseImpl.Street
+import model.gamestate.GameStatus
+import model.playerComponent.playerBaseImpl.Player
+import model.util.FieldIterator
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import playerModule.fieldComponent.fieldBaseImpl.Street
-import playerModule.playerComponent.playerBaseImpl.Player
-import playerModule.util.FieldIterator
 
 class StreetSpec extends WordSpec with Matchers {
     "A Street" should {

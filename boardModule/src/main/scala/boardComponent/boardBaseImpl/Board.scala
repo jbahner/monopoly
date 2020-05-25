@@ -2,9 +2,9 @@ package boardComponent.boardBaseImpl
 
 import boardComponent.IBoard
 import play.api.libs.json.{JsObject, Json}
-import playerModule.fieldComponent.{Field, IBuyable}
-import playerModule.playerComponent.IPlayer
-import playerModule.util.PlayerIterator
+import model.fieldComponent.{Field, IBuyable}
+import model.playerComponent.IPlayer
+import model.util.PlayerIterator
 
 import scala.xml.Elem
 

@@ -1,10 +1,10 @@
-package playerModule.playerComponent
+package model.playerModule
 
 import org.scalatest._
 import play.api.libs.json.Json
-import playerModule.fieldComponent.fieldBaseImpl.{ActionField, Street}
-import playerModule.playerComponent.playerBaseImpl.Player
-import playerModule.util.FieldIterator
+import model.fieldComponent.fieldBaseImpl.{ActionField, Street}
+import model.playerComponent.playerBaseImpl.Player
+import model.util.FieldIterator
 
 class PlayerSpec extends WordSpec with Matchers {
     "A Player" when {

@@ -2,10 +2,10 @@ package boardComponent.boardBaseImpl
 
 import boardComponent.IBoard
 import org.scalatest.{Matchers, WordSpec}
-import playerModule.fieldComponent.IBuyable
-import playerModule.fieldComponent.fieldBaseImpl.{ActionField, Street}
-import playerModule.playerComponent.playerBaseImpl.Player
-import playerModule.util.{FieldIterator, PlayerIterator}
+import model.fieldComponent.IBuyable
+import model.fieldComponent.fieldBaseImpl.{ActionField, Street}
+import model.playerComponent.playerBaseImpl.Player
+import model.util.{FieldIterator, PlayerIterator}
 
 class BoardSpec extends WordSpec with Matchers {
     "A Board" should {

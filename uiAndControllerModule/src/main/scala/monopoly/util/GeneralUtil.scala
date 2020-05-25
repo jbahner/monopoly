@@ -1,6 +1,6 @@
 package monopoly.util
 
-import playerModule.playerComponent.IPlayer
+import model.playerComponent.IPlayer
 
 object GeneralUtil {
 

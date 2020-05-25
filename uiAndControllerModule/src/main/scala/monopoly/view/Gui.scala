@@ -3,13 +3,13 @@ package monopoly.view
 import java.awt.Color
 import java.util
 
-import gamestate.GameStatus
+import model.gamestate.GameStatus
 import javax.swing.{BorderFactory, ImageIcon}
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.{CatGuiMessage, UpdateGui, UpdateInfo}
 import monopoly.util.RentContext
-import playerModule.fieldComponent.fieldBaseImpl.{Building, Street}
-import playerModule.fieldComponent.{Field, IBuyable}
+import model.fieldComponent.fieldBaseImpl.{Building, Street}
+import model.fieldComponent.{Field, IBuyable}
 
 import scala.swing._
 import scala.swing.event._

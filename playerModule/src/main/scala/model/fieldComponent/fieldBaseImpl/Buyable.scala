@@ -1,10 +1,10 @@
-package playerModule.fieldComponent.fieldBaseImpl
+package model.fieldComponent.fieldBaseImpl
 
-import gamestate.GameStatus
-import gamestate.GameStatus.GameStatus
+import model.gamestate.GameStatus
+import model.gamestate.GameStatus.GameStatus
 import play.api.libs.json.{JsObject, Json}
-import playerModule.fieldComponent.IBuyable
-import playerModule.playerComponent.IPlayer
+import model.fieldComponent.IBuyable
+import model.playerComponent.IPlayer
 
 import scala.xml.Elem
 

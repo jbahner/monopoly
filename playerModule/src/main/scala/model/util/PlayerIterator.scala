@@ -1,7 +1,7 @@
-package playerModule.util
+package model.util
 
 import play.api.libs.json.{JsObject, Json}
-import playerModule.playerComponent.IPlayer
+import model.playerComponent.IPlayer
 
 import scala.xml.Elem
 

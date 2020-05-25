@@ -1,4 +1,4 @@
-package playerModule.fieldComponent
+package model.fieldComponent
 
 import play.api.libs.json.JsObject
 

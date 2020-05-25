@@ -1,17 +1,17 @@
 package monopoly.controller
 
 import boardComponent.boardBaseImpl.Board
-import gamestate.GameStatus
-import gamestate.GameStatus.BuildStatus
+import model.gamestate.GameStatus
+import model.gamestate.GameStatus.BuildStatus
 import monopoly.controller.controllerBaseImpl.Controller
 import monopoly.util.{GeneralUtil, RentContext}
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import playerModule.fieldComponent.IBuyable
-import playerModule.fieldComponent.fieldBaseImpl.{ActionField, Building, Street}
-import playerModule.playerComponent.IPlayer
-import playerModule.playerComponent.playerBaseImpl.Player
-import playerModule.util.{FieldIterator, PlayerIterator}
+import model.fieldComponent.IBuyable
+import model.fieldComponent.fieldBaseImpl.{ActionField, Building, Street}
+import model.playerComponent.IPlayer
+import model.playerComponent.playerBaseImpl.Player
+import model.util.{FieldIterator, PlayerIterator}
 
 
 class ControllerSpec extends WordSpec with Matchers {

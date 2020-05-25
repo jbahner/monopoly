@@ -1,7 +1,7 @@
-package playerModule.util
+package model.util
 
 import play.api.libs.json.{JsObject, Json}
-import playerModule.fieldComponent.Field
+import model.fieldComponent.Field
 
 import scala.xml.Elem
 
