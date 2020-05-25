@@ -2,15 +2,14 @@ package monopoly
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
-import akka.http.scaladsl.server.Directives.{complete, get, path}
+import akka.http.scaladsl.model.HttpMethods._
+import akka.http.scaladsl.model._
 import akka.stream.ActorMaterializer
 import com.google.inject.{Guice, Injector}
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
 import monopoly.view.{Gui, IUi, Tui}
 
-import scala.io.StdIn
 import scala.io.StdIn.readLine
 
 object Monopoly {
@@ -31,13 +30,18 @@ object Monopoly {
 
     def main(args: Array[String]): Unit = {
 
-        val route =
-            path("") {
-                get {
-                    complete(HttpEntity(ContentTypes.`text/plain(UTF-8)`, controller.getCurrentGameMessage))
-                }
-            }
-        val bindingFuture = Http().bindAndHandle(route, "localhost", 8081)
+        val requestHandler: HttpRequest => HttpResponse = {
+
+            case HttpRequest(GET, Uri.Path("/"), _, _, _) =>
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/html(UTF-8)`,
+                    "<html><body>Hello world!</body></html>"))
+
+            case HttpRequest(GET, Uri.Path("/ping"), _, _, _) =>
+                HttpResponse(entity = "PONG!")
+        }
+
+        val bindingFuture = Http().bindAndHandleSync(requestHandler, "localhost", 8081)
 
         controller.publish(new UpdateInfo)
 
@@ -50,7 +54,7 @@ object Monopoly {
 
         // Server Shutdown
         println("Server shutting down")
-        System.exit(0)
+        controller.shutdown()
     }
 
 

@@ -274,6 +274,11 @@ class Controller extends IController with Publisher {
     def unstyleString(input: String): String = {
         input.replaceAll("\\[..", "")
     }
+
+    def shutdown(): Unit = {
+        // TODO maybe shutdown other services too?
+        sys.exit(1)
+    }
 }
 
 class UpdateInfo extends Event

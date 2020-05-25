@@ -92,4 +92,8 @@ class Tui(controller: IController) extends Reactor with IUi {
     def info(message: String): Unit = {
         Console.println(Console.BOLD + Console.BLUE + message + Console.RESET)
     }
+
+    override def closeOperation(): Unit = {
+        controller.shutdown()
+    }
 }

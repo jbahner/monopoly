@@ -81,4 +81,6 @@ trait IController extends Publisher {
     def saveGame()
 
     def loadGame(path: String = "save-game")
+
+    def shutdown(): Unit
 }

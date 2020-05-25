@@ -84,7 +84,7 @@ class Gui(controller: IController) extends Frame with IUi {
     }
 
     override def closeOperation(): Unit = {
-        sys.exit(0)
+        controller.shutdown()
     }
 
     def redrawButtons(): FlowPanel = {
