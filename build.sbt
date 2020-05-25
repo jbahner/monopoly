@@ -81,8 +81,8 @@ lazy val mainModuleDependencies = Seq(
     "junit" % "junit" % "4.11" % Test,
     "com.novocode" % "junit-interface" % "0.11" % Test
       exclude("junit", "junit-dep"),
-"com.typesafe.akka" %% "akka-http" % "10.1.12",
-"com.typesafe.akka" %% "akka-stream" % "2.5.26" // or whatever the latest version is
+    "com.typesafe.akka" %% "akka-http" % "10.1.12",
+    "com.typesafe.akka" %% "akka-stream" % "2.5.26" // or whatever the latest version is
 )
 
 
