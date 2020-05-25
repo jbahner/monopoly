@@ -1,9 +1,13 @@
 package boardComponent.boardBaseImpl
 
 import boardComponent.IBoard
+import model.fieldComponent.fieldBaseImpl.{ActionField, Street}
 import play.api.libs.json.{JsObject, Json}
 import model.fieldComponent.{Field, IBuyable}
+import model.gamestate.GameStatus
+import model.gamestate.GameStatus.BuildStatus
 import model.playerComponent.IPlayer
+import model.playerComponent.playerBaseImpl.Player
 import model.util.PlayerIterator
 
 import scala.xml.Elem
@@ -59,5 +63,30 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
             "current-player" -> currentPlayer.getName,
             "player-iterator" -> playerIt.toJson()
         )
+    }
+}
+
+object Board {
+    def fromJson(json: JsObject) : Board = {
+        var fields = List[Field]()
+        for (i <- 0 until (json \ "controller" \ "board" \ "num-fields").as[Int]) {
+            val f = ((json \ "controller" \ "board" \ "fields") (i) \ "field").as[JsObject]
+            (f \ "type").get.as[String] match {
+                case "action-field" =>
+                    fields = fields :+ ActionField.fromJson(f)
+                case "street" =>
+                    fields = fields :+ Street.fromJson(f)
+                case _ =>
+            }
+        }
+        var players = List[Player]()
+        for (i <- 0 until (json \ "controller" \ "board" \ "player-iterator" \ "num-players").as[Int]) {
+            val p = ((json \ "controller" \ "board" \ "player-iterator" \ "players") (i) \ "player").as[JsObject]
+            players = players :+ Player.fromJson(p, fields)
+        }
+        Board(
+            fields,
+            currentPlayer = players.find(p => p.name.equals((json \ "controller" \ "board" \ "current-player").get.as[String])).get,
+            playerIt = PlayerIterator(players.toArray, (json \ "controller" \ "board" \ "player-iterator" \ "start-idx").get.as[Int]))
     }
 }

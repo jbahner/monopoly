@@ -44,3 +44,11 @@ case class ActionField @Inject()(name: String) extends IActionField {
         )
     }
 }
+
+object ActionField {
+    def fromJson(json: JsObject) : ActionField = {
+        ActionField(
+            name = (json \ "name").get.as[String]
+        )
+    }
+}

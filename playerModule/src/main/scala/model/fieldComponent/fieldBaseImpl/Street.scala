@@ -93,3 +93,16 @@ case class Street(name: String, price: Int, rentCosts: Array[Int], houseCost: In
         )
     }
 }
+
+object Street {
+    def fromJson(json: JsObject): Street = {
+        Street(
+            name = (json \ "name").get.as[String],
+            price = (json \ "price").get.as[Int],
+            rentCosts = (json \ "rent-cost").get.as[Array[Int]],
+            houseCost = (json \ "houseCost").get.as[Int],
+            numHouses = (json \ "numHouses").get.as[Int],
+            isBought = (json \ "is-bought").get.as[Boolean]
+        )
+    }
+}

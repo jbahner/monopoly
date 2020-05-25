@@ -1,5 +1,7 @@
 package model.gamestate
 
+import play.api.libs.json.JsObject
+
 object GameStatus extends Enumeration {
     type GameStatus = Value
     val START_OF_TURN, ROLLED, NEW_FIELD, NEXT_PLAYER, BOUGHT_BY_OTHER, CAN_BUY, ALREADY_BOUGHT, BOUGHT, NOTHING, PASSED_GO, MISSING_MONEY, CAN_BUILD, DONE = Value
@@ -28,6 +30,7 @@ object GameStatus extends Enumeration {
         "DONE" -> DONE
     )
 
+    def fromJson(json: JsObject): GameStatus = revMap((json \ "controller" \ "game-status").get.as[String])
 
     def message(gameStatus: GameStatus): String = map(gameStatus)
 
@@ -44,6 +47,7 @@ object GameStatus extends Enumeration {
             "BUILT" -> BUILT,
             "TOO_MANY_HOUSES" -> TOO_MANY_HOUSES
         )
-    }
 
+        def fromJson(json: JsObject) : BuildStatus = revMap((json \ "controller" \ "build-status").get.as[String])
+    }
 }

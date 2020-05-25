@@ -66,3 +66,13 @@ case class Building(name: String, price: Int, isBought: Boolean = false) extends
         )
     }
 }
+
+object Building {
+    def fromJson(json : JsObject) : Building = {
+        Building(
+            name = (json \ "name").get.as[String],
+            price = (json \ "price").get.as[Int],
+            isBought = (json \ "is-bought").get.as[Boolean]
+        )
+    }
+}

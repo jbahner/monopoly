@@ -10,6 +10,7 @@ import model.fieldComponent.fieldBaseImpl.ActionField
 import model.playerComponent.IPlayer
 import model.playerComponent.playerBaseImpl.Player
 import model.util.FieldIterator
+import monopoly.util.fileIo.fileIoJson.FileIoJson
 
 class MonopolyModule extends AbstractModule with ScalaModule {
 
@@ -20,8 +21,8 @@ class MonopolyModule extends AbstractModule with ScalaModule {
 
         bind[IPlayer].toInstance(Player("", 0, ActionField(""), Set(), FieldIterator(List())))
         //bind[IBoard].toInstance(Board(List(), null, PlayerIterator(Array())))
-        bind[IFileIo].to[FileIoXml]
-        //bind[IFileIo].to[FileIoJson]
+//        bind[IFileIo].to[FileIoXml]
+        bind[IFileIo].to[FileIoJson]
     }
 
 }

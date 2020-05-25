@@ -33,15 +33,4 @@ abstract class Buyable(name: String, price: Int, isBought: Boolean = false) exte
             </is-bought>
         </buyable>
     }
-
-    override def toJson(): JsObject = {
-        Json.obj(
-            "field" -> Json.obj(
-                "type" -> "buyable",
-                "name" -> name,
-                "price" -> price,
-                "isBought" -> isBought
-            )
-        )
-    }
 }

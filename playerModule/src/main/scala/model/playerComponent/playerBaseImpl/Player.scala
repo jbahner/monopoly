@@ -88,3 +88,20 @@ case class Player(name: String, money: Int, currentField: Field, bought: Set[IBu
         )
     }
 }
+
+object Player {
+    def fromJson(json : JsObject, fields : List[Field]) : Player = {
+        var bought = Set[IBuyable]()
+        for (j <- 0 until (json \ "num-bought").get.as[Int]) {
+            val s = ((json \ "bought") (j) \ "field")
+            bought = bought + fields.find(field => field.getName.equals((s \ "name").get.as[String])).get.asInstanceOf[IBuyable]
+        }
+        Player(
+            name = (json \ "name").get.as[String],
+            money = (json \ "money").get.as[Int],
+            currentField = fields.find(field => field.getName.equals((json \ "current-field").get.as[String])).get,
+            bought = bought,
+            fieldIt = FieldIterator(fields)
+        )
+    }
+}
