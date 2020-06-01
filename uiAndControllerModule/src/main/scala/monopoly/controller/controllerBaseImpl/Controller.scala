@@ -150,7 +150,7 @@ class Controller extends IController with Publisher {
             controllerState = MISSING_MONEY
             publish(new UpdateInfo)
         } else {
-            // TODO atm
+            // TODO to be tested
             MainComponentServer.requestGivePlayerMoney(board, currentPlayer.getName, 0 - payAmount)
             MainComponentServer.requestGivePlayerMoney(board, receiver.getName, 0 - payAmount)
 //            board.replacePlayer(currentPlayer, currentPlayer.copy(money = currentPlayer.getMoney - payAmount))
@@ -158,15 +158,19 @@ class Controller extends IController with Publisher {
         }
     }
 
+
+    // TODO Proceed with extreme caution because this method is not usable since it is not used
     def buy: Unit = {
-        val currentPlayer = getCurrentPlayer
-        val currentField = getCurrentField
-        if (currentPlayer.get.getMoney < currentField.getPrice) {
-            controllerState = MISSING_MONEY
-            publish(new UpdateInfo)
-            return
-        }
-        undoManager.doStep(BuyCommand(currentField.asInstanceOf[IBuyable], this))
+//        val currentPlayer = getCurrentPlayer
+//        val currentField = getCurrentField
+//
+//        if (currentPlayer.get.getMoney < currentField.getPrice) {
+////        if (currentPlayer.get.getMoney < currentField.getPrice) {
+//            controllerState = MISSING_MONEY
+//            publish(new UpdateInfo)
+//            return
+//        }
+//        undoManager.doStep(BuyCommand(currentField.asInstanceOf[IBuyable], this))
 
     }
 
