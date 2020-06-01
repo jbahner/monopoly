@@ -1,10 +1,8 @@
 package monopoly.controller.controllerBaseImpl
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import boardComponent.IBoard
-import boardComponent.boardBaseImpl.Board
 import com.google.inject.{Guice, Injector}
 import model.fieldComponent.{Field, IBuyable, IStreet}
 import model.gamestate.GameStatus.BuildStatus.BuildStatus
@@ -35,7 +33,7 @@ class Controller extends IController with Publisher {
     var controllerState: GameStatus = START_OF_TURN
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
 
-    var board: IBoard = _
+    var board: String = _
     var currentDice: (Int, Int) = (0, 0)
     var currentGameMessage: String = _
 
@@ -127,8 +125,8 @@ class Controller extends IController with Publisher {
     }
 
     def nextPlayer: Unit = {
-        val boardString: String = MainComponentServer.requestNextPlayer(board.toJson().toString())
-        board = Board.fromSimplefiedJson(Json.parse(boardString).as[JsObject])
+        val boardString: String = MainComponentServer.requestNextPlayer(board)
+        board = boardString
 
         updateCurrentPlayerInfo
         publish(new UpdateInfo)
@@ -142,16 +140,22 @@ class Controller extends IController with Publisher {
         publish(new UpdateGui)
     }
 
+    def getCurrentPlayer: Option[String] = {
+        MainComponentServer.requestCurrentPlayer(board)
+    }
+
     def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer): Unit = {
         val payAmount = RentContext.rentStrategy.executeStrategy(field)
         if (currentPlayer.getMoney < payAmount) {
             controllerState = MISSING_MONEY
             publish(new UpdateInfo)
         } else {
-            board.replacePlayer(currentPlayer, currentPlayer.copy(money = currentPlayer.getMoney - payAmount))
-            board.replacePlayer(receiver, receiver.copy(money = receiver.getMoney + payAmount))
+            // TODO atm
+            MainComponentServer.requestGivePlayerMoney(board, currentPlayer.getName, 0 - payAmount)
+            MainComponentServer.requestGivePlayerMoney(board, receiver.getName, 0 - payAmount)
+//            board.replacePlayer(currentPlayer, currentPlayer.copy(money = currentPlayer.getMoney - payAmount))
+//            board.replacePlayer(receiver, receiver.copy(money = receiver.getMoney + payAmount))
         }
-        //publish(new UpdateGui)
     }
 
     def buy: Unit = {
@@ -167,10 +171,6 @@ class Controller extends IController with Publisher {
     }
 
     def getCurrentField: Field = board.getCurrentPlayer.getCurrentField
-
-    def getCurrentPlayer: Option[IPlayer] = {
-        Option(board.getCurrentPlayer)
-    }
 
     def buildHouses(streetName: String, amount: Int): Unit = {
         val field = getFieldByName(streetName)

@@ -19,6 +19,10 @@ trait IBoard {
 
     def getPlayerIt: PlayerIterator
 
+    def getPlayerByName(name: String): IPlayer
+
+    def givePlayerMoney(player: IPlayer, money: Int): Unit
+
     def getFields: List[Field]
 
     def getCurrentPlayer: IPlayer

@@ -2,13 +2,11 @@ package boardComponent.boardBaseImpl
 
 import boardComponent.IBoard
 import model.fieldComponent.fieldBaseImpl.{ActionField, Street}
-import play.api.libs.json.{JsObject, Json}
 import model.fieldComponent.{Field, IBuyable}
-import model.gamestate.GameStatus
-import model.gamestate.GameStatus.BuildStatus
 import model.playerComponent.IPlayer
 import model.playerComponent.playerBaseImpl.Player
 import model.util.PlayerIterator
+import play.api.libs.json.{JsObject, Json}
 
 import scala.xml.Elem
 
@@ -39,9 +37,21 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
             playerIt = new PlayerIterator(newPlayers.toArray, playerIt.currentIdx))
     }
 
-    def getPlayerit: PlayerIterator = playerIt
-
     def getCurrentPlayer: IPlayer = currentPlayer
+
+    def getPlayerByName(name: String): IPlayer = {
+        var player: IPlayer = _
+        playerIt.foreach(playerItPlayer =>
+            if (playerItPlayer.getName == name) {
+                player = playerItPlayer.copy()
+            }
+        )
+        player
+    }
+
+    def givePlayerMoney(player: IPlayer, money: Int): Unit = {
+        this.replacePlayer(player, player.copy(money = player.getMoney + money))
+    }
 
     def toXml(): Elem = {
         <board>
@@ -67,7 +77,7 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
 }
 
 object Board {
-    def fromJson(json: JsObject) : Board = {
+    def fromJson(json: JsObject): Board = {
         var fields = List[Field]()
         for (i <- 0 until (json \ "controller" \ "board" \ "num-fields").as[Int]) {
             val f = ((json \ "controller" \ "board" \ "fields") (i) \ "field").as[JsObject]
@@ -90,7 +100,7 @@ object Board {
             playerIt = PlayerIterator(players.toArray, (json \ "controller" \ "board" \ "player-iterator" \ "start-idx").get.as[Int]))
     }
 
-    def fromSimplefiedJson(json: JsObject) : Board = {
+    def fromSimplefiedJson(json: JsObject): Board = {
         var fields = List[Field]()
         for (i <- 0 until (json \ "num-fields").as[Int]) {
             val f = ((json \ "fields") (i) \ "field").as[JsObject]

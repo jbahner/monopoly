@@ -44,7 +44,7 @@ trait IController extends Publisher {
 
     def getCurrentField: Field
 
-    def getCurrentPlayer: Option[IPlayer]
+    def getCurrentPlayer: Option[String]
 
     def catCurrentGameMessage: String
 

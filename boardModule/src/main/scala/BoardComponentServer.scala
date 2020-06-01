@@ -4,7 +4,8 @@ import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpRequest, HttpResponse, _}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
-import boardComponent.boardBaseImpl.Board
+import boardComponent.IBoard
+import boardComponent.boardBaseImpl._
 import play.api.libs.json.{JsObject, Json}
 
 object BoardComponentServer {
@@ -15,6 +16,9 @@ object BoardComponentServer {
 
     private val PATH_ROOT = "/"
     private val PATH_BOARD_NEXT_PLAYER = "/board/next-player"
+    private val PATH_BOARD_CURRENT_PLAYER = "board/current-player"
+    private val PATH_BOARD_REPLACE_PLAYER = "board/replace-player"
+    private val PATH_BOARD_GIVE_PLAYER_MONEY = "/board/give-player-money"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
@@ -25,38 +29,66 @@ object BoardComponentServer {
 
 
             case HttpRequest(GET, Uri.Path(PATH_ROOT), _, _, _) =>
+                println("Route: \t" + PATH_ROOT + "\t\t has been called")
+
                 HttpResponse(entity = HttpEntity(
                     ContentTypes.`text/html(UTF-8)`,
                     "<html><body>Hello world!</body></html>"))
 
             case HttpRequest(POST, Uri.Path(PATH_BOARD_NEXT_PLAYER), _, entity, _) => {
+                println("Route: \t" + PATH_BOARD_NEXT_PLAYER + "\t\t has been called")
+
+                val board = entityToBoard(entity)
+                val retBoard = board.nextPlayerTurn()
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    retBoard.toJson().toString()))
+            }
+
+            case HttpRequest(GET, Uri.Path(PATH_BOARD_CURRENT_PLAYER), _, entity, _) => {
+                println("Route: \t" + PATH_BOARD_CURRENT_PLAYER + "\t\t has been called")
+
+                val board = entityToBoard(entity)
+                val currentPlayer = board.getCurrentPlayer
+
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    currentPlayer.toJson().toString()))
+            }
+
+                // TODO  NOT WORKING ATM
+            case HttpRequest(POST, Uri.Path(PATH_BOARD_REPLACE_PLAYER), _, entity, _) => {
+                println("Route: \t" + PATH_BOARD_REPLACE_PLAYER + "\t\t has been called")
+
+                val board = entityToBoard(entity)
+                val currentPlayer = board.getCurrentPlayer
+
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    currentPlayer.toJson().toString()))
+            }
+
+            case HttpRequest(POST, Uri.Path(PATH_BOARD_GIVE_PLAYER_MONEY), _, entity, _) => {
+                println("Route: \t" + PATH_BOARD_GIVE_PLAYER_MONEY + "\t\t has been called")
+
+                val board = entityToBoard(entity)
 
                 val requestJsonBoardAsString = entityToJson(entity)
-                println("Input:")
-                println("\t" + requestJsonBoardAsString)
-
                 val json = Json.parse(requestJsonBoardAsString).as[JsObject]
-                println("parsed JSON from String")
+                val moneyToGive = (json \ "moneyToGive").as[Int]
+                val recievingPlayer = board.getPlayerByName((json \ "recievingPlayer").toString)
 
-                try {
+                board.givePlayerMoney(recievingPlayer, moneyToGive)
 
-                    val board = Board.fromSimplefiedJson(json)
-                    println("parsed Board from JSON")
-
-                    val retBoard = board.nextPlayerTurn()
-                    println("called next player on board")
-                    println("Output")
-                    println("\t" + retBoard.toJson().toString())
-
-
-                    HttpResponse(entity = HttpEntity(
-                        ContentTypes.`text/plain(UTF-8)`,
-                        retBoard.toJson().toString()))
-                } catch {
-                    case e: Exception => e.printStackTrace()
-                        HttpResponse()
-                }
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    board.toJson().toString()))
             }
+
+
             //            case HttpRequest(GET, Uri.Path("/crash"), _, _, _) =>
             //                sys.error("BOOM!")
             //
@@ -72,6 +104,12 @@ object BoardComponentServer {
 
     }
 
+
+    def entityToBoard(entity: RequestEntity): IBoard = {
+        val requestJsonBoardAsString = entityToJson(entity)
+        val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+        Board.fromSimplefiedJson(json)
+    }
 
     def entityToJson(entity: RequestEntity): String = {
         val entityString = Unmarshal(entity).to[String].toString

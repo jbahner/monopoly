@@ -19,7 +19,7 @@ lazy val global = project
 lazy val uiAndControllerModule = project
   .settings(name := "UiAndControllerModule",
       libraryDependencies ++= mainModuleDependencies)
-  .dependsOn(boardModule, playerModule)
+  .dependsOn(playerModule)
 
 lazy val boardModule = project
   .settings(name := "BoardModule",

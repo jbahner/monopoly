@@ -10,6 +10,7 @@ import com.google.inject.{Guice, Injector}
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
 import monopoly.view.{Gui, IUi, Tui}
+import play.api.libs.json.Json
 
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -70,6 +71,34 @@ object MainComponentServer {
                 1 seconds)
 
         getStringFromResponse(response)
+    }
+
+    def requestCurrentPlayer(board: String): Option[String] = {
+        val response: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/current-player",
+                        entity = board)),
+                1 seconds)
+
+        Option.apply(getStringFromResponse(response))
+    }
+
+    def requestGivePlayerMoney(board: String, playerName: String, moneyToGive: Int): Option[String] = {
+        val response: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(POST,
+                        uri = BOARD_COMPONENT_URL + "/board/give-player-money",
+                        entity = board
+                            .+("recievingPlayer", Json.toJson(playerName))
+                                .+("moneyToGive", Json.toJson(moneyToGive.toString))
+                    )),
+                1 seconds)
+
+        // TODO atm
+        Option.apply(getStringFromResponse(response))
     }
 
 
