@@ -89,4 +89,27 @@ object Board {
             currentPlayer = players.find(p => p.name.equals((json \ "controller" \ "board" \ "current-player").get.as[String])).get,
             playerIt = PlayerIterator(players.toArray, (json \ "controller" \ "board" \ "player-iterator" \ "start-idx").get.as[Int]))
     }
+
+    def fromSimplefiedJson(json: JsObject) : Board = {
+        var fields = List[Field]()
+        for (i <- 0 until (json \ "num-fields").as[Int]) {
+            val f = ((json \ "fields") (i) \ "field").as[JsObject]
+            (f \ "type").get.as[String] match {
+                case "action-field" =>
+                    fields = fields :+ ActionField.fromJson(f)
+                case "street" =>
+                    fields = fields :+ Street.fromJson(f)
+                case _ =>
+            }
+        }
+        var players = List[Player]()
+        for (i <- 0 until (json \ "player-iterator" \ "num-players").as[Int]) {
+            val p = ((json \ "player-iterator" \ "players") (i) \ "player").as[JsObject]
+            players = players :+ Player.fromJson(p, fields)
+        }
+        Board(
+            fields,
+            currentPlayer = players.find(p => p.name.equals((json \ "current-player").get.as[String])).get,
+            playerIt = PlayerIterator(players.toArray, (json \ "player-iterator" \ "start-idx").get.as[Int]))
+    }
 }

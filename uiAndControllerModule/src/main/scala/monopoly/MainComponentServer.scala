@@ -11,7 +11,8 @@ import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
 import monopoly.view.{Gui, IUi, Tui}
 
-import scala.concurrent.Future
+import scala.concurrent._
+import scala.concurrent.duration._
 import scala.io.StdIn.readLine
 
 object MainComponentServer {
@@ -28,6 +29,7 @@ object MainComponentServer {
     val tui: IUi = new Tui(controller)
     val gui: IUi = new Gui(controller)
 
+    private val BOARD_COMPONENT_URL = "http://localhost:8082"
 
 
     def main(args: Array[String]): Unit = {
@@ -39,8 +41,8 @@ object MainComponentServer {
                     ContentTypes.`text/html(UTF-8)`,
                     "<html><body>Hello world!</body></html>"))
 
-            case HttpRequest(GET, Uri.Path("/ping"), _, _, _) =>
-                HttpResponse(entity = "PONG!")
+            case HttpRequest(GET, Uri.Path("/health"), _, _, _) =>
+                HttpResponse(entity = "Health is feeling good!")
         }
 
         val bindingFuture = Http().bindAndHandleSync(requestHandler, "localhost", 8081)
@@ -53,17 +55,26 @@ object MainComponentServer {
             tui.processInput(input)
         }
 
-
         // Server Shutdown
         println("Server shutting down")
         controller.shutdown()
     }
 
-    def requestNextPlayer(): Unit = {
-        val responseFuture: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = "http://localhost:8082/board/next-player"))
-        responseFuture.onComplete(
-            response => println(Unmarshal(response.get).to[String])
-        )
+    def requestNextPlayer(board: String): String = {
+        val response: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(POST,
+                        uri = BOARD_COMPONENT_URL + "/board/next-player",
+                        entity = board)),
+                1 seconds)
+
+        getStringFromResponse(response)
+    }
+
+
+    def getStringFromResponse(input: HttpResponse): String = {
+        Unmarshal(input).to[String].toString.replace("FulfilledFuture(", "").replace(")", "")
     }
 
 

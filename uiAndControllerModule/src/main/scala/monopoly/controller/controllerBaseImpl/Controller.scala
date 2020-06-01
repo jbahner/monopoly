@@ -1,8 +1,10 @@
 package monopoly.controller.controllerBaseImpl
 
 import akka.actor.ActorSystem
+import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import boardComponent.IBoard
+import boardComponent.boardBaseImpl.Board
 import com.google.inject.{Guice, Injector}
 import model.fieldComponent.{Field, IBuyable, IStreet}
 import model.gamestate.GameStatus.BuildStatus.BuildStatus
@@ -70,13 +72,13 @@ class Controller extends IController with Publisher {
             case BOUGHT_BY_OTHER =>
                 val field = getCurrentField.asInstanceOf[IBuyable]
                 currentGameMessage += infoString("Field already bought by " + getBuyer(field).get.getName + ".\n" +
-                  "You must pay " + RentContext.rentStrategy.executeStrategy(field) + " rent!\n")
+                    "You must pay " + RentContext.rentStrategy.executeStrategy(field) + " rent!\n")
                 currentGameMessage
             case CAN_BUILD =>
                 buildStatus match {
                     case BuildStatus.DEFAULT => val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer.get)
                         currentGameMessage += userInputString("You can build on: \n" + buildablesToString(wholeGroups) +
-                          "\nType the name of the street and the amount of houses you want to build. Press \"q\" to quit, \"u\" to undo or \"re\" to redo.\n")
+                            "\nType the name of the street and the amount of houses you want to build. Press \"q\" to quit, \"u\" to undo or \"re\" to redo.\n")
                         currentGameMessage
                     case BuildStatus.BUILT => currentGameMessage = infoString("Successfully built!\n")
                         currentGameMessage
@@ -125,11 +127,11 @@ class Controller extends IController with Publisher {
     }
 
     def nextPlayer: Unit = {
-        MainComponentServer.requestNextPlayer()
+        val boardString: String = MainComponentServer.requestNextPlayer(board.toJson().toString())
+        board = Board.fromSimplefiedJson(Json.parse(boardString).as[JsObject])
 
-//        board = board.nextPlayerTurn()
-//        updateCurrentPlayerInfo
-//        publish(new UpdateInfo)
+        updateCurrentPlayerInfo
+        publish(new UpdateInfo)
     }
 
     def updateCurrentPlayerInfo: Unit = {
