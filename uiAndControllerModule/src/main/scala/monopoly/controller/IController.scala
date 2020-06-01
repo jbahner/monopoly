@@ -1,13 +1,12 @@
 package monopoly.controller
 
-import boardComponent.IBoard
 import com.google.inject.Injector
+import model.fieldComponent.{Field, IBuyable}
 import model.gamestate.GameStatus.BuildStatus.BuildStatus
 import model.gamestate.GameStatus._
+import model.playerComponent.IPlayer
 import monopoly.util.UndoManager
 import play.api.libs.json.{JsObject, JsValue}
-import model.fieldComponent.{Field, IBuyable}
-import model.playerComponent.IPlayer
 
 import scala.swing.Publisher
 import scala.xml.Elem
@@ -19,14 +18,12 @@ trait IController extends Publisher {
     var buildStatus: BuildStatus
     var currentGameMessage: String
     var currentDice: (Int, Int)
+    var board:String
+    val STATIC_RENT_AMOUNT: Int
 
-    def getBoard: IBoard
 
-    def setBoard(board: IBoard): Unit
 
     def setUp: Unit
-
-    def getBuyer(buyable: IBuyable): Option[IPlayer]
 
     def rollDice: Unit
 
@@ -34,15 +31,11 @@ trait IController extends Publisher {
 
     def updateCurrentPlayerInfo: Unit
 
-    def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer)
+//    def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer)
 
     def buy: Unit
 
-    def getFieldByName(name: String): Option[Field]
-
     def buildHouses(streetName: String, amount: Int): Unit
-
-    def getCurrentField: Field
 
     def getCurrentPlayer: Option[String]
 
@@ -61,8 +54,6 @@ trait IController extends Publisher {
     def getCurrentGameMessage: String
 
     def buildablesToString(buildables: List[Set[String]]): String
-
-    def getJSON: JsValue
 
     def getControllerState: GameStatus
 

@@ -21,7 +21,13 @@ trait IBoard {
 
     def getPlayerByName(name: String): IPlayer
 
-    def givePlayerMoney(player: IPlayer, money: Int): Unit
+    def givePlayerMoney(player: IPlayer, money: Int): IBoard
+
+    def buildHouses(streetName: String, amount: Int): IBoard
+
+    def getBuyer(buyable: IBuyable): Option[IPlayer]
+
+    def getFieldByName(name: String): Option[Field]
 
     def getFields: List[Field]
 

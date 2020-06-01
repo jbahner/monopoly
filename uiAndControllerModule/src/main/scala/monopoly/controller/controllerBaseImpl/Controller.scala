@@ -31,7 +31,7 @@ class Controller extends IController with Publisher {
     private val fileIo = injector.getInstance(classOf[IFileIo])
     var controllerState: GameStatus = START_OF_TURN
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
-    private val STATIC_RENT_AMOUNT = 100
+    val STATIC_RENT_AMOUNT = 100
 
     var board: String = _
     var currentDice: (Int, Int) = (0, 0)
@@ -126,7 +126,7 @@ class Controller extends IController with Publisher {
         val sb = new StringBuilder()
         buildables.foreach(set => {
             sb.append("\t")
-            set.foreach(s => sb.append(s).append(" (").append(getFieldByName(s).get.asInstanceOf[IStreet].getHouseCost).append("€)\n"))
+            set.foreach(s => sb.append(s).append(" (").append(MainComponentServer.requestCurrentFieldHouseCost(board)).append("€)\n"))
         })
         sb.toString()
     }
@@ -151,16 +151,16 @@ class Controller extends IController with Publisher {
         MainComponentServer.requestCurrentPlayer(board)
     }
 
-    def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer): Unit = {
+    def payRent(currentPlayerName: String, field: IBuyable, receiverName: String): Unit = {
         val payAmount = STATIC_RENT_AMOUNT
             //RentContext.rentStrategy.executeStrategy(field)
-        if (currentPlayer.getMoney < payAmount) {
+        if (MainComponentServer.requestCurrentPlayerMoney(board) < payAmount) {
             controllerState = MISSING_MONEY
             publish(new UpdateInfo)
         } else {
             // TODO to be tested
-            MainComponentServer.requestGivePlayerMoney(board, currentPlayer.getName, 0 - payAmount)
-            MainComponentServer.requestGivePlayerMoney(board, receiver.getName, 0 - payAmount)
+            board = MainComponentServer.requestGivePlayerMoney(board, currentPlayerName, 0 - payAmount)
+            board = MainComponentServer.requestGivePlayerMoney(board, receiverName, 0 - payAmount)
             //            board.replacePlayer(currentPlayer, currentPlayer.copy(money = currentPlayer.getMoney - payAmount))
             //            board.replacePlayer(receiver, receiver.copy(money = receiver.getMoney + payAmount))
         }
@@ -185,34 +185,15 @@ class Controller extends IController with Publisher {
     // def getCurrentField: String = board.getCurrentPlayer.getCurrentField
 
     def buildHouses(streetName: String, amount: Int): Unit = {
-        val field = getFieldByName(streetName)
-        if (field.isEmpty || !field.get.isInstanceOf[IStreet]) {
-            buildStatus = BuildStatus.INVALID_ARGS
-            return
-        }
-        val street = field.get.asInstanceOf[IStreet]
-        val buyer = getBuyer(street)
-        // TODO fix dis
-        if (buyer.isEmpty || !buyer.get.equals(getCurrentPlayer.get))
-            buildStatus = BuildStatus.NOT_OWN
-        else if (street.getNumHouses + amount > 5)
-            buildStatus = BuildStatus.TOO_MANY_HOUSES
-        else if (MainComponentServer.requestCurrentPlayerMoney(board).toInt < street.getHouseCost * amount)
-            buildStatus = BuildStatus.MISSING_MONEY
-        else
-            undoManager.doStep(BuildCommand(street, amount, this))
+        board = MainComponentServer.requestBuyHouses(board, streetName, amount)
+
+        //undoManager.doStep(BuildCommand(street, amount, this))
+        println("TECHNICALLY BUILD A HOUSE")
+        println("BUT THATS DISABLED AT THE MOMENT")
         publish(new UpdateInfo)
     }
 
-    def getBuyer(buyable: IBuyable): Option[IPlayer] = {
-        val players = board.getPlayerIt.list
-        val player = players.find(p => p.getBought.contains(buyable))
-        player
-    }
 
-    def getFieldByName(name: String): Option[Field] = {
-        board.getFields.find(field => field.getName.equals(name))
-    }
 
     def getCurrentGameMessage: String = {
         currentGameMessage
@@ -220,16 +201,6 @@ class Controller extends IController with Publisher {
 
     def getControllerState: GameStatus = {
         controllerState
-    }
-
-    def getJSON: JsValue = {
-        Json.obj(
-            "board" -> Json.obj(
-                "state" -> controllerState.toString,
-                "current_player" -> getCurrentPlayer.get.getName,
-                "players" -> board.getPlayerIt.list.map(p => p.getJSON).toList
-            )
-        )
     }
 
     def getUndoManager: UndoManager = {

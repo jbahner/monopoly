@@ -2,7 +2,8 @@ package boardComponent.boardBaseImpl
 
 import boardComponent.IBoard
 import model.fieldComponent.fieldBaseImpl.{ActionField, Street}
-import model.fieldComponent.{Field, IBuyable}
+import model.fieldComponent.{Field, IBuyable, IStreet}
+import model.gamestate.GameStatus._
 import model.playerComponent.IPlayer
 import model.playerComponent.playerBaseImpl.Player
 import model.util.PlayerIterator
@@ -40,17 +41,44 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
     def getCurrentPlayer: IPlayer = currentPlayer
 
     def getPlayerByName(name: String): IPlayer = {
-        var player: IPlayer = _
+        var player = List[IPlayer]()
         playerIt.foreach(playerItPlayer =>
             if (playerItPlayer.getName == name) {
-                player = playerItPlayer.copy()
+                player = player :+ playerItPlayer.copy()
             }
         )
+        player.head
+    }
+
+    def givePlayerMoney(player: IPlayer, money: Int): IBoard = {
+        this.replacePlayer(player, player.copy(money = player.getMoney + money))
+    }
+
+    def buildHouses(streetName: String, amount: Int): IBoard = {
+        var buildStatus = BuildStatus.DEFAULT
+        val field = getFieldByName(streetName)
+        if (field.isEmpty || !field.get.isInstanceOf[IStreet]) {
+            buildStatus = BuildStatus.INVALID_ARGS
+        }
+        val street = field.get.asInstanceOf[IStreet]
+        val buyer = getBuyer(street)
+        if (buyer.isEmpty || !buyer.get.equals(getCurrentPlayer))
+            buildStatus = BuildStatus.NOT_OWN
+        else if (street.getNumHouses + amount > 5)
+            buildStatus = BuildStatus.TOO_MANY_HOUSES
+        else if (currentPlayer.getMoney < street.getHouseCost * amount)
+            buildStatus = BuildStatus.MISSING_MONEY
+        this
+    }
+
+    def getBuyer(buyable: IBuyable): Option[IPlayer] = {
+        val players = getPlayerIt.list
+        val player = players.find(p => p.getBought.contains(buyable))
         player
     }
 
-    def givePlayerMoney(player: IPlayer, money: Int): Unit = {
-        this.replacePlayer(player, player.copy(money = player.getMoney + money))
+    def getFieldByName(name: String): Option[Field] = {
+        getFields.find(field => field.getName.equals(name))
     }
 
     def toXml(): Elem = {
@@ -100,8 +128,9 @@ object Board {
             playerIt = PlayerIterator(players.toArray, (json \ "controller" \ "board" \ "player-iterator" \ "start-idx").get.as[Int]))
     }
 
-    def fromSimplefiedJson(json: JsObject): Board = {
+    def fromSimplefiedJson(inputJson: JsObject): Board = {
         var fields = List[Field]()
+        val json = (inputJson \ "controller" \ "board")
         for (i <- 0 until (json \ "num-fields").as[Int]) {
             val f = ((json \ "fields") (i) \ "field").as[JsObject]
             (f \ "type").get.as[String] match {

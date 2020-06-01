@@ -7,6 +7,8 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import com.google.inject.{Guice, Injector}
+import model.gamestate.GameStatus
+import model.gamestate.GameStatus.GameStatus
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
 import monopoly.view.{Gui, IUi, Tui}
@@ -66,7 +68,7 @@ object MainComponentServer {
             Await.result(
                 Http().singleRequest(
                     HttpRequest(POST,
-                        uri = BOARD_COMPONENT_URL + "/board/next-player",
+                        uri = "http://localhost:8082/board/next-player",
                         entity = board)),
                 1 seconds)
 
@@ -78,27 +80,26 @@ object MainComponentServer {
             Await.result(
                 Http().singleRequest(
                     HttpRequest(GET,
-                        uri = BOARD_COMPONENT_URL + "/board/current-player",
+                        uri = "http://localhost:8082/board/current-player",
                         entity = board)),
                 1 seconds)
 
         Option.apply(getStringFromResponse(response))
     }
 
-    def requestGivePlayerMoney(board: String, playerName: String, moneyToGive: Int): Option[String] = {
+    def requestGivePlayerMoney(board: String, playerName: String, moneyToGive: Int): String = {
         val response: HttpResponse =
             Await.result(
                 Http().singleRequest(
                     HttpRequest(POST,
-                        uri = BOARD_COMPONENT_URL + "/board/give-player-money",
+                        uri = "http://localhost:8082/board/give-player-money",
                         entity = board
                             .+("recievingPlayer", Json.toJson(playerName))
-                                .+("moneyToGive", Json.toJson(moneyToGive.toString))
+                            .+("moneyToGive", Json.toJson(moneyToGive.toString))
                     )),
                 1 seconds)
 
-        // TODO atm
-        Option.apply(getStringFromResponse(response))
+        getStringFromResponse(response)
     }
 
     def requestCurrentFieldName(board: String): String = {
@@ -106,7 +107,7 @@ object MainComponentServer {
             Await.result(
                 Http().singleRequest(
                     HttpRequest(GET,
-                        uri = BOARD_COMPONENT_URL + "/board/current-field-name",
+                        uri = "http://localhost:8082/board/current-field-name",
                         entity = board)),
                 1 seconds)
 
@@ -115,14 +116,16 @@ object MainComponentServer {
 
     // TODO to be tested
     def requestCurrentPlayerName(board: String): String = {
-        val currentPlayer =  requestCurrentPlayer(board).get
+        val currentPlayer = requestCurrentPlayer(board).get
+        println("CurrentPlayer")
+        println(currentPlayer)
         (Json.parse(currentPlayer).as[JsObject] \ "name").toString
     }
 
     // TODO to be tested
-    def requestCurrentPlayerMoney(board: String): String = {
-        val currentPlayer =  requestCurrentPlayer(board).get
-        (Json.parse(currentPlayer).as[JsObject] \ "money").toString
+    def requestCurrentPlayerMoney(board: String): Int = {
+        val currentPlayer = requestCurrentPlayer(board).get
+        (Json.parse(currentPlayer).as[JsObject] \ "money").as[Int]
     }
 
     def requestCurrentFieldPrice(board: String): String = {
@@ -130,7 +133,7 @@ object MainComponentServer {
             Await.result(
                 Http().singleRequest(
                     HttpRequest(GET,
-                        uri = BOARD_COMPONENT_URL + "/board/current-field-price",
+                        uri = "http://localhost:8082/board/current-field-price",
                         entity = board)),
                 1 seconds)
 
@@ -139,19 +142,91 @@ object MainComponentServer {
 
     def requestParsingBoardFromJson(json: String): String = {
         val response: HttpResponse =
-        Await.result(
-            Http().singleRequest(
-                HttpRequest(GET,
-                    uri = BOARD_COMPONENT_URL + "/board/parse-from-json",
-                    entity = json)),
-            1 seconds)
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = "http://localhost:8082/board/parse-from-json",
+                        entity = json)),
+                1 seconds)
 
         getStringFromResponse(response)
+    }
+
+    def requestBuyHouses(board: String, streetName: String, amount: Int): String = {
+
+        val response: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(POST,
+                        uri = "http://localhost:8082/board/buy-houses",
+                        entity = board
+                            .+("streetName", Json.toJson(streetName))
+                            .+("amount", Json.toJson(amount.toString)))),
+                1 seconds)
+
+
+
+        getStringFromResponse(response)
+    }
+
+    def requestCurrentPlayerWalk(board: String, amount: Int): (String, Boolean, GameStatus) = {
+
+        val response: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(POST,
+                        uri = "http://localhost:8082/board/walk",
+                        entity = board
+                            .+("amount", Json.toJson(amount.toString)))),
+                1 seconds)
+
+
+
+        val responseString = getStringFromResponse(response)
+
+        val json = Json.parse(responseString).as[JsObject]
+        val passedGo = (json \ "passedGo").as[Boolean]
+        val newGameState = GameStatus.revMap((json \ "newGamestate").toString)
+
+        (responseString, passedGo, newGameState)
+    }
+
+    def requestCurrentFieldHouseCost(board: String): Int = {
+        val response: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = "http://localhost:8082/board/current-field-house-cost",
+                        entity = board)),
+                1 seconds)
+
+        getStringFromResponse(response).toInt
+    }
+
+    def requestCurrentPlayerBoughtFieldNames(board: String): List[String] = {
+        val response: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = "http://localhost:8082/board/current-player-bought-fields",
+                        entity = board)),
+                1 seconds)
+
+        var nameList = List[String]()
+
+        getStringFromResponse(response).split("\n").foreach(name =>
+        nameList :+ name)
+        nameList
     }
 
 
     def getStringFromResponse(input: HttpResponse): String = {
         Unmarshal(input).to[String].toString.replace("FulfilledFuture(", "").replace(")", "")
+    }
+
+    def entityToJson(entity: RequestEntity): String = {
+        val entityString = Unmarshal(entity).to[String].toString
+        entityString.replace("FulfilledFuture(", "").replace(")", "")
     }
 
 

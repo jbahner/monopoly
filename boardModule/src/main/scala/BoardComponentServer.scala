@@ -6,6 +6,8 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import boardComponent.IBoard
 import boardComponent.boardBaseImpl._
+import model.fieldComponent.IStreet
+import model.gamestate.GameStatus
 import play.api.libs.json.{JsObject, Json}
 
 object BoardComponentServer {
@@ -18,9 +20,13 @@ object BoardComponentServer {
     private val PATH_BOARD_NEXT_PLAYER = "/board/next-player"
     private val PATH_BOARD_CURRENT_PLAYER = "board/current-player"
     private val PATH_BOARD_GIVE_PLAYER_MONEY = "/board/give-player-money"
+    private val PATH_BOARD_CURRENT_PLAYER_BOUGHT_FIELDS = "/board/current-player-bought-fields"
     private val PATH_BOARD_CURRENT_FIELD_NAME = "/board/current-field-name"
     private val PATH_BOARD_CURRENT_FIELD_PRICE = "/board/current-field-price"
+    private val PATH_BOARD_CURRENT_FIELD_HOUSE_COST = "/board/current-field-house-cost"
     private val PATH_BOARD_PARSE_FROM_JSON = "/board/parse-from-json"
+    private val PATH_BOARD_BUY_HOUSES = "/board/buy-houses"
+    private val PATH_BOARD_WALK = "/board/walk"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
@@ -70,11 +76,11 @@ object BoardComponentServer {
                 val moneyToGive = (json \ "moneyToGive").as[Int]
                 val recievingPlayer = board.getPlayerByName((json \ "recievingPlayer").toString)
 
-                board.givePlayerMoney(recievingPlayer, moneyToGive)
+                val retBoard = board.givePlayerMoney(recievingPlayer, moneyToGive)
 
                 HttpResponse(entity = HttpEntity(
                     ContentTypes.`text/plain(UTF-8)`,
-                    board.toJson().toString()))
+                    retBoard.toJson().toString()))
             }
 
             case HttpRequest(GET, Uri.Path(PATH_BOARD_CURRENT_FIELD_NAME), _, entity, _) => {
@@ -104,11 +110,88 @@ object BoardComponentServer {
             case HttpRequest(GET, Uri.Path(PATH_BOARD_PARSE_FROM_JSON), _, entity, _) => {
                 println("Route: \t" + PATH_BOARD_PARSE_FROM_JSON + "\t\t has been called")
 
+                try {
+
+                    println(entityToJson(entity))
+                    val board = entityToBoard(entity)
+
+                    HttpResponse(entity = HttpEntity(
+                        ContentTypes.`text/plain(UTF-8)`,
+                        board.toJson().toString()))
+                } catch {
+                    case e: Exception => e.printStackTrace()
+                        HttpResponse()
+                }
+
+            }
+
+            case HttpRequest(POST, Uri.Path(PATH_BOARD_BUY_HOUSES), _, entity, _) => {
+                println("Route: \t" + PATH_BOARD_BUY_HOUSES + "\t\t has been called")
+
                 val board = entityToBoard(entity)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val amount = (json \ "amount").as[Int]
+                val streetName = (json \ "streetName").toString
+
+                val retBoard = board.buildHouses(streetName, amount)
+
 
                 HttpResponse(entity = HttpEntity(
                     ContentTypes.`text/plain(UTF-8)`,
-                    board.toJson().toString()))
+                    retBoard.toJson().toString()))
+            }
+
+            case HttpRequest(POST, Uri.Path(PATH_BOARD_WALK), _, entity, _) => {
+                println("Route: \t" + PATH_BOARD_WALK + "\t\t has been called")
+
+                val board = entityToBoard(entity)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val amount = (json \ "amount").as[Int]
+
+                val (newPlayer, passedGo) = board.getCurrentPlayer.walk(amount)
+
+                val newGamestate = board.getCurrentPlayer.getCurrentField.action(board.getCurrentPlayer)
+
+                board.replacePlayer(board.getCurrentPlayer, newPlayer)
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    board.toJson()
+                        .+("passedGo", Json.toJson(passedGo.toString))
+                        .+("newGamestate", Json.toJson(GameStatus.map.get(newGamestate).toString))
+                        .toString()))
+            }
+
+
+            case HttpRequest(GET, Uri.Path(PATH_BOARD_CURRENT_FIELD_HOUSE_COST), _, entity, _) => {
+                println("Route: \t" + PATH_BOARD_CURRENT_FIELD_HOUSE_COST + "\t\t has been called")
+
+                val board = entityToBoard(entity)
+                val houseCost = board.getCurrentPlayer.getCurrentField.asInstanceOf[IStreet].getHouseCost
+
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    houseCost.toString))
+            }
+
+
+            case HttpRequest(GET, Uri.Path(PATH_BOARD_CURRENT_PLAYER_BOUGHT_FIELDS), _, entity, _) => {
+                println("Route: \t" + PATH_BOARD_CURRENT_PLAYER_BOUGHT_FIELDS + "\t\t has been called")
+
+                val board = entityToBoard(entity)
+                var boughtFieldNames: String = ""
+                board.getCurrentPlayer.getBought.toSeq.sortBy(_.getName)
+                    .foreach(bought => boughtFieldNames = boughtFieldNames + bought.getName + "\n")
+
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    boughtFieldNames))
             }
 
 
