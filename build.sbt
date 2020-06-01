@@ -11,30 +11,23 @@ lazy val global = project
   .in(file("."))
   .aggregate(
       boardModule,
-      playerModule,
-      uiAndControllerModule,
-      stateModule
+      modelModule,
+      uiAndControllerModule
   )
 
 lazy val uiAndControllerModule = project
   .settings(name := "UiAndControllerModule",
       libraryDependencies ++= mainModuleDependencies)
-  .dependsOn(playerModule)
+  .dependsOn(modelModule)
 
 lazy val boardModule = project
   .settings(name := "BoardModule",
       libraryDependencies ++= mainModuleDependencies)
-  .dependsOn(playerModule)
-  .aggregate(playerModule)
+  .dependsOn(modelModule)
+  .aggregate(modelModule)
 
-lazy val playerModule = project
-  .settings(name := "PlayerModule",
-      libraryDependencies ++= mainModuleDependencies)
-  .dependsOn(stateModule)
-  .aggregate(stateModule)
-
-lazy val stateModule = project
-  .settings(name := "StateModule",
+lazy val modelModule = project
+  .settings(name := "ModelModule",
       libraryDependencies ++= mainModuleDependencies)
 
 
