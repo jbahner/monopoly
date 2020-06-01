@@ -1,22 +1,18 @@
 package monopoly.util.fileIo.fileIoXml
 
-import boardComponent.IBoard
-import boardComponent.boardBaseImpl.Board
-import model.gamestate.GameStatus
-import model.gamestate.GameStatus.BuildStatus.BuildStatus
-import model.gamestate.GameStatus.GameStatus
-import monopoly.controller.IController
-import monopoly.util.fileIo.IFileIo
 import model.fieldComponent.fieldBaseImpl.{ActionField, Street}
 import model.fieldComponent.{Field, IBuyable}
 import model.playerComponent.playerBaseImpl.Player
-import model.util.{FieldIterator, PlayerIterator}
+import model.util.FieldIterator
+import monopoly.controller.IController
 
 import scala.util.{Failure, Success, Try}
 import scala.xml.PrettyPrinter
 
-class FileIoXml extends IFileIo {
-    def load(path: String): (IBoard, GameStatus, BuildStatus) = {
+class FileIoXml
+//    extends IFileIo
+{
+    def load(path: String): Unit = {
         val f = Try(scala.xml.XML.loadFile(path.replace(".json", ".xml")))
         val file = f match {
             case Success(v) => v
@@ -61,11 +57,12 @@ class FileIoXml extends IFileIo {
                 case _ =>
             }
         })
-        (Board(
-            fields,
-            players.find(p => p.name.equals((file \ "board" \ "current-player").text.trim)).get,
-            playerIt = PlayerIterator(players.toArray, (file \ "board" \ "player-iterator" \ "start-idx").text.trim.toInt)
-        ), GameStatus.revMap((file \\ "controller" \ "game-status").text.trim), GameStatus.BuildStatus.revMap((file \\ "controller" \ "build-status").text.trim))
+        //        (
+        //            Board(
+        //            fields,
+        //            players.find(p => p.name.equals((file \ "board" \ "current-player").text.trim)).get,
+        //            playerIt = PlayerIterator(players.toArray, (file \ "board" \ "player-iterator" \ "start-idx").text.trim.toInt)
+        //        ), GameStatus.revMap((file \\ "controller" \ "game-status").text.trim), GameStatus.BuildStatus.revMap((file \\ "controller" \ "build-status").text.trim))
     }
 
     def save(controller: IController): Unit = saveString(controller)
