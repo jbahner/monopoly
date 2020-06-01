@@ -10,7 +10,7 @@ import com.google.inject.{Guice, Injector}
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
 import monopoly.view.{Gui, IUi, Tui}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -99,6 +99,54 @@ object MainComponentServer {
 
         // TODO atm
         Option.apply(getStringFromResponse(response))
+    }
+
+    def requestCurrentFieldName(board: String): String = {
+        val response: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/current-field-name",
+                        entity = board)),
+                1 seconds)
+
+        getStringFromResponse(response)
+    }
+
+    // TODO to be tested
+    def requestCurrentPlayerName(board: String): String = {
+        val currentPlayer =  requestCurrentPlayer(board).get
+        (Json.parse(currentPlayer).as[JsObject] \ "name").toString
+    }
+
+    // TODO to be tested
+    def requestCurrentPlayerMoney(board: String): String = {
+        val currentPlayer =  requestCurrentPlayer(board).get
+        (Json.parse(currentPlayer).as[JsObject] \ "money").toString
+    }
+
+    def requestCurrentFieldPrice(board: String): String = {
+        val response: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/current-field-price",
+                        entity = board)),
+                1 seconds)
+
+        getStringFromResponse(response)
+    }
+
+    def requestParsingBoardFromJson(json: String): String = {
+        val response: HttpResponse =
+        Await.result(
+            Http().singleRequest(
+                HttpRequest(GET,
+                    uri = BOARD_COMPONENT_URL + "/board/parse-from-json",
+                    entity = json)),
+            1 seconds)
+
+        getStringFromResponse(response)
     }
 
 

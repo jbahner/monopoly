@@ -2,7 +2,6 @@ package monopoly.controller.controllerBaseImpl
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import boardComponent.IBoard
 import com.google.inject.{Guice, Injector}
 import model.fieldComponent.{Field, IBuyable, IStreet}
 import model.gamestate.GameStatus.BuildStatus.BuildStatus
@@ -10,7 +9,7 @@ import model.gamestate.GameStatus.{BuildStatus, GameStatus, _}
 import model.playerComponent.IPlayer
 import monopoly.controller._
 import monopoly.util.fileIo.IFileIo
-import monopoly.util.{GeneralUtil, RentContext, UndoManager}
+import monopoly.util.{RentContext, UndoManager}
 import monopoly.{MainComponentServer, MonopolyModule}
 import play.api.libs.json.{JsObject, JsValue, Json}
 
@@ -32,6 +31,7 @@ class Controller extends IController with Publisher {
     private val fileIo = injector.getInstance(classOf[IFileIo])
     var controllerState: GameStatus = START_OF_TURN
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
+    private val STATIC_RENT_AMOUNT = 100
 
     var board: String = _
     var currentDice: (Int, Int) = (0, 0)
@@ -59,24 +59,27 @@ class Controller extends IController with Publisher {
                 currentGameMessage
             case PASSED_GO => currentGameMessage += infoString("Received 200€ by passing Go\n")
                 currentGameMessage
-            case NEW_FIELD => currentGameMessage = infoString("New Field: " + getCurrentField.getName + "\n")
+            case NEW_FIELD => currentGameMessage = infoString("New Field: " + getCurrentFieldName + "\n")
                 currentGameMessage
             case ALREADY_BOUGHT => currentGameMessage += infoString("You already own this street\n")
                 currentGameMessage
             case CAN_BUY =>
-                val field: IBuyable = getCurrentField.asInstanceOf[IBuyable]
-                currentGameMessage += userInputString("Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice) + "\n")
+                val fieldName: String = MainComponentServer.requestCurrentFieldName(board)
+                val fieldCost: String = MainComponentServer.requestCurrentFieldPrice(board)
+                currentGameMessage += userInputString("Do you want to buy %s for %s€? (Y/N)".format(fieldName, fieldCost) + "\n")
                 currentGameMessage
             case BOUGHT_BY_OTHER =>
-                val field = getCurrentField.asInstanceOf[IBuyable]
-                currentGameMessage += infoString("Field already bought by " + getBuyer(field).get.getName + ".\n" +
-                    "You must pay " + RentContext.rentStrategy.executeStrategy(field) + " rent!\n")
+//                val field = getCurrentField.asInstanceOf[IBuyable]
+                currentGameMessage += infoString("Field already bought.\n" +
+                    // TODO Rent amount is no longer dynamic, for simplicity it is hardcoded
+                    "You must pay " + STATIC_RENT_AMOUNT + " rent!\n")
                 currentGameMessage
             case CAN_BUILD =>
                 buildStatus match {
-                    case BuildStatus.DEFAULT => val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer.get)
-                        currentGameMessage += userInputString("You can build on: \n" + buildablesToString(wholeGroups) +
-                            "\nType the name of the street and the amount of houses you want to build. Press \"q\" to quit, \"u\" to undo or \"re\" to redo.\n")
+                    case BuildStatus.DEFAULT =>
+                        //                        val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer.get)
+                        //                        currentGameMessage += userInputString("You can build on: \n" + buildablesToString(wholeGroups) +
+                        currentGameMessage += "\nType the name of the street and the amount of houses you want to build. Press \"q\" to quit, \"u\" to undo or \"re\" to redo.\n"
                         currentGameMessage
                     case BuildStatus.BUILT => currentGameMessage = infoString("Successfully built!\n")
                         currentGameMessage
@@ -91,9 +94,13 @@ class Controller extends IController with Publisher {
                     //case BuildStatus.DONE => currentGameMessageString = ""
                     //    currentGameMessageString
                 }
-            case DONE => currentGameMessage = turnString(getCurrentPlayer.get.getName + " ended his turn.\n\n")
+            case DONE => currentGameMessage = turnString(MainComponentServer.requestCurrentPlayerName(board) + " ended his turn.\n\n")
                 currentGameMessage
-            case NEXT_PLAYER => currentGameMessage = turnString("Next player: " + getCurrentPlayer.get.getName + "\n") + playerInfoString(getCurrentPlayer.get.getDetails)
+            case NEXT_PLAYER =>
+                currentGameMessage =
+                    turnString("Next player: " + MainComponentServer.requestCurrentPlayerName(board) + "\n")
+                // TODO disabled for simplicity
+                //.concat(playerInfoString(getCurrentPlayer.get.getDetails))
                 currentGameMessage
             case MISSING_MONEY => currentGameMessage = "You do not have enough money!"
                 currentGameMessage
@@ -145,7 +152,8 @@ class Controller extends IController with Publisher {
     }
 
     def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer): Unit = {
-        val payAmount = RentContext.rentStrategy.executeStrategy(field)
+        val payAmount = STATIC_RENT_AMOUNT
+            //RentContext.rentStrategy.executeStrategy(field)
         if (currentPlayer.getMoney < payAmount) {
             controllerState = MISSING_MONEY
             publish(new UpdateInfo)
@@ -153,28 +161,28 @@ class Controller extends IController with Publisher {
             // TODO to be tested
             MainComponentServer.requestGivePlayerMoney(board, currentPlayer.getName, 0 - payAmount)
             MainComponentServer.requestGivePlayerMoney(board, receiver.getName, 0 - payAmount)
-//            board.replacePlayer(currentPlayer, currentPlayer.copy(money = currentPlayer.getMoney - payAmount))
-//            board.replacePlayer(receiver, receiver.copy(money = receiver.getMoney + payAmount))
+            //            board.replacePlayer(currentPlayer, currentPlayer.copy(money = currentPlayer.getMoney - payAmount))
+            //            board.replacePlayer(receiver, receiver.copy(money = receiver.getMoney + payAmount))
         }
     }
 
 
     // TODO Proceed with extreme caution because this method is not usable since it is not used
     def buy: Unit = {
-//        val currentPlayer = getCurrentPlayer
-//        val currentField = getCurrentField
-//
-//        if (currentPlayer.get.getMoney < currentField.getPrice) {
-////        if (currentPlayer.get.getMoney < currentField.getPrice) {
-//            controllerState = MISSING_MONEY
-//            publish(new UpdateInfo)
-//            return
-//        }
-//        undoManager.doStep(BuyCommand(currentField.asInstanceOf[IBuyable], this))
+        //        val currentPlayer = getCurrentPlayer
+        //        val currentField = getCurrentField
+        //
+        //        if (currentPlayer.get.getMoney < currentField.getPrice) {
+        ////        if (currentPlayer.get.getMoney < currentField.getPrice) {
+        //            controllerState = MISSING_MONEY
+        //            publish(new UpdateInfo)
+        //            return
+        //        }
+        //        undoManager.doStep(BuyCommand(currentField.asInstanceOf[IBuyable], this))
 
     }
 
-    def getCurrentField: Field = board.getCurrentPlayer.getCurrentField
+    // def getCurrentField: String = board.getCurrentPlayer.getCurrentField
 
     def buildHouses(streetName: String, amount: Int): Unit = {
         val field = getFieldByName(streetName)
@@ -184,11 +192,12 @@ class Controller extends IController with Publisher {
         }
         val street = field.get.asInstanceOf[IStreet]
         val buyer = getBuyer(street)
+        // TODO fix dis
         if (buyer.isEmpty || !buyer.get.equals(getCurrentPlayer.get))
             buildStatus = BuildStatus.NOT_OWN
         else if (street.getNumHouses + amount > 5)
             buildStatus = BuildStatus.TOO_MANY_HOUSES
-        else if (getCurrentPlayer.get.getMoney < street.getHouseCost * amount)
+        else if (MainComponentServer.requestCurrentPlayerMoney(board).toInt < street.getHouseCost * amount)
             buildStatus = BuildStatus.MISSING_MONEY
         else
             undoManager.doStep(BuildCommand(street, amount, this))
@@ -235,12 +244,6 @@ class Controller extends IController with Publisher {
         currentDice
     }
 
-    def getBoard: IBoard = board
-
-    def setBoard(board: IBoard): Unit = {
-        this.board = board
-    }
-
     def saveGame() = {
         fileIo.save(this)
     }
@@ -265,9 +268,12 @@ class Controller extends IController with Publisher {
             </game-status>
             <build-status>
                 {buildStatus}
-            </build-status>{board.toXml()}<current-dice>
+            </build-status>
+            {//board.toXml()
+            }
+            <current-dice>
             {currentDice._1 + "," + currentDice._2}
-        </current-dice>
+            </current-dice>
             <current-game-message>
                 {unstyleString(currentGameMessage)}
             </current-game-message>
@@ -279,7 +285,7 @@ class Controller extends IController with Publisher {
             "controller" -> Json.obj(
                 "game-status" -> controllerState,
                 "build-status" -> buildStatus,
-                "board" -> board.toJson(),
+//                "board" -> board.toJson(),
                 "current-dice" -> Json.toJson(currentDice._1 + "," + currentDice._2),
                 "current-game-message" -> unstyleString(currentGameMessage)
             )
@@ -293,6 +299,10 @@ class Controller extends IController with Publisher {
     def shutdown(): Unit = {
         // TODO maybe shutdown other services too?
         sys.exit(1)
+    }
+
+    def getCurrentFieldName(): String = {
+        MainComponentServer.requestCurrentFieldName(board)
     }
 }
 

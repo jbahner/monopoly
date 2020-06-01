@@ -17,8 +17,10 @@ object BoardComponentServer {
     private val PATH_ROOT = "/"
     private val PATH_BOARD_NEXT_PLAYER = "/board/next-player"
     private val PATH_BOARD_CURRENT_PLAYER = "board/current-player"
-    private val PATH_BOARD_REPLACE_PLAYER = "board/replace-player"
     private val PATH_BOARD_GIVE_PLAYER_MONEY = "/board/give-player-money"
+    private val PATH_BOARD_CURRENT_FIELD_NAME = "/board/current-field-name"
+    private val PATH_BOARD_CURRENT_FIELD_PRICE = "/board/current-field-price"
+    private val PATH_BOARD_PARSE_FROM_JSON = "/board/parse-from-json"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
@@ -58,19 +60,6 @@ object BoardComponentServer {
                     currentPlayer.toJson().toString()))
             }
 
-                // TODO  NOT WORKING ATM
-            case HttpRequest(POST, Uri.Path(PATH_BOARD_REPLACE_PLAYER), _, entity, _) => {
-                println("Route: \t" + PATH_BOARD_REPLACE_PLAYER + "\t\t has been called")
-
-                val board = entityToBoard(entity)
-                val currentPlayer = board.getCurrentPlayer
-
-
-                HttpResponse(entity = HttpEntity(
-                    ContentTypes.`text/plain(UTF-8)`,
-                    currentPlayer.toJson().toString()))
-            }
-
             case HttpRequest(POST, Uri.Path(PATH_BOARD_GIVE_PLAYER_MONEY), _, entity, _) => {
                 println("Route: \t" + PATH_BOARD_GIVE_PLAYER_MONEY + "\t\t has been called")
 
@@ -82,6 +71,40 @@ object BoardComponentServer {
                 val recievingPlayer = board.getPlayerByName((json \ "recievingPlayer").toString)
 
                 board.givePlayerMoney(recievingPlayer, moneyToGive)
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    board.toJson().toString()))
+            }
+
+            case HttpRequest(GET, Uri.Path(PATH_BOARD_CURRENT_FIELD_NAME), _, entity, _) => {
+                println("Route: \t" + PATH_BOARD_CURRENT_FIELD_NAME + "\t\t has been called")
+
+                val board = entityToBoard(entity)
+                val currentFieldName = board.getCurrentPlayer.getCurrentField.getName
+
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    currentFieldName))
+            }
+
+            case HttpRequest(GET, Uri.Path(PATH_BOARD_CURRENT_FIELD_PRICE), _, entity, _) => {
+                println("Route: \t" + PATH_BOARD_CURRENT_FIELD_PRICE + "\t\t has been called")
+
+                val board = entityToBoard(entity)
+                val currentFieldPrice = board.getCurrentPlayer.getCurrentField.getPrice
+
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    currentFieldPrice.toString))
+            }
+
+            case HttpRequest(GET, Uri.Path(PATH_BOARD_PARSE_FROM_JSON), _, entity, _) => {
+                println("Route: \t" + PATH_BOARD_PARSE_FROM_JSON + "\t\t has been called")
+
+                val board = entityToBoard(entity)
 
                 HttpResponse(entity = HttpEntity(
                     ContentTypes.`text/plain(UTF-8)`,
