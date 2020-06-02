@@ -50,7 +50,7 @@ case class PlayerIterator(players: Array[IPlayer], startIdx: Int = 0) extends It
         Json.obj(
             "num-players" -> players.length,
             "players" -> players.map(p => p.toJson()),
-            "start-idx" -> startIdx
+            "start-idx" -> current
         )
     }
 }
