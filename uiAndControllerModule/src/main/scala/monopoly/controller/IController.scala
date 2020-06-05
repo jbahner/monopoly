@@ -86,5 +86,15 @@ trait IController extends Publisher {
 
     def getHouseCount(streetName: String): Int
 
+    def getCurrentFieldType(): String
+
+    def getCurrentFieldName(): String
+
+    def getCurrentFieldOwnerMessage(): String
+
+    def getCurrentFieldRent(): Int
+
+    def getCurrentFieldOwnersName(): String
+
     def shutdown(): Unit
 }

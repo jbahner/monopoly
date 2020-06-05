@@ -1,9 +1,9 @@
 package boardComponent.boardBaseImpl
 
 import boardComponent.IBoard
-import model.fieldComponent.fieldBaseImpl.{ActionField, Street}
+import model.fieldComponent.fieldBaseImpl.{ActionField, Building, Street}
 import play.api.libs.json.{JsObject, Json}
-import model.fieldComponent.{Field, IBuyable}
+import model.fieldComponent.{Field, IActionField, IBuyable, IStreet}
 import model.gamestate.GameStatus
 import model.gamestate.GameStatus.BuildStatus
 import model.playerComponent.IPlayer
@@ -75,6 +75,48 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
 
     override def getHouseCount(streetName: String): Int = {
         getFieldByName(streetName).get.asInstanceOf[Street].numHouses
+    }
+
+    override def getCurrentField(): Field = {
+        getCurrentPlayer.getCurrentField
+    }
+
+    override def getCurrentFieldType(): String = {
+        getCurrentField() match {
+            case building: IBuyable => "Building"
+            case street: IStreet => "Street"
+            case field: Field => "Field"
+        }
+    }
+
+    override def getCurrentFieldName(): String = {
+        getCurrentField().getName
+    }
+
+    override def getCurrentFieldOwnedByString(): String = {
+        val curField = getCurrentField().asInstanceOf[IBuyable]
+
+        if (curField.isBought) getBuyer(curField).get.getName
+        else "Nobody"
+
+    }
+
+    def getBuyer(buyable: IBuyable): Option[IPlayer] = {
+        val players = getPlayerIt.list
+
+        for (pl <- players) {
+            val filteredSet = pl.getBought.filter(_.getName == buyable.getName)
+            if (filteredSet.nonEmpty) {
+                return Option.apply(pl)
+            }
+        }
+        Option.empty
+    }
+
+    override def getCurrentFieldOwnerName(): String = {
+        val currentFieldBuyer = getBuyer(getCurrentField().asInstanceOf[IBuyable])
+        if (currentFieldBuyer.isDefined) currentFieldBuyer.get.getName
+        else "Field Owner Could not be fetched."
     }
 }
 

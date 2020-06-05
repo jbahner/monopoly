@@ -87,4 +87,18 @@ class MockController extends IController with Publisher {
     override def toJson(): JsObject = ???
 
     override def shutdown(): Unit = ???
+
+    override def getHouseCost(streetName: String): Int = ???
+
+    override def getHouseCount(streetName: String): Int = ???
+
+    override def getCurrentFieldType(): String = ???
+
+    override def getCurrentFieldName(): String = ???
+
+    override def getCurrentFieldOwnerMessage(): String = ???
+
+    override def getCurrentFieldRent(): Int = ???
+
+    override def getCurrentFieldOwnersName(): String = ???
 }

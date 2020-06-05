@@ -6,7 +6,7 @@ import akka.stream.ActorMaterializer
 import boardComponent.IBoard
 import boardComponent.boardBaseImpl.Board
 import com.google.inject.{Guice, Injector}
-import model.fieldComponent.{Field, IBuyable, IStreet}
+import model.fieldComponent.{Field, IActionField, IBuyable, IStreet}
 import model.gamestate.GameStatus.BuildStatus.BuildStatus
 import model.gamestate.GameStatus.{BuildStatus, GameStatus, _}
 import model.playerComponent.IPlayer
@@ -169,7 +169,7 @@ class Controller extends IController with Publisher {
 
     }
 
-    def getCurrentField: Field = board.getCurrentPlayer.getCurrentField
+    def getCurrentField: Field = board.getCurrentField()
 
     def getCurrentPlayer: Option[IPlayer] = {
         Option(board.getCurrentPlayer)
@@ -195,15 +195,7 @@ class Controller extends IController with Publisher {
     }
 
     def getBuyer(buyable: IBuyable): Option[IPlayer] = {
-        val players = board.getPlayerIt.list
-
-        for (pl <- players) {
-            val filteredSet = pl.getBought.filter(_.getName == buyable.getName)
-            if (filteredSet.nonEmpty) {
-                return Option.apply(pl)
-            }
-        }
-        Option.empty
+        board.getBuyer(buyable)
     }
 
     def getFieldByName(fieldName: String): Option[Field] = {
@@ -306,6 +298,26 @@ class Controller extends IController with Publisher {
 
     override def getHouseCount(streetName: String): Int = {
         board.getHouseCount(streetName)
+    }
+
+    override def getCurrentFieldType(): String = {
+        board.getCurrentFieldType()
+    }
+
+    override def getCurrentFieldName(): String = {
+        board.getCurrentFieldName()
+    }
+
+    override def getCurrentFieldOwnerMessage(): String = {
+        "Owned by " + board.getCurrentFieldOwnedByString()
+    }
+
+    override def getCurrentFieldRent(): Int = {
+        RentContext.rentStrategy.executeStrategy(board.getCurrentField().asInstanceOf[IBuyable])
+    }
+
+    override def getCurrentFieldOwnersName(): String = {
+        board.getCurrentFieldOwnerName()
     }
 }
 

@@ -34,4 +34,16 @@ trait IBoard {
     def getHouseCount(streetName: String): Int
 
     def getFieldByName(fieldName: String): Option[Field]
+
+    def getCurrentField(): Field
+
+    def getCurrentFieldType(): String
+
+    def getCurrentFieldName(): String
+
+    def getCurrentFieldOwnedByString(): String
+
+    def getBuyer(buyable: IBuyable): Option[IPlayer]
+
+    def getCurrentFieldOwnerName(): String
 }

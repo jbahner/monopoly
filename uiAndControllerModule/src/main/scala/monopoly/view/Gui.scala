@@ -145,7 +145,7 @@ class Gui(controller: IController) extends Frame with IUi {
 
     def generateCenterCurrentFieldDetails(): GridPanel = {
         new GridPanel(2, 1) {
-            val curFieldType: String = controller.getCurrentFieldType
+            val curFieldType: String = controller.getCurrentFieldType()
 
 
             contents += new GridPanel(7, 1) {
@@ -156,26 +156,22 @@ class Gui(controller: IController) extends Frame with IUi {
                 }
 
 
-                contents += new Label(curField.getName)
+                contents += new Label(controller.getCurrentFieldName())
 
 
-                curField match {
-                    case street: Street =>
-                        contents += new Label(
-                            if (curField.asInstanceOf[Street].isBought) "Bought by " + controller.getBuyer(curField.asInstanceOf[Street]).get.getName
-                            else "Not owned")
-                        contents += new Label("Current Rent: " + curField.asInstanceOf[Street].rentCosts(curField.asInstanceOf[Street].numHouses))
-                        contents += new Label("Houses: " + curField.asInstanceOf[Street].numHouses.toString)
-                    case building: Building =>
-                        contents += new Label(
-                            if (curField.asInstanceOf[Building].isBought) "Bought by " + controller.getBuyer(curField.asInstanceOf[Building]).get.getName
-                            else "Not owned")
+                curFieldType match {
+                    case "Street" =>
+                        contents += new Label(controller.getCurrentFieldOwnerMessage())
+                        contents += new Label("Current Rent: " + controller.getCurrentFieldRent())
+                        contents += new Label("Houses: " + controller.getHouseCount(controller.getCurrentFieldName()))
+                    case "Building" =>
+                        contents += new Label(controller.getCurrentFieldOwnerMessage())
                     case _ =>
                 }
             }
 
 
-            if (curField.getName.equals("Go")) {
+            if (controller.getCurrentFieldName().equals("Go")) {
                 contents += new Label() {
                     icon = new ImageIcon("src\\main\\scala\\de\\htwg\\se\\monopoly\\view\\textures\\go_field.png")
                     maximumSize = new Dimension(100, 100)
@@ -243,9 +239,9 @@ class Gui(controller: IController) extends Frame with IUi {
             case GameStatus.ALREADY_BOUGHT =>
                 bufferedMessage = bufferedMessage + "  You already own this street.  \n"
             case GameStatus.BOUGHT_BY_OTHER =>
-                val curField = controller.getCurrentField.asInstanceOf[IBuyable]
                 // RentPay 2
-                bufferedMessage = bufferedMessage + "  Field already bought by " + controller.getBuyer(curField).get.getName + "\nYou must pay " + RentContext.rentStrategy.executeStrategy(curField) + "€ rent  "
+                bufferedMessage = bufferedMessage + "  Field already bought by " + controller.getCurrentFieldOwnersName() +
+                  "\nYou must pay " + controller.getCurrentFieldRent() + "€ rent."
             case GameStatus.PASSED_GO =>
                 bufferedMessage = bufferedMessage + "  Earned 200€ for passing Go.  \n"
             case GameStatus.NOTHING =>
