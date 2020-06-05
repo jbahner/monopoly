@@ -6,7 +6,7 @@ import akka.stream.ActorMaterializer
 import boardComponent.IBoard
 import boardComponent.boardBaseImpl.Board
 import com.google.inject.{Guice, Injector}
-import model.fieldComponent.{Field, IActionField, IBuyable, IStreet}
+import model.fieldComponent.{Field, IBuyable, IStreet}
 import model.gamestate.GameStatus.BuildStatus.BuildStatus
 import model.gamestate.GameStatus.{BuildStatus, GameStatus, _}
 import model.playerComponent.IPlayer
@@ -20,6 +20,7 @@ import scala.swing.Publisher
 import scala.swing.event.Event
 import scala.xml.Elem
 
+// TODO put this into the board -> The RentContext
 class Controller extends IController with Publisher {
 
     implicit val system = ActorSystem("Controller-System-Actor")
@@ -145,6 +146,7 @@ class Controller extends IController with Publisher {
         publish(new UpdateGui)
     }
 
+    // TODO put this into the board
     def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer): Unit = {
         val payAmount = RentContext.rentStrategy.executeStrategy(field)
         if (currentPlayer.getMoney < payAmount) {
@@ -157,6 +159,7 @@ class Controller extends IController with Publisher {
         //publish(new UpdateGui)
     }
 
+    // TODO put this into the board
     def buy: Unit = {
         val currentPlayer = getCurrentPlayer
         val currentField = getCurrentField
@@ -171,10 +174,12 @@ class Controller extends IController with Publisher {
 
     def getCurrentField: Field = board.getCurrentField()
 
+    // TODO put this into the board -> Option should come from board anot from controller
     def getCurrentPlayer: Option[IPlayer] = {
         Option(board.getCurrentPlayer)
     }
 
+    // TODO put this into the board
     def buildHouses(streetName: String, amount: Int): Unit = {
         val field = getFieldByName(streetName)
         if (field.isEmpty || !field.get.isInstanceOf[IStreet]) {
