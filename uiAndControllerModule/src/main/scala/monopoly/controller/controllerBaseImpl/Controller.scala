@@ -72,6 +72,7 @@ class Controller extends IController with Publisher {
             case BOUGHT_BY_OTHER =>
                 val field = getCurrentField.asInstanceOf[IBuyable]
                 currentGameMessage += infoString("Field already bought by " + getBuyer(field).get.getName + ".\n" +
+                  // RentPay 1
                     "You must pay " + RentContext.rentStrategy.executeStrategy(field) + " rent!\n")
                 currentGameMessage
             case CAN_BUILD =>
@@ -128,7 +129,9 @@ class Controller extends IController with Publisher {
 
     def nextPlayer: Unit = {
         val boardString: String = MainComponentServer.requestNextPlayer(board.toJson().toString())
+
         board = Board.fromSimplefiedJson(Json.parse(boardString).as[JsObject])
+//         board = board.nextPlayerTurn()
 
         updateCurrentPlayerInfo
         publish(new UpdateInfo)
@@ -193,8 +196,14 @@ class Controller extends IController with Publisher {
 
     def getBuyer(buyable: IBuyable): Option[IPlayer] = {
         val players = board.getPlayerIt.list
-        val player = players.find(p => p.getBought.contains(buyable))
-        player
+
+        for (pl <- players) {
+            val filteredSet = pl.getBought.filter(_.getName == buyable.getName)
+            if (filteredSet.nonEmpty) {
+                return Option.apply(pl)
+            }
+        }
+        Option.empty
     }
 
     def getFieldByName(name: String): Option[Field] = {

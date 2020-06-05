@@ -7,9 +7,16 @@ trait RentStrategy {
     def executeStrategy(buyable: IBuyable): Int
 }
 
+// This Rent Strategy is called 3 times.
+// 2 times to display the amount that needs to be payed
+// and 1 time to actually pay the amount called from the controller
 case class StreetRentStrategy(controller: IController, street: IStreet) extends RentStrategy {
     override def executeStrategy(buyable: IBuyable): Int = {
-        if (street.getNumHouses == 0 && GeneralUtil.hasWholeGroup(controller.getBuyer(street.asInstanceOf[IBuyable]).get, street.getName))
+        if (street.getNumHouses == 0 &&
+            GeneralUtil.hasWholeGroup(
+              controller.getBuyer(street.asInstanceOf[IBuyable]).get,
+              street.getName))
+
             street.getRentCosts(street.getNumHouses) * 2
         else
             street.getRentCosts(street.getNumHouses)

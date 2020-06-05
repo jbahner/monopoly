@@ -246,6 +246,7 @@ class Gui(controller: IController) extends Frame with IUi {
                 bufferedMessage = bufferedMessage + "  You already own this street.  \n"
             case GameStatus.BOUGHT_BY_OTHER =>
                 val curField = controller.getCurrentField.asInstanceOf[IBuyable]
+                // RentPay 2
                 bufferedMessage = bufferedMessage + "  Field already bought by " + controller.getBuyer(curField).get.getName + "\nYou must pay " + RentContext.rentStrategy.executeStrategy(curField) + "€ rent  "
             case GameStatus.PASSED_GO =>
                 bufferedMessage = bufferedMessage + "  Earned 200€ for passing Go.  \n"
