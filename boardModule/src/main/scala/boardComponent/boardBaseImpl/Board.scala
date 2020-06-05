@@ -64,6 +64,18 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
             "player-iterator" -> playerIt.toJson()
         )
     }
+
+    override def getHouseCost(streetName: String): Int = {
+        getFieldByName(streetName).get.asInstanceOf[Street].houseCost
+    }
+
+    override def getFieldByName(fieldName: String): Option[Field] = {
+        getFields.find(field => field.getName.equals(fieldName))
+    }
+
+    override def getHouseCount(streetName: String): Int = {
+        getFieldByName(streetName).get.asInstanceOf[Street].numHouses
+    }
 }
 
 object Board {

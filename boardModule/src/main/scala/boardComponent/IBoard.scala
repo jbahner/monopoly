@@ -28,4 +28,10 @@ trait IBoard {
     def toXml(): Elem
 
     def toJson(): JsObject
+
+    def getHouseCost(streetName: String): Int
+
+    def getHouseCount(streetName: String): Int
+
+    def getFieldByName(fieldName: String): Option[Field]
 }

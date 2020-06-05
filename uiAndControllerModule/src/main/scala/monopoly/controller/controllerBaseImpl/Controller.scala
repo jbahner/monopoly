@@ -206,8 +206,8 @@ class Controller extends IController with Publisher {
         Option.empty
     }
 
-    def getFieldByName(name: String): Option[Field] = {
-        board.getFields.find(field => field.getName.equals(name))
+    def getFieldByName(fieldName: String): Option[Field] = {
+        board.getFieldByName(fieldName)
     }
 
     def getCurrentGameMessage: String = {
@@ -298,6 +298,14 @@ class Controller extends IController with Publisher {
     def shutdown(): Unit = {
         // TODO maybe shutdown other services too?
         sys.exit(1)
+    }
+
+    override def getHouseCost(streetName: String): Int = {
+        board.getHouseCost(streetName)
+    }
+
+    override def getHouseCount(streetName: String): Int = {
+        board.getHouseCount(streetName)
     }
 }
 

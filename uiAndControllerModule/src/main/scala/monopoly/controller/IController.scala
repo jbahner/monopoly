@@ -82,5 +82,9 @@ trait IController extends Publisher {
 
     def loadGame(path: String = "save-game")
 
+    def getHouseCost(streetName: String): Int
+
+    def getHouseCount(streetName: String): Int
+
     def shutdown(): Unit
 }

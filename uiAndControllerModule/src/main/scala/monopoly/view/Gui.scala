@@ -8,8 +8,6 @@ import javax.swing.{BorderFactory, ImageIcon}
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.{CatGuiMessage, UpdateGui, UpdateInfo}
 import monopoly.util.RentContext
-import model.fieldComponent.fieldBaseImpl.{Building, Street}
-import model.fieldComponent.{Field, IBuyable}
 
 import scala.swing._
 import scala.swing.event._
@@ -131,9 +129,9 @@ class Gui(controller: IController) extends Frame with IUi {
                     case _: ButtonClicked =>
                         controller.buildHouses(streetName, 1)
                 }
-                tooltip = controller.getFieldByName(streetName).get.asInstanceOf[Street].houseCost + "€"
+                tooltip = controller.getHouseCost(streetName) + "€"
             }
-            contents += new Label(" -- " + controller.getFieldByName(streetName).get.asInstanceOf[Street].numHouses.toString)
+            contents += new Label(" -- " + controller.getHouseCount(streetName).toString)
         }
 
     }
@@ -147,7 +145,7 @@ class Gui(controller: IController) extends Frame with IUi {
 
     def generateCenterCurrentFieldDetails(): GridPanel = {
         new GridPanel(2, 1) {
-            val curField: Field = controller.getCurrentField
+            val curFieldType: String = controller.getCurrentFieldType
 
 
             contents += new GridPanel(7, 1) {
