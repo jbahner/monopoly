@@ -3,16 +3,17 @@ package monopoly.controller.controllerBaseImpl
 import akka.actor.ActorSystem
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
-import boardComponent.IBoard
-import boardComponent.boardBaseImpl.Board
+import modelComponent.boardComponent.IBoard
+import modelComponent.boardComponent.boardBaseImpl.Board
 import com.google.inject.{Guice, Injector}
-import model.fieldComponent.{Field, IBuyable, IStreet}
-import model.gamestate.GameStatus.BuildStatus.BuildStatus
-import model.gamestate.GameStatus.{BuildStatus, GameStatus, _}
-import model.playerComponent.IPlayer
+import modelComponent.fieldComponent.{Field, IBuyable, IStreet}
+import modelComponent.playerComponent.IPlayer
+import modelComponent.util.{GeneralUtil, RentContext}
 import monopoly.controller._
+import monopoly.controller.gamestate.GameStatus.BuildStatus.BuildStatus
+import monopoly.controller.gamestate.GameStatus._
 import monopoly.util.fileIo.IFileIo
-import monopoly.util.{GeneralUtil, RentContext, UndoManager}
+import monopoly.util.UndoManager
 import monopoly.{MainComponentServer, MonopolyModule}
 import play.api.libs.json.{JsObject, JsValue, Json}
 

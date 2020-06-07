@@ -1,9 +1,9 @@
 package monopoly.util.fileIo
 
-import boardComponent.IBoard
-import model.gamestate.GameStatus.BuildStatus.BuildStatus
-import model.gamestate.GameStatus.GameStatus
+import modelComponent.boardComponent.IBoard
 import monopoly.controller.IController
+import monopoly.controller.gamestate.GameStatus.BuildStatus.BuildStatus
+import monopoly.controller.gamestate.GameStatus.GameStatus
 
 trait IFileIo {
 

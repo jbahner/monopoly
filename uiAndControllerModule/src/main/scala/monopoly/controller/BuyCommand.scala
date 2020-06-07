@@ -1,11 +1,11 @@
 package monopoly.controller
 
-import boardComponent.IBoard
-import model.gamestate.GameStatus._
+import modelComponent.boardComponent.IBoard
+import modelComponent.gamestate.GameStatus._
 import monopoly.controller.controllerBaseImpl.UpdateInfo
 import monopoly.util.Command
-import model.fieldComponent.{IBuilding, IBuyable, IStreet}
-import model.playerComponent.IPlayer
+import modelComponent.fieldComponent.{IBuilding, IBuyable, IStreet}
+import modelComponent.playerComponent.IPlayer
 
 
 case class BuyCommand(buyable: IBuyable, controller: IController) extends Command {

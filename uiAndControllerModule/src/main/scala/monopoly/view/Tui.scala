@@ -1,7 +1,7 @@
 package monopoly.view
 
-import model.gamestate.GameStatus
-import model.gamestate.GameStatus._
+import modelComponent.gamestate.GameStatus
+import modelComponent.gamestate.GameStatus._
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
 

@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpRequest, HttpResponse, _}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
-import boardComponent.boardBaseImpl.Board
+import modelComponent.boardComponent.boardBaseImpl.Board
 import play.api.libs.json.{JsObject, Json}
 
 object BoardComponentServer {

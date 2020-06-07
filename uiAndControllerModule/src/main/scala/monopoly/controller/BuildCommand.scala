@@ -1,10 +1,10 @@
 package monopoly.controller
 
-import boardComponent.IBoard
-import model.gamestate.GameStatus._
+import modelComponent.boardComponent.IBoard
+import modelComponent.gamestate.GameStatus._
 import monopoly.controller.controllerBaseImpl.{Controller, UpdateInfo}
 import monopoly.util.Command
-import model.fieldComponent.IStreet
+import modelComponent.fieldComponent.IStreet
 
 case class BuildCommand(street: IStreet, amount: Int, controller: Controller) extends Command {
     private val backupBoard: IBoard = controller.board.copy(controller.board.getFields, controller.board.getCurrentPlayer, controller.board.getPlayerIt)

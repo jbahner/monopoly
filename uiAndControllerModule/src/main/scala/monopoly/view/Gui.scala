@@ -3,11 +3,10 @@ package monopoly.view
 import java.awt.Color
 import java.util
 
-import model.gamestate.GameStatus
 import javax.swing.{BorderFactory, ImageIcon}
+import modelComponent.gamestate.GameStatus
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.{CatGuiMessage, UpdateGui, UpdateInfo}
-import monopoly.util.RentContext
 
 import scala.swing._
 import scala.swing.event._
@@ -115,7 +114,7 @@ class Gui(controller: IController) extends Frame with IUi {
             case GameStatus.CAN_BUILD => new GridPanel(controller.getCurrentPlayer.get.getBought.size, 1) {
                 if (controller.getCurrentPlayer.isDefined)
                     controller.getCurrentPlayer.get.getBought.toSeq.sortBy(_.getName)
-                      .foreach(bought => contents += generateBuildButton(bought.getName))
+                        .foreach(bought => contents += generateBuildButton(bought.getName))
             }
             case _ => new GridPanel(1, 1)
         }
@@ -241,7 +240,7 @@ class Gui(controller: IController) extends Frame with IUi {
             case GameStatus.BOUGHT_BY_OTHER =>
                 // RentPay 2
                 bufferedMessage = bufferedMessage + "  Field already bought by " + controller.getCurrentFieldOwnersName() +
-                  "\nYou must pay " + controller.getCurrentFieldRent() + "€ rent."
+                    "\nYou must pay " + controller.getCurrentFieldRent() + "€ rent."
             case GameStatus.PASSED_GO =>
                 bufferedMessage = bufferedMessage + "  Earned 200€ for passing Go.  \n"
             case GameStatus.NOTHING =>

@@ -6,10 +6,10 @@ import monopoly.controller.controllerBaseImpl.Controller
 import monopoly.util.fileIo.IFileIo
 import monopoly.util.fileIo.fileIoXml.FileIoXml
 import net.codingwell.scalaguice.ScalaModule
-import model.fieldComponent.fieldBaseImpl.ActionField
-import model.playerComponent.IPlayer
-import model.playerComponent.playerBaseImpl.Player
-import model.util.FieldIterator
+import modelComponent.fieldComponent.fieldBaseImpl.ActionField
+import modelComponent.playerComponent.IPlayer
+import modelComponent.playerComponent.playerBaseImpl.Player
+import modelComponent.util.FieldIterator
 import monopoly.util.fileIo.fileIoJson.FileIoJson
 
 class MonopolyModule extends AbstractModule with ScalaModule {

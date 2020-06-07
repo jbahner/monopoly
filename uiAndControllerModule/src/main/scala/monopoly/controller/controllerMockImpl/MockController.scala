@@ -1,20 +1,22 @@
 package monopoly.controller.controllerMockImpl
 
-import boardComponent.IBoard
+import modelComponent.boardComponent.IBoard
 import com.google.inject.{Guice, Injector}
-import model.gamestate.GameStatus.BuildStatus.BuildStatus
-import model.gamestate.GameStatus.GameStatus
+import modelComponent.gamestate.GameStatus.BuildStatus.BuildStatus
+import modelComponent.gamestate.GameStatus.GameStatus
 import monopoly.MonopolyModule
 import monopoly.controller.IController
 import monopoly.util.UndoManager
 import play.api.libs.json.{JsObject, JsValue}
-import model.fieldComponent.{Field, IBuyable}
-import model.playerComponent.IPlayer
+import modelComponent.fieldComponent.{Field, IBuyable}
+import modelComponent.playerComponent.IPlayer
 
 import scala.swing.Publisher
 import scala.xml.Elem
 
-class MockController extends IController with Publisher {
+class MockController
+//    extends IController 
+        extends Publisher {
     val injector: Injector = Guice.createInjector(new MonopolyModule)
     var controllerState: GameStatus = _
     var buildStatus: BuildStatus = _
@@ -76,29 +78,29 @@ class MockController extends IController with Publisher {
 
     def getCurrentDice: (Int, Int) = ???
 
-    override def toXml(): Elem = ???
+    def toXml(): Elem = ???
 
-    override def saveGame(): Unit = ???
+    def saveGame(): Unit = ???
 
-    override def loadGame(path: String): Unit = ???
+    def loadGame(path: String): Unit = ???
 
-    override def unstyleString(input: String): String = ???
+    def unstyleString(input: String): String = ???
 
-    override def toJson(): JsObject = ???
+    def toJson(): JsObject = ???
 
-    override def shutdown(): Unit = ???
+    def shutdown(): Unit = ???
 
-    override def getHouseCost(streetName: String): Int = ???
+    def getHouseCost(streetName: String): Int = ???
 
-    override def getHouseCount(streetName: String): Int = ???
+    def getHouseCount(streetName: String): Int = ???
 
-    override def getCurrentFieldType(): String = ???
+    def getCurrentFieldType(): String = ???
 
-    override def getCurrentFieldName(): String = ???
+    def getCurrentFieldName(): String = ???
 
-    override def getCurrentFieldOwnerMessage(): String = ???
+    def getCurrentFieldOwnerMessage(): String = ???
 
-    override def getCurrentFieldRent(): Int = ???
+    def getCurrentFieldRent(): Int = ???
 
-    override def getCurrentFieldOwnersName(): String = ???
+    def getCurrentFieldOwnersName(): String = ???
 }

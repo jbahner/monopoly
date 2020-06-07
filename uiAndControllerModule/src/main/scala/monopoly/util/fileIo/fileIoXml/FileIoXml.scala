@@ -1,16 +1,16 @@
 package monopoly.util.fileIo.fileIoXml
 
-import boardComponent.IBoard
-import boardComponent.boardBaseImpl.Board
-import model.gamestate.GameStatus
-import model.gamestate.GameStatus.BuildStatus.BuildStatus
-import model.gamestate.GameStatus.GameStatus
+import modelComponent.boardComponent.IBoard
+import modelComponent.boardComponent.boardBaseImpl.Board
+import modelComponent.gamestate.GameStatus
+import modelComponent.gamestate.GameStatus.BuildStatus.BuildStatus
+import modelComponent.gamestate.GameStatus.GameStatus
 import monopoly.controller.IController
 import monopoly.util.fileIo.IFileIo
-import model.fieldComponent.fieldBaseImpl.{ActionField, Street}
-import model.fieldComponent.{Field, IBuyable}
-import model.playerComponent.playerBaseImpl.Player
-import model.util.{FieldIterator, PlayerIterator}
+import modelComponent.fieldComponent.fieldBaseImpl.{ActionField, Street}
+import modelComponent.fieldComponent.{Field, IBuyable}
+import modelComponent.playerComponent.playerBaseImpl.Player
+import modelComponent.util.{FieldIterator, PlayerIterator}
 
 import scala.util.{Failure, Success, Try}
 import scala.xml.PrettyPrinter
