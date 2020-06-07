@@ -7,7 +7,7 @@ import scala.xml.Elem
 
 trait IActionField extends Field {
 
-    def action(player: IPlayer): GameStatus
+    def action(player: IPlayer): String
 
     def getName: String
 

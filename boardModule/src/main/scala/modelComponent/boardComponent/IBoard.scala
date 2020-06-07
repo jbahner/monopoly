@@ -3,11 +3,12 @@ package modelComponent.boardComponent
 import play.api.libs.json.JsObject
 import modelComponent.fieldComponent.{Field, IBuyable}
 import modelComponent.playerComponent.IPlayer
-import modelComponent.util.PlayerIterator
+import modelComponent.util.{GeneralUtil, PlayerIterator}
 
 import scala.xml.Elem
 
 trait IBoard {
+    val currentDice: Int
 
     def nextPlayer(): IPlayer
 
@@ -23,7 +24,7 @@ trait IBoard {
 
     def getCurrentPlayer: IPlayer
 
-    def copy(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator): IBoard
+    def copy(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator, currentDice: Int): IBoard
 
     def toXml(): Elem
 
@@ -46,4 +47,10 @@ trait IBoard {
     def getBuyer(buyable: IBuyable): Option[IPlayer]
 
     def getCurrentFieldOwnerName(): String
+
+    def buildablesToString(buildables: List[Set[String]]): String
+
+    def getPossibleBuildPlacesToString(): String
+
+    def getCurrentFieldRent(): Int
 }

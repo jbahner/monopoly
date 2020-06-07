@@ -1,31 +1,31 @@
 package modelComponent.boardComponent.boardBaseImpl
 
 import modelComponent.boardComponent.IBoard
-import modelComponent.fieldComponent.fieldBaseImpl.{ActionField, Building, Street}
-import play.api.libs.json.{JsObject, Json}
-import modelComponent.fieldComponent.{Field, IActionField, IBuyable, IStreet}
-import modelComponent.gamestate.GameStatus
-import modelComponent.gamestate.GameStatus.BuildStatus
+import modelComponent.fieldComponent.fieldBaseImpl.{ActionField, Street}
+import modelComponent.fieldComponent.{Field, IBuyable, IStreet}
 import modelComponent.playerComponent.IPlayer
 import modelComponent.playerComponent.playerBaseImpl.Player
-import modelComponent.util.PlayerIterator
+import modelComponent.util.{GeneralUtil, PlayerIterator, RentContext}
+import play.api.libs.json.{JsObject, Json}
 
 import scala.xml.Elem
 
-case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator) extends IBoard {
+case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator, currentDice: Int) extends IBoard {
 
-    override def nextPlayerTurn(): IBoard = copy(getFields, nextPlayer(), getPlayerIt)
+    RentContext.board = this
+
+    override def nextPlayerTurn(): IBoard = copy(getFields, nextPlayer(), getPlayerIt, currentDice)
 
     override def nextPlayer(): IPlayer = playerIt.next()
 
     override def replacePlayer(player: IPlayer, newPlayer: IPlayer): IBoard = {
         playerIt.replace(player, newPlayer)
-        copy(getFields, currentPlayer = if (currentPlayer == player) newPlayer else currentPlayer, getPlayerIt)
+        copy(getFields, currentPlayer = if (currentPlayer == player) newPlayer else currentPlayer, getPlayerIt, currentDice)
     }
 
     def getFields: List[Field] = fields
 
-    def copy(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator): IBoard = Board(fields, currentPlayer, playerIt)
+    def copy(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator, currentDice: Int): IBoard = Board(fields, currentPlayer, playerIt, currentDice)
 
     def getPlayerIt: PlayerIterator = playerIt
 
@@ -36,7 +36,7 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
                 bought = p.getBought.map(f => if (f == field) newField else f))
         })
         copy(fields = fields.updated(fields.indexOf(field), newField), currentPlayer = newPlayers.find(p => p.getName == currentPlayer.getName).get,
-            playerIt = new PlayerIterator(newPlayers.toArray, playerIt.currentIdx))
+            playerIt = new PlayerIterator(newPlayers.toArray, playerIt.currentIdx), currentDice)
     }
 
     def getPlayerit: PlayerIterator = playerIt
@@ -61,7 +61,8 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
             "num-fields" -> fields.size,
             "fields" -> fields.map(field => field.toJson()),
             "current-player" -> currentPlayer.getName,
-            "player-iterator" -> playerIt.toJson()
+            "player-iterator" -> playerIt.toJson(),
+            "currentDice" -> currentDice
         )
     }
 
@@ -118,10 +119,28 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
         if (currentFieldBuyer.isDefined) currentFieldBuyer.get.getName
         else "Field Owner Could not be fetched."
     }
+
+    def buildablesToString(buildables: List[Set[String]]): String = {
+        val sb = new StringBuilder()
+        buildables.foreach(set => {
+            sb.append("\t")
+            set.foreach(s => sb.append(s).append(" (").append(getFieldByName(s).get.asInstanceOf[IStreet].getHouseCost).append("€)\n"))
+        })
+        sb.toString()
+    }
+
+    def getPossibleBuildPlacesToString(): String = {
+        val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer)
+        buildablesToString(wholeGroups)
+    }
+
+    def getCurrentFieldRent(): Int = {
+        RentContext.rentStrategy.executeStrategy(this, getCurrentField().asInstanceOf[IBuyable])
+    }
 }
 
 object Board {
-    def fromJson(json: JsObject) : Board = {
+    def fromJson(json: JsObject): Board = {
         var fields = List[Field]()
         for (i <- 0 until (json \ "controller" \ "board" \ "num-fields").as[Int]) {
             val f = ((json \ "controller" \ "board" \ "fields") (i) \ "field").as[JsObject]
@@ -141,10 +160,12 @@ object Board {
         Board(
             fields,
             currentPlayer = players.find(p => p.name.equals((json \ "controller" \ "board" \ "current-player").get.as[String])).get,
-            playerIt = PlayerIterator(players.toArray, (json \ "controller" \ "board" \ "player-iterator" \ "start-idx").get.as[Int]))
+            playerIt = PlayerIterator(players.toArray, (json \ "controller" \ "board" \ "player-iterator" \ "start-idx").get.as[Int]),
+            (json \ "controller" \ "board" \ "currentDice").as[Int]
+        )
     }
 
-    def fromSimplefiedJson(json: JsObject) : Board = {
+    def fromSimplefiedJson(json: JsObject): Board = {
         var fields = List[Field]()
         for (i <- 0 until (json \ "num-fields").as[Int]) {
             val f = ((json \ "fields") (i) \ "field").as[JsObject]
@@ -164,6 +185,7 @@ object Board {
         Board(
             fields,
             currentPlayer = players.find(p => p.name.equals((json \ "current-player").get.as[String])).get,
-            playerIt = PlayerIterator(players.toArray, (json \ "player-iterator" \ "start-idx").get.as[Int]))
+            playerIt = PlayerIterator(players.toArray, (json \ "player-iterator" \ "start-idx").get.as[Int]),
+            (json \ "controller" \ "board" \ "currentDice").as[Int])
     }
 }

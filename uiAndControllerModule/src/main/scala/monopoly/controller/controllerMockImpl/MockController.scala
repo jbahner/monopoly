@@ -2,8 +2,10 @@ package monopoly.controller.controllerMockImpl
 
 import modelComponent.boardComponent.IBoard
 import com.google.inject.{Guice, Injector}
-import modelComponent.gamestate.GameStatus.BuildStatus.BuildStatus
-import modelComponent.gamestate.GameStatus.GameStatus
+import monopoly.controller.gamestate.GameStatus
+.BuildStatus.BuildStatus
+import monopoly.controller.gamestate.GameStatus
+.GameStatus
 import monopoly.MonopolyModule
 import monopoly.controller.IController
 import monopoly.util.UndoManager

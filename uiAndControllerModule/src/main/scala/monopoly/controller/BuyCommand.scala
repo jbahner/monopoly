@@ -1,15 +1,20 @@
 package monopoly.controller
 
 import modelComponent.boardComponent.IBoard
-import modelComponent.gamestate.GameStatus._
-import monopoly.controller.controllerBaseImpl.UpdateInfo
-import monopoly.util.Command
 import modelComponent.fieldComponent.{IBuilding, IBuyable, IStreet}
 import modelComponent.playerComponent.IPlayer
+import monopoly.controller.controllerBaseImpl.UpdateInfo
+import monopoly.controller.gamestate.GameStatus._
+import monopoly.util.Command
 
 
 case class BuyCommand(buyable: IBuyable, controller: IController) extends Command {
-    private val backupBoard: IBoard = controller.getBoard.copy(controller.getBoard.getFields, controller.getCurrentPlayer.get, controller.getBoard.getPlayerIt.copy)
+    private val backupBoard: IBoard = controller.getBoard
+        .copy(controller.getBoard.getFields,
+            controller.getCurrentPlayer.get,
+            controller.getBoard.getPlayerIt.copy,
+            controller.getBoard.currentDice)
+
     private val backupGameString: String = controller.currentGameMessage
 
     override def undoStep(): Unit = {
@@ -30,7 +35,7 @@ case class BuyCommand(buyable: IBuyable, controller: IController) extends Comman
         val newPlayer: IPlayer = currentPlayer.get.copy(money = currentPlayer.get.getMoney - newField.getPrice,
             bought = currentPlayer.get.getBought + newField)
         controller.setBoard(controller.getBoard.replacePlayer(currentPlayer.get, newPlayer)
-          .copy(controller.getBoard.getFields, newPlayer, controller.getBoard.getPlayerIt))
+            .copy(controller.getBoard.getFields, newPlayer, controller.getBoard.getPlayerIt, controller.getBoard.currentDice))
         controller.setBoard(controller.getBoard.replaceField(buyable, newField))
         controller.controllerState = BOUGHT
         controller.publish(new UpdateInfo)

@@ -26,17 +26,17 @@ class BuildingSpec extends WordSpec with Matchers {
             "get the correct action" should {
                 "can buy" in {
                     val player = Player("player", 1500, building, Set(), new FieldIterator(List(building)))
-                    building.action(player) should be(GameStatus.CAN_BUY)
+                    building.action(player) should be("CAN_BUY")
                 }
                 "bought by other" in {
                     val boughtBuilding = building.setBought()
                     val player = Player("player", 1500, boughtBuilding, Set(), new FieldIterator(List(boughtBuilding)))
-                    boughtBuilding.action(player) should be(GameStatus.BOUGHT_BY_OTHER)
+                    boughtBuilding.action(player) should be("BOUGHT_BY_OTHER")
                 }
                 "bought by same" in {
                     val boughtBuilding = building.setBought()
                     val player = Player("player", 1500, boughtBuilding, Set(boughtBuilding), new FieldIterator(List(boughtBuilding)))
-                    boughtBuilding.action(player) should be(GameStatus.ALREADY_BOUGHT)
+                    boughtBuilding.action(player) should be("ALREADY_BOUGHT")
                 }
             }
         }

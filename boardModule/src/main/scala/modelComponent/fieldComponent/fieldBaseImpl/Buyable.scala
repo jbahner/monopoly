@@ -10,12 +10,12 @@ import scala.xml.Elem
 
 abstract class Buyable(name: String, price: Int, isBought: Boolean = false) extends IBuyable {
 
-    override def action(player: IPlayer): GameStatus = {
+    override def action(player: IPlayer): String = {
         if (isBought) {
-            if (player.getBought.contains(this)) GameStatus.ALREADY_BOUGHT
-            else GameStatus.BOUGHT_BY_OTHER
+            if (player.getBought.contains(this)) GameStatus.map(GameStatus.ALREADY_BOUGHT)
+            else GameStatus.map(GameStatus.BOUGHT_BY_OTHER)
         }
-        else GameStatus.CAN_BUY
+        else GameStatus.map(GameStatus.CAN_BUY)
     }
 
     override def getPrice: Int = price

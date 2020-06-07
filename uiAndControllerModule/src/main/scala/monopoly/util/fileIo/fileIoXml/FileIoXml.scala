@@ -2,9 +2,12 @@ package monopoly.util.fileIo.fileIoXml
 
 import modelComponent.boardComponent.IBoard
 import modelComponent.boardComponent.boardBaseImpl.Board
-import modelComponent.gamestate.GameStatus
-import modelComponent.gamestate.GameStatus.BuildStatus.BuildStatus
-import modelComponent.gamestate.GameStatus.GameStatus
+import monopoly.controller.gamestate.GameStatus
+
+import monopoly.controller.gamestate.GameStatus
+.BuildStatus.BuildStatus
+import monopoly.controller.gamestate.GameStatus
+.GameStatus
 import monopoly.controller.IController
 import monopoly.util.fileIo.IFileIo
 import modelComponent.fieldComponent.fieldBaseImpl.{ActionField, Street}
@@ -64,7 +67,9 @@ class FileIoXml extends IFileIo {
         (Board(
             fields,
             players.find(p => p.name.equals((file \ "board" \ "current-player").text.trim)).get,
-            playerIt = PlayerIterator(players.toArray, (file \ "board" \ "player-iterator" \ "start-idx").text.trim.toInt)
+            playerIt = PlayerIterator(players.toArray, (file \ "board" \ "player-iterator" \ "start-idx").text.trim.toInt),
+            // Hardcoded currentDice because saving as XML is never used anymore
+            0
         ), GameStatus.revMap((file \\ "controller" \ "game-status").text.trim), GameStatus.BuildStatus.revMap((file \\ "controller" \ "build-status").text.trim))
     }
 

@@ -2,9 +2,12 @@ package monopoly.util.fileIo.fileIoJson
 
 import modelComponent.boardComponent.IBoard
 import modelComponent.boardComponent.boardBaseImpl.Board
-import modelComponent.gamestate.GameStatus
-import modelComponent.gamestate.GameStatus.BuildStatus.BuildStatus
-import modelComponent.gamestate.GameStatus.{BuildStatus, GameStatus}
+import monopoly.controller.gamestate.GameStatus
+
+import monopoly.controller.gamestate.GameStatus
+.BuildStatus.BuildStatus
+import monopoly.controller.gamestate.GameStatus
+.{BuildStatus, GameStatus}
 import monopoly.controller.IController
 import monopoly.util.fileIo.IFileIo
 import play.api.libs.json.{JsObject, Json}

@@ -18,12 +18,12 @@ case class Building(name: String, price: Int, isBought: Boolean = false) extends
 
     def getIsBought: Boolean = isBought
 
-    override def action(player: IPlayer): GameStatus = {
+    override def action(player: IPlayer): String = {
         if (isBought) {
-            if (player.getBought.contains(this)) GameStatus.ALREADY_BOUGHT
-            else GameStatus.BOUGHT_BY_OTHER
+            if (player.getBought.contains(this)) GameStatus.map(GameStatus.ALREADY_BOUGHT)
+            else GameStatus.map(GameStatus.BOUGHT_BY_OTHER)
         }
-        else GameStatus.CAN_BUY
+        else GameStatus.map(GameStatus.CAN_BUY)
     }
 
     def getPrice: Int = price

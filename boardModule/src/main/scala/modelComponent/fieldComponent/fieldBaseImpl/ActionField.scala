@@ -11,9 +11,9 @@ import scala.xml.Elem
 
 case class ActionField @Inject()(name: String) extends IActionField {
 
-    override def action(player: IPlayer): GameStatus = {
+    override def action(player: IPlayer): String = {
         name match {
-            case _ => GameStatus.NOTHING
+            case _ => GameStatus.map(GameStatus.NOTHING)
         }
     }
 

@@ -39,17 +39,17 @@ class StreetSpec extends WordSpec with Matchers {
         "get the correct action" should {
             "can buy" in {
                 val player = Player("player", 1500, street, Set(), new FieldIterator(List(street)))
-                street.action(player) should be(GameStatus.CAN_BUY)
+                street.action(player) should be("CAN_BUY")
             }
             "bought by other" in {
                 val boughtStreet = street.setBought()
                 val player = Player("player", 1500, boughtStreet, Set(), new FieldIterator(List(boughtStreet)))
-                boughtStreet.action(player) should be(GameStatus.BOUGHT_BY_OTHER)
+                boughtStreet.action(player) should be("BOUGHT_BY_OTHER")
             }
             "bought by same" in {
                 val boughtStreet = street.setBought()
                 val player = Player("player", 1500, boughtStreet, Set(boughtStreet), new FieldIterator(List(boughtStreet)))
-                boughtStreet.action(player) should be(GameStatus.ALREADY_BOUGHT)
+                boughtStreet.action(player) should be("ALREADY_BOUGHT")
             }
         }
     }

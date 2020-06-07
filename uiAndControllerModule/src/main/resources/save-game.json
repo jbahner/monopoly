@@ -172,7 +172,8 @@
           }
         } ],
         "start-idx" : 0
-      }
+      },
+      "currentDice": 0
     },
     "current-dice" : "0,0",
     "current-game-message" : "\u001B\u001Bm\"r\" to roll, \"q\" to quit, \"u\" to undo or \"re\" to redo!\u001B"

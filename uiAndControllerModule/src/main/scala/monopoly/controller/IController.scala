@@ -97,4 +97,6 @@ trait IController extends Publisher {
     def getCurrentFieldOwnersName(): String
 
     def shutdown(): Unit
+
+    def getPossibleBuildPlacesToString(): String
 }

@@ -1,17 +1,20 @@
 package monopoly.controller
 
 import modelComponent.boardComponent.IBoard
-import modelComponent.gamestate.GameStatus._
 import monopoly.controller.controllerBaseImpl.{CatGuiMessage, UpdateInfo}
 import monopoly.util.Command
 import modelComponent.fieldComponent.IBuyable
 import modelComponent.util.GeneralUtil
+import monopoly.controller.gamestate.GameStatus
+import monopoly.controller.gamestate.GameStatus._
+
 
 
 case class WalkCommand(dice: (Int, Int), controller: IController) extends Command {
     private val backupBoard: IBoard = controller.getBoard.copy(controller.getBoard.getFields,
         controller.getBoard.getCurrentPlayer,
-        controller.getBoard.getPlayerIt)
+        controller.getBoard.getPlayerIt,
+        controller.getBoard.currentDice)
     private val backupGameString: String = controller.getCurrentGameMessage
 
     override def undoStep(): Unit = {
@@ -47,7 +50,7 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
 
         val newField = controller.getCurrentField
         // Action return ALREADY_BOUGHT, CAN_BUY or BOUGHT_BY_OTHER
-        controller.controllerState = newField.action(newPlayer)
+        controller.controllerState = GameStatus.revMap(newField.action(newPlayer))
         controller.catCurrentGameMessage
         controller.publish(new CatGuiMessage)
 

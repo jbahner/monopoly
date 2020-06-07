@@ -4,7 +4,8 @@ import java.awt.Color
 import java.util
 
 import javax.swing.{BorderFactory, ImageIcon}
-import modelComponent.gamestate.GameStatus
+import monopoly.controller.gamestate.GameStatus
+
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.{CatGuiMessage, UpdateGui, UpdateInfo}
 

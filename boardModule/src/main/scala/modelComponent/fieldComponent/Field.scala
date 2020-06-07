@@ -8,7 +8,7 @@ import scala.xml.Elem
 
 trait Field {
 
-    def action(player: IPlayer): GameStatus
+    def action(player: IPlayer): String
 
     def getName: String
 

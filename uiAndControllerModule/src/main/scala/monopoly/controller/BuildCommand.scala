@@ -1,13 +1,13 @@
 package monopoly.controller
 
 import modelComponent.boardComponent.IBoard
-import modelComponent.gamestate.GameStatus._
-import monopoly.controller.controllerBaseImpl.{Controller, UpdateInfo}
-import monopoly.util.Command
 import modelComponent.fieldComponent.IStreet
+import monopoly.controller.controllerBaseImpl.{Controller, UpdateInfo}
+import monopoly.controller.gamestate.GameStatus.{BuildStatus, _}
+import monopoly.util.Command
 
 case class BuildCommand(street: IStreet, amount: Int, controller: Controller) extends Command {
-    private val backupBoard: IBoard = controller.board.copy(controller.board.getFields, controller.board.getCurrentPlayer, controller.board.getPlayerIt)
+    private val backupBoard: IBoard = controller.board.copy(controller.board.getFields, controller.board.getCurrentPlayer, controller.board.getPlayerIt, controller.board.currentDice)
     private val backupGameString: String = controller.currentGameMessage
 
     override def undoStep(): Unit = {
