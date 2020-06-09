@@ -154,6 +154,22 @@ object MainComponentServer {
         responseString.toInt
     }
 
+    def getCurrentPlayerMoney(board: String): Int = {
+        val boardJson = Json.parse(board).as[JsObject]
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/current-player-money",
+                        entity = boardJson.toString())),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString.toInt
+    }
+
 
     def getStringFromResponse(input: HttpResponse): String = {
         Unmarshal(input).to[String].toString.replace("FulfilledFuture(", "").replace(")", "")

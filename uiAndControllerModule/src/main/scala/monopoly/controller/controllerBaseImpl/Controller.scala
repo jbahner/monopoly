@@ -177,7 +177,7 @@ class Controller extends IController with Publisher {
             buildStatus = BuildStatus.NOT_OWN
         else if (MainComponentServer.getAmountOfHousesOnStreet(board.toJson().toString(), streetName) + amount > 5)
             buildStatus = BuildStatus.TOO_MANY_HOUSES
-        else if (board.getCurrentPlayerMoney() < board.getHouseCost(streetName) * amount)
+        else if (MainComponentServer.getCurrentPlayerMoney(board.toJson().toString()) < board.getHouseCost(streetName) * amount)
             buildStatus = BuildStatus.MISSING_MONEY
         else {
             board = board.buildHouses(streetName, amount)
