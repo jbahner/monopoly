@@ -84,7 +84,7 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
     }
 
     override def getCurrentField(): Field = {
-        getCurrentPlayer.get.getCurrentField()
+        getCurrentPlayer().get.getCurrentField()
     }
 
     override def getCurrentFieldType(): String = {

@@ -287,23 +287,23 @@ class Controller extends IController with Publisher {
 
 
 
-    override def getCurrentFieldType(): String = {
+    def getCurrentFieldType(): String = {
         board.getCurrentFieldType()
     }
 
-    override def getCurrentFieldName(): String = {
+    def getCurrentFieldName(): String = {
         board.getCurrentFieldName()
     }
 
-    override def getCurrentFieldOwnerMessage(): String = {
+    def getCurrentFieldOwnerMessage(): String = {
         "Owned by " + board.getCurrentFieldOwnedByString()
     }
 
-    override def getCurrentFieldRent(): Int = {
+    def getCurrentFieldRent(): Int = {
         board.getCurrentFieldRent()
     }
 
-    override def getCurrentFieldOwnersName(): String = {
+    def getCurrentFieldOwnersName(): String = {
         board.getCurrentFieldOwnerName()
     }
 
@@ -311,27 +311,27 @@ class Controller extends IController with Publisher {
         board.getPossibleBuildPlacesToString()
     }
 
-    override def buyCurrentField(): IBoard = {
+    def buyCurrentField(): IBoard = {
         board.buyCurrentField()
     }
 
-    override def getAmountOfHousesOnStreet(streetName: String): Int = {
+    def getAmountOfHousesOnStreet(streetName: String): Int = {
         board.getAmountOfHousesOnStreet(streetName)
     }
 
-    override def currentPlayerWalk(): IBoard = {
+    def currentPlayerWalk(): IBoard = {
         Board.fromSimplefiedJson(Json.parse(MainComponentServer.playerWalk(board.toJson().toString())).as[JsObject])
     }
 
-    override def getNewGameStateAfterWalk(): GameStatus = {
+    def getNewGameStateAfterWalk(): GameStatus = {
         GameStatus.revMap(board.getNewGameStateAfterWalk())
     }
 
-    override def canCurrentPlayerBuyHouses(): Boolean = {
+    def canCurrentPlayerBuyHouses(): Boolean = {
         board.canCurrentPlayerBuyHouses()
     }
 
-    override def getDidPlayerPassGo(): Boolean = {
+    def getDidPlayerPassGo(): Boolean = {
         (board.toJson() \ "passedGo").as[Boolean]
     }
 
