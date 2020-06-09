@@ -172,16 +172,15 @@ class Controller extends IController with Publisher {
     // TODO put this into the board
     def buildHouses(streetName: String, amount: Int): Unit = {
 
-        
+
         if (!MainComponentServer.canCurrentPlayerBuildOnStreet(board.toJson().toString(), streetName))
             buildStatus = BuildStatus.NOT_OWN
-        else if (getAmountOfHousesOnStreet(streetName) + amount > 5)
+        else if (MainComponentServer.getAmountOfHousesOnStreet(board.toJson().toString(), streetName) + amount > 5)
             buildStatus = BuildStatus.TOO_MANY_HOUSES
         else if (board.getCurrentPlayerMoney() < board.getHouseCost(streetName) * amount)
             buildStatus = BuildStatus.MISSING_MONEY
         else {
             board = board.buildHouses(streetName, amount)
-            // undoManager.doStep(BuildCommand(streetName, amount, this))
             buildStatus = BuildStatus.BUILT
         }
 

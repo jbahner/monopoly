@@ -133,9 +133,25 @@ object MainComponentServer {
                 HTTP_RESPONSE_WAIT_TIME seconds)
 
         val responseString = getStringFromResponse(httpResonse)
-        println("Response String: " + responseString)
 
         responseString.toBoolean
+    }
+
+    def getAmountOfHousesOnStreet(board: String, streetName: String): Int = {
+        val boardJson = Json.parse(board).as[JsObject]
+            .+("streetNameParam", Json.toJson(streetName))
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/amount-of-houses",
+                        entity = boardJson.toString())),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString.toInt
     }
 
 

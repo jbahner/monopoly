@@ -19,6 +19,7 @@ object BoardComponentServer {
     private val PATH_PLAYER_WALK = "/board/player-walk"
     private val PATH_PAY_RENT = "/board/pay-rent"
     private val PATH_CAN_CURRENT_PLAYER_BUILT = "/board/can-current-player-build"
+    private val PATH_AMOUNT_OF_HOUSES = "/board/amount-of-houses"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
@@ -115,6 +116,21 @@ object BoardComponentServer {
                 HttpResponse(entity = HttpEntity(
                     ContentTypes.`text/plain(UTF-8)`,
                     returnBoolean.toString))
+
+
+            case HttpRequest(GET, Uri.Path(PATH_AMOUNT_OF_HOUSES), _, entity, _) =>
+                println("Called Route: " + PATH_AMOUNT_OF_HOUSES)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val board = Board.fromSimplefiedJson(json)
+                val steetName = (json \ "streetNameParam").get.as[String]
+                val returnNumber = board.getAmountOfHousesOnStreet(steetName)
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    returnNumber.toString))
 
 
 
