@@ -20,9 +20,9 @@ trait IController extends Publisher {
     var currentGameMessage: String
     var currentDice: (Int, Int)
 
-    def getBoard(): IBoard
+    def getBoard(): String
 
-    def setBoard(board: IBoard): Unit
+    def setBoard(board: String): Unit
 
     def setUp(): Unit
 
@@ -39,10 +39,6 @@ trait IController extends Publisher {
     def buy(): Unit
 
     def buildHouses(streetName: String, amount: Int): Unit
-
-    def getCurrentField(): Field
-
-    def getCurrentPlayer(): Option[IPlayer]
 
     def catCurrentGameMessage(): String
 
@@ -76,34 +72,12 @@ trait IController extends Publisher {
 
     def saveGame(): Unit
 
-    def loadGame(path: String = "save-game"): IBoard
-
-    def getCurrentFieldType(): String
-
-    def getCurrentFieldName(): String
-
-    def getCurrentFieldOwnerMessage(): String
-
-    def getCurrentFieldRent(): Int
-
-    def getCurrentFieldOwnersName(): String
+    def loadGame(path: String = "save-game"): String
 
     def shutdown(): Unit
 
-    def getPossibleBuildPlacesToString(): String
-
-    def buyCurrentField(): IBoard
-
-    def getAmountOfHousesOnStreet(streetName: String): Int
-
-    def currentPlayerWalk(): IBoard
-
-    def getNewGameStateAfterWalk(): GameStatus
-
-    def canCurrentPlayerBuyHouses(): Boolean
+    def currentPlayerWalk(): String
 
     def getDidPlayerPassGo(): Boolean
-
-    def getCurrentPlayerMoney(): Int
 
 }

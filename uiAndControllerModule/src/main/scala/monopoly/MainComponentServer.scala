@@ -10,6 +10,8 @@ import com.google.inject.{Guice, Injector}
 import modelComponent.boardComponent.boardBaseImpl.Board
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
+import monopoly.controller.gamestate.GameStatus
+import monopoly.controller.gamestate.GameStatus.GameStatus
 import monopoly.view.{Gui, IUi, Tui}
 import play.api.libs.json.{JsObject, Json}
 
@@ -27,13 +29,13 @@ object MainComponentServer {
     // needed for the future flatMap/onComplete in the end
     implicit val executionContext = system.dispatcher
 
+    private val BOARD_COMPONENT_URL = "http://localhost:8082"
     val injector: Injector = Guice.createInjector(new MonopolyModule)
     val controller: IController = injector.getInstance(classOf[IController])
     controller.setUp
     val tui: IUi = new Tui(controller)
-    val gui: IUi = new Gui(controller)
 
-    private val BOARD_COMPONENT_URL = "http://localhost:8082"
+    val gui: IUi = new Gui(controller)
 
 
     def main(args: Array[String]): Unit = {
@@ -156,7 +158,7 @@ object MainComponentServer {
     }
 
     def getCurrentPlayerMoney(board: String): Int = {
-        val boardJson = Json.parse(board).as[JsObject]
+        val boardJson = board
 
         val httpResonse: HttpResponse =
             Await.result(
@@ -169,6 +171,22 @@ object MainComponentServer {
         val responseString = getStringFromResponse(httpResonse)
 
         responseString.toInt
+    }
+
+    def getCurrentPlayerName(board: String): String = {
+        val boardJson = board
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/current-player-name",
+                        entity = boardJson.toString())),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString
     }
 
     def getHouseCost(board: String, streetName: String): Int = {
@@ -224,14 +242,14 @@ object MainComponentServer {
     }
 
     def getCurrentField(board: String): String = {
-        val boardJson = Json.parse(board).as[JsObject]
+        val boardJson = board
 
         val httpResonse: HttpResponse =
             Await.result(
                 Http().singleRequest(
                     HttpRequest(GET,
                         uri = BOARD_COMPONENT_URL + "/board/current-field",
-                        entity = boardJson.toString())),
+                        entity = boardJson)),
                 HTTP_RESPONSE_WAIT_TIME seconds)
 
         val responseString = getStringFromResponse(httpResonse)
@@ -250,6 +268,9 @@ object MainComponentServer {
     // TODO owner of field is not displayed in Gui
     def getCurrentFieldType(board: String): String = {
         val currentField = getCurrentField(board)
+
+        println("Current Field!")
+        println(currentField)
 
         val json = Json.parse(currentField).as[JsObject]
 
@@ -270,6 +291,104 @@ object MainComponentServer {
         val responseString = getStringFromResponse(httpResonse)
 
         responseString.toInt
+    }
+
+    def getCurrentFieldRent(board: String): Int = {
+        val boardJson = Json.parse(board).as[JsObject]
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/current-field",
+                        entity = boardJson.toString())),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString.toInt
+    }
+
+    def canCurrentPlayerBuyHouses(board: String): Boolean = {
+        val boardJson = Json.parse(board).as[JsObject]
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/can-buy-houses",
+                        entity = boardJson.toString())),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString.toBoolean
+    }
+
+    def getPossibleBuildPlacesToString(board: String): String = {
+        val boardJson = Json.parse(board).as[JsObject]
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/possible-build-places",
+                        entity = boardJson.toString())),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString
+    }
+
+    def getFieldGameState(board: String): GameStatus = {
+        val boardJson = Json.parse(board).as[JsObject]
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/get-field-game-state",
+                        entity = boardJson.toString())),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        GameStatus.revMap(responseString)
+    }
+
+    def getCurrentPlayerDetails(board: String): String = {
+        val boardJson = board
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/current-player-details",
+                        entity = boardJson)),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString
+    }
+
+    def getCurrentPlayerBoughtFieldnames(board: String) : List[String] = {
+        val boardJson = Json.parse(board).as[JsObject]
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/current-player-bought-fieldnames",
+                        entity = boardJson.toString())),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        val boughtStreets = responseString.split(";")
+
+        boughtStreets.toList
     }
 
 

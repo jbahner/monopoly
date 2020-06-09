@@ -18,7 +18,9 @@ import modelComponent.util.{FieldIterator, PlayerIterator}
 import scala.util.{Failure, Success, Try}
 import scala.xml.PrettyPrinter
 
-class FileIoXml extends IFileIo {
+class FileIoXml
+//    extends IFileIo
+{
     def load(path: String): (IBoard, GameStatus, BuildStatus) = {
         val f = Try(scala.xml.XML.loadFile(path.replace(".json", ".xml")))
         val file = f match {

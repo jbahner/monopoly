@@ -4,10 +4,10 @@ import modelComponent.boardComponent.IBoard
 
 trait Command {
 
-    def doStep(): IBoard
+    def doStep(): String
 
-    def undoStep(): IBoard
+    def undoStep(): String
 
-    def redoStep(): IBoard
+    def redoStep(): String
 
 }

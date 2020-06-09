@@ -7,7 +7,7 @@ import monopoly.controller.gamestate.GameStatus.GameStatus
 
 trait IFileIo {
 
-    def load(path: String): (IBoard, GameStatus, BuildStatus)
+    def load(path: String): (String, GameStatus, BuildStatus)
 
     def save(controller: IController): Unit
 

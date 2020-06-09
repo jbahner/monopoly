@@ -254,6 +254,11 @@ object Board {
         )
     }
 
+    def fromJsonToString(json: JsObject): String = {
+        val boardString = (json \ "controller" \ "board").get.toString()
+        boardString
+    }
+
     def fromSimplefiedJson(json: JsObject): Board = {
         var fields = List[Field]()
         for (i <- 0 until (json \ "num-fields").as[Int]) {

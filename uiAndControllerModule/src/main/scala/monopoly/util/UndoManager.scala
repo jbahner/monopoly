@@ -6,12 +6,12 @@ class UndoManager {
     private var undoStack: List[Command] = Nil
     private var redoStack: List[Command] = Nil
 
-    def doStep(command: Command): IBoard = {
+    def doStep(command: Command): String = {
         undoStack = command :: undoStack
         command.doStep()
     }
 
-    def undoStep(): IBoard = {
+    def undoStep(): String = {
         undoStack match {
             case head :: stack =>
                 val board = head.undoStep()
@@ -21,7 +21,7 @@ class UndoManager {
         }
     }
 
-    def redoStep(): IBoard = {
+    def redoStep(): String = {
         redoStack match {
             case head :: stack =>
                 val board = head.redoStep()

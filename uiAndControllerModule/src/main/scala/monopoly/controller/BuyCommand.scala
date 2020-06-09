@@ -8,28 +8,23 @@ import monopoly.util.Command
 import play.api.libs.json.{JsObject, Json}
 
 case class BuyCommand(controller: IController) extends Command {
-    private val backupBoardString: String = controller.getBoard().toJson().toString
+    private val backupBoardString: String = controller.getBoard()
 
     private val backupGameString: String = controller.currentGameMessage
 
-    override def undoStep(): IBoard = {
-        val parsedBoard = Board.fromSimplefiedJson(Json.parse(backupBoardString).as[JsObject])
+    override def undoStep(): String = {
+        val parsedBoard = backupBoardString
         controller.setBoard(parsedBoard)
         controller.currentGameMessage = backupGameString
         controller.controllerState = CAN_BUY
         parsedBoard
     }
 
-    override def redoStep(): IBoard = doStep()
+    override def redoStep(): String = doStep()
 
-    override def doStep(): IBoard = {
+    override def doStep(): String = {
 
-        val board = controller.buyCurrentField()
-
-        controller.controllerState = BOUGHT
-
-        controller.publish(new UpdateInfo)
-
-        board
+        // Buying things is disabled
+        controller.getBoard()
     }
 }

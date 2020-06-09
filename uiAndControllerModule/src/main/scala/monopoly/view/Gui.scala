@@ -112,12 +112,10 @@ class Gui(controller: IController) extends Frame with IUi {
 
     def generateBuildButtons(): GridPanel = {
         controller.getControllerState match {
-            case GameStatus.CAN_BUILD => new GridPanel(MainComponentServer.getCurrentPlayBoughtStreetsCount(controller.getBoard().toJson().toString()),
-
-                1) {
-                if (controller.getCurrentPlayer.isDefined)
-                    controller.getCurrentPlayer.get.getBought.toSeq.sortBy(_.getName)
-                        .foreach(bought => contents += generateBuildButton(bought.getName))
+            case GameStatus.CAN_BUILD => new GridPanel(MainComponentServer.getCurrentPlayBoughtStreetsCount(controller.getBoard()), 1)
+            {
+                MainComponentServer.getCurrentPlayerBoughtFieldnames(controller.getBoard())
+                    .foreach(bought => contents += generateBuildButton(bought))
             }
             case _ => new GridPanel(1, 1)
         }
@@ -131,9 +129,9 @@ class Gui(controller: IController) extends Frame with IUi {
                     case _: ButtonClicked =>
                         controller.buildHouses(streetName, 1)
                 }
-                tooltip = MainComponentServer.getHouseCost(controller.getBoard().toJson().toString(), streetName) + "€"
+                tooltip = MainComponentServer.getHouseCost(controller.getBoard(), streetName) + "€"
             }
-            contents += new Label(" -- " + MainComponentServer.getAmountOfHousesOnStreet(controller.getBoard().toJson().toString(), streetName))
+            contents += new Label(" -- " + MainComponentServer.getAmountOfHousesOnStreet(controller.getBoard(), streetName))
 
         }
 
@@ -148,7 +146,7 @@ class Gui(controller: IController) extends Frame with IUi {
 
     def generateCenterCurrentFieldDetails(): GridPanel = {
         new GridPanel(2, 1) {
-            val curFieldType: String = MainComponentServer.getCurrentFieldType(controller.getBoard().toJson().toString())
+            val curFieldType: String = MainComponentServer.getCurrentFieldType(controller.getBoard())
 
 
             contents += new GridPanel(7, 1) {
@@ -159,23 +157,24 @@ class Gui(controller: IController) extends Frame with IUi {
                 }
 
 
-                contents += new Label(controller.getCurrentFieldName())
+                contents += new Label(MainComponentServer.getCurrentFieldName(controller.getBoard()))
 
 
                 curFieldType match {
                     case "Street" =>
-                        contents += new Label(controller.getCurrentFieldOwnerMessage())
-                        contents += new Label("Current Rent: " + controller.getCurrentFieldRent())
-                        val currentFieldName = MainComponentServer.getCurrentFieldName(controller.getBoard().toJson().toString())
-                        contents += new Label("Houses: " + MainComponentServer.getAmountOfHousesOnStreet(controller.getBoard().toJson().toString(), currentFieldName))
+                        contents += new Label(MainComponentServer.getOwnersName(controller.getBoard(), MainComponentServer.getCurrentFieldName(controller.getBoard())))
+
+                        contents += new Label("Current Rent: " + MainComponentServer.getCurrentFieldRent(controller.getBoard()))
+                        val currentFieldName = MainComponentServer.getCurrentFieldName(controller.getBoard())
+                        contents += new Label("Houses: " + MainComponentServer.getAmountOfHousesOnStreet(controller.getBoard(), currentFieldName))
                     case "Building" =>
-                        contents += new Label(controller.getCurrentFieldOwnerMessage())
+                        contents += new Label(MainComponentServer.getOwnersName(controller.getBoard(), MainComponentServer.getCurrentFieldName(controller.getBoard())))
                     case _ =>
                 }
             }
 
 
-            if (controller.getCurrentFieldName().equals("Go")) {
+            if (MainComponentServer.getCurrentFieldName(controller.getBoard()).equals("Go")) {
                 contents += new Label() {
                     icon = new ImageIcon("src\\main\\scala\\de\\htwg\\se\\monopoly\\view\\textures\\go_field.png")
                     maximumSize = new Dimension(100, 100)
@@ -209,7 +208,7 @@ class Gui(controller: IController) extends Frame with IUi {
         var msg = ""
         controller.getControllerState match {
             case GameStatus.START_OF_TURN =>
-                msg = "  " + controller.getCurrentPlayer.get.getName + "'s turn.\nIt is your start of the turn!\nRoll the dice.  "
+                msg = "  " + MainComponentServer.getCurrentPlayerName(controller.getBoard()) + "'s turn.\nIt is your start of the turn!\nRoll the dice.  "
                 bufferedMessage = ""
             case GameStatus.CAN_BUILD =>
                 controller.getBuildStatus match {
@@ -228,9 +227,9 @@ class Gui(controller: IController) extends Frame with IUi {
 
         new GridPanel(10, 1) {
             contents += new Label("")
-            contents += new Label("  " + controller.getCurrentPlayer.get.getName + "    ")
+            contents += new Label("  " + MainComponentServer.getCurrentPlayerName(controller.getBoard()) + "    ")
             // TODO current Players money is not displayed correctly
-            contents += new Label(controller.getCurrentPlayerMoney() + " €")
+            contents += new Label(MainComponentServer.getCurrentPlayerMoney(controller.getBoard()) + " €")
             contents += new Label("")
         }
     }
@@ -240,13 +239,15 @@ class Gui(controller: IController) extends Frame with IUi {
             case GameStatus.ROLLED =>
                 bufferedMessage = "  Rolled " + controller.getCurrentDice._1 + " and " + controller.getCurrentDice._2 + "  \n"
             case GameStatus.NEW_FIELD =>
-                bufferedMessage = bufferedMessage + "  Your new Field is " + controller.getCurrentField().getName + ".  \n"
+                bufferedMessage = bufferedMessage + "  Your new Field is " + MainComponentServer.getCurrentFieldName(controller.getBoard()) + ".  \n"
             case GameStatus.ALREADY_BOUGHT =>
                 bufferedMessage = bufferedMessage + "  You already own this street.  \n"
             case GameStatus.BOUGHT_BY_OTHER =>
                 // RentPay 2
-                bufferedMessage = bufferedMessage + "  Field already bought by " + controller.getCurrentFieldOwnersName() +
-                    "\nYou must pay " + controller.getCurrentFieldRent() + "€ rent."
+                bufferedMessage = bufferedMessage + "  Field already bought by " +
+                    MainComponentServer.getOwnersName(controller.getBoard(),
+                        MainComponentServer.getCurrentFieldName(controller.getBoard())) +
+                    "\nYou must pay " + MainComponentServer.getCurrentFieldRent(controller.getBoard()) + "€ rent."
             case GameStatus.PASSED_GO =>
                 bufferedMessage = bufferedMessage + "  Earned 200€ for passing Go.  \n"
             case GameStatus.NOTHING =>

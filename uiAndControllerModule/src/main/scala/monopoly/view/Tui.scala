@@ -1,9 +1,8 @@
 package monopoly.view
 
+import monopoly.MainComponentServer
 import monopoly.controller.gamestate.GameStatus
-
-import monopoly.controller.gamestate.GameStatus
-._
+import monopoly.controller.gamestate.GameStatus._
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
 
@@ -12,7 +11,7 @@ import scala.util.{Failure, Success, Try}
 
 class Tui(controller: IController) extends Reactor with IUi {
     listenTo(controller)
-    playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer.get.getDetails)
+    playerInfo(message(NEXT_PLAYER) + MainComponentServer.getCurrentPlayerDetails(controller.getBoard()))
 
 
     def processInput(input: String): Unit = {

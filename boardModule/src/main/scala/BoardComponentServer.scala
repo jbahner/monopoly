@@ -6,6 +6,7 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import modelComponent.boardComponent.boardBaseImpl.Board
 import modelComponent.fieldComponent.IBuyable
+import modelComponent.util.RentContext
 import play.api.libs.json.{JsObject, Json}
 
 object BoardComponentServer {
@@ -27,9 +28,13 @@ object BoardComponentServer {
     private val PATH_GET_OWNERS_NAME = "/board/get-owners-name"
     private val PATH_CURRENT_FIELD = "/board/current-field"
     private val PATH_CURRENT_PLAYER_BOUGHT_STREET_COUNT = "/board/current-player-bought-streets-count"
-    //    private val PATH_ROOT = "/"
-    //    private val PATH_ROOT = "/"
-    //    private val PATH_ROOT = "/"
+    private val PATH_CURRENT_PLAYER_NAME = "/board/current-player-name"
+    private val PATH_CURRENT_FIELD_RENT = "/board/current-field"
+    private val PATH_CURRENT_PLAYER_BUY_HOUSES = "/board/can-buy-houses"
+    private val PATH_POSSIBLE_BUILD_PLACES = "/board/possible-build-places"
+    private val PATH_GET_FIELD_GAMESTATE = "/board/get-field-game-state"
+    private val PATH_CURRENT_PLAYER_DETAILS = "/board/current-player-details"
+    private val PATH_CURRENT_PLAYER_BOUGHT_FIELDNAMES = "/current-player-bought-fieldnames"
 
     def main(args: Array[String]): Unit = {
 
@@ -228,6 +233,113 @@ object BoardComponentServer {
                 HttpResponse(entity = HttpEntity(
                     ContentTypes.`text/plain(UTF-8)`,
                     boughtSize.toString))
+
+
+            case HttpRequest(GET, Uri.Path(PATH_CURRENT_PLAYER_NAME), _, entity, _) =>
+                println("Called Route: " + PATH_CURRENT_PLAYER_NAME)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val board = Board.fromSimplefiedJson(json)
+
+                val playerName = board.getCurrentPlayer().get.getName
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    playerName))
+
+
+            case HttpRequest(GET, Uri.Path(PATH_CURRENT_FIELD_RENT), _, entity, _) =>
+                println("Called Route: " + PATH_CURRENT_FIELD_RENT)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val board = Board.fromSimplefiedJson(json)
+
+                val currentRent = RentContext.rentStrategy.executeStrategy(board, board.getCurrentField().asInstanceOf[IBuyable])
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    currentRent.toString))
+
+            case HttpRequest(GET, Uri.Path(PATH_CURRENT_PLAYER_BUY_HOUSES), _, entity, _) =>
+                println("Called Route: " + PATH_CURRENT_PLAYER_BUY_HOUSES)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val board = Board.fromSimplefiedJson(json)
+
+                val boolFlag = board.canCurrentPlayerBuyHouses()
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    boolFlag.toString))
+
+            case HttpRequest(GET, Uri.Path(PATH_POSSIBLE_BUILD_PLACES), _, entity, _) =>
+                println("Called Route: " + PATH_POSSIBLE_BUILD_PLACES)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val board = Board.fromSimplefiedJson(json)
+
+                val placesToString = board.getPossibleBuildPlacesToString()
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    placesToString))
+
+
+            case HttpRequest(GET, Uri.Path(PATH_GET_FIELD_GAMESTATE), _, entity, _) =>
+                println("Called Route: " + PATH_GET_FIELD_GAMESTATE)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val board = Board.fromSimplefiedJson(json)
+
+                val newGamestateString = board.getCurrentField().action(board.getCurrentPlayer().get)
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    newGamestateString))
+
+
+            case HttpRequest(GET, Uri.Path(PATH_CURRENT_PLAYER_DETAILS), _, entity, _) =>
+                println("Called Route: " + PATH_CURRENT_PLAYER_DETAILS)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+
+                println(requestJsonBoardAsString)
+
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val board = Board.fromSimplefiedJson(json)
+
+                val details = board.getCurrentPlayer().get.getDetails
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    details))
+
+            case HttpRequest(GET, Uri.Path(PATH_CURRENT_PLAYER_BOUGHT_FIELDNAMES), _, entity, _) =>
+                println("Called Route: " + PATH_CURRENT_PLAYER_BOUGHT_FIELDNAMES)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val board = Board.fromSimplefiedJson(json)
+
+                var answer = ""
+
+                board.getCurrentPlayer().get.getBought.toSeq.sortBy(_.getName)
+                    .foreach(bought => answer += bought.getName + ";")
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    answer))
 
 
 

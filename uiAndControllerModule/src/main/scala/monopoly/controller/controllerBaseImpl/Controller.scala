@@ -37,7 +37,7 @@ class Controller extends IController with Publisher {
     var controllerState: GameStatus = START_OF_TURN
     var buildStatus: BuildStatus = BuildStatus.DEFAULT
 
-    var board: IBoard = _
+    var board: String = _
     var currentDice: (Int, Int) = (0, 0)
     var currentGameMessage: String = _
 
@@ -48,9 +48,9 @@ class Controller extends IController with Publisher {
     }
 
     def rollDice(): Unit = {
-        val (tmpBoard, d1, d2) = MainComponentServer.rollDice(board.toJson().toString())
+        val (tmpBoard, d1, d2) = MainComponentServer.rollDice(board)
         currentDice = (d1, d2)
-        board = Board.fromSimplefiedJson(Json.parse(tmpBoard).as[JsObject])
+        board = tmpBoard
 
         catCurrentGameMessage()
         board = undoManager.doStep(WalkCommand(currentDice, this))
@@ -65,22 +65,22 @@ class Controller extends IController with Publisher {
                 currentGameMessage
             case PASSED_GO => currentGameMessage += infoString("Received 200€ by passing Go\n")
                 currentGameMessage
-            case NEW_FIELD => currentGameMessage = infoString("New Field: " + MainComponentServer.getCurrentFieldName(board.toJson().toString()) + "\n")
+            case NEW_FIELD => currentGameMessage = infoString("New Field: " + MainComponentServer.getCurrentFieldName(board) + "\n")
                 currentGameMessage
             case ALREADY_BOUGHT => currentGameMessage += infoString("You already own this street\n")
                 currentGameMessage
             case CAN_BUY =>
-                currentGameMessage += userInputString("Do you want to buy %s ? (Y/N)".format(MainComponentServer.getCurrentFieldName(board.toJson().toString())) + "\n")
+                currentGameMessage += userInputString("Do you want to buy %s ? (Y/N)".format(MainComponentServer.getCurrentFieldName(board)) + "\n")
                 currentGameMessage
             case BOUGHT_BY_OTHER =>
-                val currentFieldName = MainComponentServer.getCurrentFieldName(board.toJson().toString())
+                val currentFieldName = MainComponentServer.getCurrentFieldName(board)
                 currentGameMessage += infoString("Field already bought by " + getOwnersName(currentFieldName) + ".\n" +
                     // RentPay 1
-                    "You must pay " + getCurrentFieldRent() + " rent!\n")
+                    "You must pay " + MainComponentServer.getCurrentFieldRent(board) + " rent!\n")
                 currentGameMessage
             case CAN_BUILD =>
                 buildStatus match {
-                    case BuildStatus.DEFAULT => currentGameMessage += userInputString("You can build on: \n" + getPossibleBuildPlacesToString() +
+                    case BuildStatus.DEFAULT => currentGameMessage += userInputString("You can build on: \n" + MainComponentServer.getPossibleBuildPlacesToString(board) +
                         "\nType the name of the street and the amount of houses you want to build. Press \"q\" to quit, \"u\" to undo or \"re\" to redo.\n")
                         currentGameMessage
                     case BuildStatus.BUILT => currentGameMessage = infoString("Successfully built!\n")
@@ -93,9 +93,10 @@ class Controller extends IController with Publisher {
                     case BuildStatus.MISSING_MONEY => currentGameMessage += errorString("You don't have enough money!\n")
                         currentGameMessage
                 }
-            case DONE => currentGameMessage = turnString(getCurrentPlayer().get.getName + " ended his turn.\n\n")
+            case DONE => currentGameMessage = turnString(MainComponentServer.getCurrentPlayerName(board) + " ended his turn.\n\n")
                 currentGameMessage
-            case NEXT_PLAYER => currentGameMessage = turnString("Next player: " + getCurrentPlayer().get.getName + "\n") + playerInfoString(getCurrentPlayer().get.getDetails)
+            case NEXT_PLAYER => currentGameMessage = turnString("Next player: " + MainComponentServer.getCurrentPlayerName(board) + "\n") +
+                playerInfoString(MainComponentServer.getCurrentPlayerDetails(board))
                 currentGameMessage
             case MISSING_MONEY => currentGameMessage = "You do not have enough money!"
                 currentGameMessage
@@ -121,10 +122,8 @@ class Controller extends IController with Publisher {
 
     def nextPlayer(): Unit = {
 
-        val boardString: String = MainComponentServer.requestNextPlayer(board.toJson().toString())
-        board = Board.fromSimplefiedJson(Json.parse(boardString).as[JsObject])
-
-        //        board = board.nextPlayerTurn()
+        val boardString: String = MainComponentServer.requestNextPlayer(board)
+        board =boardString
 
         updateCurrentPlayerInfo()
         publish(new UpdateInfo)
@@ -140,15 +139,15 @@ class Controller extends IController with Publisher {
 
     // TODO put this into the board
     def payRent(): Unit = {
-        val payAmount = getCurrentFieldRent()
-        val currentPlayerMoney = getCurrentPlayerMoney()
+        val payAmount = MainComponentServer.getCurrentFieldRent(board)
+        val currentPlayerMoney = MainComponentServer.getCurrentPlayerMoney(board)
         if (currentPlayerMoney < payAmount) {
             controllerState = MISSING_MONEY
             publish(new UpdateInfo)
         } else {
 
-            val tmpBoard = MainComponentServer.currentPlayerPaysRent(board.toJson().toString())
-            board = Board.fromSimplefiedJson(Json.parse(tmpBoard).as[JsObject])
+            val tmpBoard = MainComponentServer.currentPlayerPaysRent(board)
+            board = tmpBoard
         }
         publish(new UpdateInfo)
     }
@@ -170,14 +169,14 @@ class Controller extends IController with Publisher {
 
     def buildHouses(streetName: String, amount: Int): Unit = {
 
-        if (!MainComponentServer.canCurrentPlayerBuildOnStreet(board.toJson().toString(), streetName))
+        if (!MainComponentServer.canCurrentPlayerBuildOnStreet(board, streetName))
             buildStatus = BuildStatus.NOT_OWN
-        else if (MainComponentServer.getAmountOfHousesOnStreet(board.toJson().toString(), streetName) + amount > 5)
+        else if (MainComponentServer.getAmountOfHousesOnStreet(board, streetName) + amount > 5)
             buildStatus = BuildStatus.TOO_MANY_HOUSES
-        else if (MainComponentServer.getCurrentPlayerMoney(board.toJson().toString()) < MainComponentServer.getHouseCost(board.toJson().toString(), streetName) * amount)
+        else if (MainComponentServer.getCurrentPlayerMoney(board) < MainComponentServer.getHouseCost(board, streetName) * amount)
             buildStatus = BuildStatus.MISSING_MONEY
         else {
-            board = Board.fromSimplefiedJson(Json.parse(MainComponentServer.buildHouses(board.toJson().toString(), streetName, amount)).as[JsObject])
+            board = MainComponentServer.buildHouses(board, streetName, amount)
             buildStatus = BuildStatus.BUILT
         }
 
@@ -186,7 +185,7 @@ class Controller extends IController with Publisher {
     }
 
     def getOwnersName(streetName: String): String = {
-        MainComponentServer.getOwnersName(board.toJson().toString(), streetName)
+        MainComponentServer.getOwnersName(board, streetName)
     }
 
 
@@ -219,9 +218,9 @@ class Controller extends IController with Publisher {
         currentDice
     }
 
-    def getBoard(): IBoard = board
+    def getBoard(): String = board
 
-    def setBoard(board: IBoard): Unit = {
+    def setBoard(board: String): Unit = {
         this.board = board
     }
 
@@ -229,7 +228,7 @@ class Controller extends IController with Publisher {
         fileIo.save(this)
     }
 
-    def loadGame(path: String = "save-game"): IBoard = {
+    def loadGame(path: String = "save-game"): String = {
         val (lBoard, lControllerState, lBuildStatus) = fileIo.load(path)
         controllerState = lControllerState
         buildStatus = lBuildStatus
@@ -249,7 +248,9 @@ class Controller extends IController with Publisher {
             </game-status>
             <build-status>
                 {buildStatus}
-            </build-status>{board.toXml()}<current-dice>
+            </build-status>
+<!--            {board.toXml()}-->
+            <current-dice>
             {currentDice._1 + "," + currentDice._2}
         </current-dice>
             <current-game-message>
@@ -263,7 +264,7 @@ class Controller extends IController with Publisher {
             "controller" -> Json.obj(
                 "game-status" -> controllerState,
                 "build-status" -> buildStatus,
-                "board" -> board.toJson(),
+//                "board" -> board.toJson(),
                 "current-dice" -> Json.toJson(currentDice._1 + "," + currentDice._2),
                 "current-game-message" -> unstyleString(currentGameMessage)
             )
@@ -274,69 +275,23 @@ class Controller extends IController with Publisher {
         input.replaceAll("\\[..", "")
     }
 
-    def getCurrentField(): Field = board.getCurrentField()
-
-    def getCurrentPlayer(): Option[IPlayer] = {
-        board.getCurrentPlayer
-    }
-
     def shutdown(): Unit = {
         // TODO maybe shutdown other services too?
         sys.exit(1)
     }
 
 
+//    def buyCurrentField(): IBoard = {
+//        board.buyCurrentField()
+//    }
 
-    def getCurrentFieldType(): String = {
-        board.getCurrentFieldType()
+    def currentPlayerWalk(): String = {
+        MainComponentServer.playerWalk(board)
     }
 
-    def getCurrentFieldName(): String = {
-        board.getCurrentFieldName()
-    }
-
-    def getCurrentFieldOwnerMessage(): String = {
-        "Owned by " + board.getCurrentFieldOwnedByString()
-    }
-
-    def getCurrentFieldRent(): Int = {
-        board.getCurrentFieldRent()
-    }
-
-    def getCurrentFieldOwnersName(): String = {
-        board.getCurrentFieldOwnerName()
-    }
-
-    def getPossibleBuildPlacesToString(): String = {
-        board.getPossibleBuildPlacesToString()
-    }
-
-    def buyCurrentField(): IBoard = {
-        board.buyCurrentField()
-    }
-
-    def getAmountOfHousesOnStreet(streetName: String): Int = {
-        board.getAmountOfHousesOnStreet(streetName)
-    }
-
-    def currentPlayerWalk(): IBoard = {
-        Board.fromSimplefiedJson(Json.parse(MainComponentServer.playerWalk(board.toJson().toString())).as[JsObject])
-    }
-
-    def getNewGameStateAfterWalk(): GameStatus = {
-        GameStatus.revMap(board.getNewGameStateAfterWalk())
-    }
-
-    def canCurrentPlayerBuyHouses(): Boolean = {
-        board.canCurrentPlayerBuyHouses()
-    }
 
     def getDidPlayerPassGo(): Boolean = {
-        (board.toJson() \ "passedGo").as[Boolean]
-    }
-
-    def getCurrentPlayerMoney(): Int = {
-        board.getCurrentPlayerMoney()
+        (Json.parse(board).as[JsObject] \ "passedGo").as[Boolean]
     }
 
 }
