@@ -16,6 +16,8 @@ object BoardComponentServer {
     private val PATH_ROOT = "/"
     private val PATH_NEXT_PLAYER = "/board/next-player"
     private val PATH_ROLL_DICE = "/board/roll-dice"
+    private val PATH_PLAYER_WALK = "/board/player-walk"
+    private val PATH_PASS_GO = "/board/passed-go"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
@@ -34,46 +36,56 @@ object BoardComponentServer {
                 println("Called Route: " + PATH_NEXT_PLAYER)
 
                 val requestJsonBoardAsString = entityToJson(entity)
-//                println("Input:")
-//                println("\t" + requestJsonBoardAsString)
 
                 val json = Json.parse(requestJsonBoardAsString).as[JsObject]
                 val board = Board.fromSimplefiedJson(json)
 
                 val retBoard = board.nextPlayerTurn()
-//                println("Output")
-//                println("\t" + retBoard.toJson().toString())
-
 
                 HttpResponse(entity = HttpEntity(
                     ContentTypes.`text/plain(UTF-8)`,
                     retBoard.toJson().toString()))
 
             case HttpRequest(POST, Uri.Path(PATH_ROLL_DICE), _, entity, _) =>
-
-                println("Called Route: " + PATH_NEXT_PLAYER)
+                println("Called Route: " + PATH_ROLL_DICE)
 
                 val requestJsonBoardAsString = entityToJson(entity)
-//                println("Input:")
-//                println("\t" + requestJsonBoardAsString)
 
                 val json = Json.parse(requestJsonBoardAsString).as[JsObject]
                 val board = Board.fromSimplefiedJson(json)
                 val (d1, d2) = board.rollDice()
 
-                println("Rolled: " + d1 + " " + d2)
-
                 val returnBoardJson = board.toJson()
                     .+("d1", Json.toJson(d1))
                     .+("d2", Json.toJson(d2))
-
-//                println("Output")
-//                println("\t" + retBoard.toJson().toString())
 
 
                 HttpResponse(entity = HttpEntity(
                     ContentTypes.`text/plain(UTF-8)`,
                     returnBoardJson.toString()))
+
+            case HttpRequest(POST, Uri.Path(PATH_PLAYER_WALK), _, entity, _) =>
+
+                println("Called Route: " + PATH_PLAYER_WALK)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val board = Board.fromSimplefiedJson(json)
+                val newBoard = board.currentPlayerWalk()
+
+                val returnBoardJson = newBoard.toJson()
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    returnBoardJson.toString()))
+
+
+
+
+
+
+
 
             //            case HttpRequest(GET, Uri.Path("/crash"), _, _, _) =>
             //                sys.error("BOOM!")

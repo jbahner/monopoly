@@ -51,7 +51,7 @@ object MainComponentServer {
         controller.publish(new UpdateInfo)
 
         var input = readLine()
-        while (input != "q") {
+        while (input != "quit") {
             input = readLine()
             tui.processInput(input)
         }
@@ -88,6 +88,20 @@ object MainComponentServer {
         (responseString,
             (responseJson \ "d1").as[Int],
             (responseJson \ "d2").as[Int])
+    }
+
+    def playerWalk(board: String): (String) = {
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(POST,
+                        uri = BOARD_COMPONENT_URL + "/board/player-walk",
+                        entity = board)),
+                1 seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString
     }
 
 

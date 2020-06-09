@@ -49,7 +49,6 @@ class Controller extends IController with Publisher {
 
     def rollDice(): Unit = {
         val (tmpBoard, d1, d2) = MainComponentServer.rollDice(board.toJson().toString())
-        println("Rolled: " + d1 + " " + d2)
         currentDice = (d1, d2)
         board = Board.fromSimplefiedJson(Json.parse(tmpBoard).as[JsObject])
 
@@ -333,7 +332,7 @@ class Controller extends IController with Publisher {
     }
 
     override def currentPlayerWalk(): IBoard = {
-        board.currentPlayerWalk()
+        Board.fromSimplefiedJson(Json.parse(MainComponentServer.playerWalk(board.toJson().toString())).as[JsObject])
     }
 
     override def getNewGameStateAfterWalk(): GameStatus = {
@@ -342,6 +341,10 @@ class Controller extends IController with Publisher {
 
     override def canCurrentPlayerBuyHouses(): Boolean = {
         board.canCurrentPlayerBuyHouses()
+    }
+
+    override def getDidPlayerPassGo(): Boolean = {
+        (board.toJson() \ "passedGo").as[Boolean]
     }
 }
 

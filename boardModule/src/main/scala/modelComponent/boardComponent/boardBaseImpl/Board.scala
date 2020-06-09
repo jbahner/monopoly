@@ -66,7 +66,8 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
             "fields" -> fields.map(field => field.toJson()),
             "current-player" -> currentPlayer.getName,
             "player-iterator" -> playerIt.toJson(),
-            "currentDice" -> currentDice
+            "currentDice" -> currentDice,
+            "passedGo" -> didPlayerPassGo
         )
     }
 
@@ -202,6 +203,7 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
         val player = getCurrentPlayer().get
         val (newPlayer, passedGo) = getCurrentPlayer().get.walk(currentDice)
 
+        // passed Go does not seem to work as intended
         didPlayerPassGo = passedGo
 
         replacePlayer(player, newPlayer)
@@ -262,9 +264,14 @@ object Board {
             val p = ((json \ "player-iterator" \ "players") (i) \ "player").as[JsObject]
             players = players :+ Player.fromJson(p, fields)
         }
-        Board(
+        var loadedBoard = Board(
             fields,
             currentPlayer = players.find(p => p.name.equals((json \ "current-player").get.as[String])).get,
             playerIt = PlayerIterator(players.toArray, (json \ "player-iterator" \ "start-idx").get.as[Int]))
+
+
+        loadedBoard.currentDice = (json \ "currentDice").as[Int]
+        loadedBoard.didPlayerPassGo = (json \ "passedGo").as[Boolean]
+        loadedBoard
     }
 }

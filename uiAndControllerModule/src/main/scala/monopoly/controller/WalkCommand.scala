@@ -35,8 +35,12 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
         controller.controllerState = ROLLED
         controller.catCurrentGameMessage()
         controller.publish(new CatGuiMessage)
+
+        // Seems a bit buggy -> Player always walks from "Go" and not from previous field
         val board = controller.currentPlayerWalk()
-        val passedGo = board.getDidPlayerPassGo()
+
+        val passedGo = controller.getDidPlayerPassGo()
+        println("passedGo: " + passedGo)
         controller.setBoard(board)
 
         if (passedGo) {
