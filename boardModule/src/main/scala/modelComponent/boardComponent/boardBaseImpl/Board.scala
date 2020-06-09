@@ -211,6 +211,10 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
     override def getNewGameStateAfterWalk(): String = {
         getCurrentField().action(getCurrentPlayer().get)
     }
+
+    override def canCurrentPlayerBuyHouses(): Boolean = {
+        GeneralUtil.getWholeGroups(getCurrentPlayer().get) != Nil
+    }
 }
 
 object Board {

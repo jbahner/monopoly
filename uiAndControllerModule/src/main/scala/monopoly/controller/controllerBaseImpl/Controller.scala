@@ -4,13 +4,13 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.google.inject.{Guice, Injector}
 import modelComponent.boardComponent.IBoard
-import modelComponent.fieldComponent.{Field, IBuyable, IStreet}
+import modelComponent.fieldComponent.{Field, IBuyable}
 import modelComponent.playerComponent.IPlayer
 import monopoly.MonopolyModule
 import monopoly.controller.gamestate.GameStatus
-import monopoly.controller.{BuyCommand, _}
 import monopoly.controller.gamestate.GameStatus.BuildStatus.BuildStatus
 import monopoly.controller.gamestate.GameStatus._
+import monopoly.controller.{BuyCommand, _}
 import monopoly.util.UndoManager
 import monopoly.util.fileIo.IFileIo
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -333,6 +333,10 @@ class Controller extends IController with Publisher {
 
     override def getNewGameStateAfterWalk(): GameStatus = {
         GameStatus.revMap(board.getNewGameStateAfterWalk())
+    }
+
+    override def canCurrentPlayerBuyHouses(): Boolean = {
+        board.canCurrentPlayerBuyHouses()
     }
 }
 

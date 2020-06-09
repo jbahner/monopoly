@@ -107,4 +107,6 @@ trait IController extends Publisher {
     def currentPlayerWalk(): IBoard
 
     def getNewGameStateAfterWalk(): GameStatus
+
+    def canCurrentPlayerBuyHouses(): Boolean
 }

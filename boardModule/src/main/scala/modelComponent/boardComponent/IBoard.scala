@@ -73,4 +73,6 @@ trait IBoard {
     def getDidPlayerPassGo(): Boolean
 
     def getNewGameStateAfterWalk(): String
+
+    def canCurrentPlayerBuyHouses(): Boolean
 }

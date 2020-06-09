@@ -37,6 +37,7 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
         controller.publish(new CatGuiMessage)
         val board = controller.currentPlayerWalk()
         val passedGo = board.getDidPlayerPassGo()
+        controller.setBoard(board)
 
         if (passedGo) {
             controller.controllerState = PASSED_GO
@@ -51,7 +52,7 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
 
         // Action return ALREADY_BOUGHT, CAN_BUY or BOUGHT_BY_OTHER
         controller.controllerState = controller.getNewGameStateAfterWalk()
-        controller.catCurrentGameMessage()
+        // controller.catCurrentGameMessage()
         controller.publish(new CatGuiMessage)
 
         controller.controllerState match {
@@ -61,11 +62,11 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
                     controller.getBuyer(controller.getCurrentField().asInstanceOf[IBuyable]).get)
             case _ =>
         }
-        board
 
-//        if (GeneralUtil.getWholeGroups(newPlayer) != Nil) {
-//            controller.controllerState = CAN_BUILD
-//            controller.buildStatus = BuildStatus.DEFAULT
-//        }
+        if (controller.canCurrentPlayerBuyHouses()) {
+            controller.controllerState = CAN_BUILD
+            controller.buildStatus = BuildStatus.DEFAULT
+        }
+        board
     }
 }
