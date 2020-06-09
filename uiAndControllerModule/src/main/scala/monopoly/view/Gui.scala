@@ -4,8 +4,8 @@ import java.awt.Color
 import java.util
 
 import javax.swing.{BorderFactory, ImageIcon}
+import monopoly.MainComponentServer
 import monopoly.controller.gamestate.GameStatus
-
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.{CatGuiMessage, UpdateGui, UpdateInfo}
 
@@ -129,9 +129,10 @@ class Gui(controller: IController) extends Frame with IUi {
                     case _: ButtonClicked =>
                         controller.buildHouses(streetName, 1)
                 }
-                tooltip = controller.getHouseCost(streetName) + "€"
+                tooltip = MainComponentServer.getHouseCost(controller.getBoard().toJson().toString(), streetName) + "€"
             }
-            contents += new Label(" -- " + controller.getHouseCount(streetName).toString)
+            contents += new Label(" -- " + MainComponentServer.getAmountOfHousesOnStreet(controller.getBoard().toJson().toString(), streetName))
+
         }
 
     }
@@ -163,7 +164,8 @@ class Gui(controller: IController) extends Frame with IUi {
                     case "Street" =>
                         contents += new Label(controller.getCurrentFieldOwnerMessage())
                         contents += new Label("Current Rent: " + controller.getCurrentFieldRent())
-                        contents += new Label("Houses: " + controller.getHouseCount(controller.getCurrentFieldName()))
+                        val currentFieldName = MainComponentServer.getCurrentFieldName(controller.getBoard().toJson().toString())
+                        contents += new Label("Houses: " + MainComponentServer.getAmountOfHousesOnStreet(controller.getBoard().toJson().toString(), currentFieldName))
                     case "Building" =>
                         contents += new Label(controller.getCurrentFieldOwnerMessage())
                     case _ =>

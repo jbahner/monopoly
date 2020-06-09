@@ -65,13 +65,12 @@ class Controller extends IController with Publisher {
                 currentGameMessage
             case PASSED_GO => currentGameMessage += infoString("Received 200€ by passing Go\n")
                 currentGameMessage
-            case NEW_FIELD => currentGameMessage = infoString("New Field: " + getCurrentField().getName + "\n")
+            case NEW_FIELD => currentGameMessage = infoString("New Field: " + MainComponentServer.getCurrentFieldName(board.toJson().toString()) + "\n")
                 currentGameMessage
             case ALREADY_BOUGHT => currentGameMessage += infoString("You already own this street\n")
                 currentGameMessage
             case CAN_BUY =>
-                val field: IBuyable = getCurrentField().asInstanceOf[IBuyable]
-                currentGameMessage += userInputString("Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice) + "\n")
+                currentGameMessage += userInputString("Do you want to buy %s ? (Y/N)".format(MainComponentServer.getCurrentFieldName(board.toJson().toString())) + "\n")
                 currentGameMessage
             case BOUGHT_BY_OTHER =>
                 val currentFieldName = MainComponentServer.getCurrentFieldName(board.toJson().toString())
@@ -200,13 +199,12 @@ class Controller extends IController with Publisher {
     }
 
     def getJSON(): JsValue = {
-        Json.obj(
-            "board" -> Json.obj(
-                "state" -> controllerState.toString,
-                "current_player" -> getCurrentPlayer().get.getName,
-                "players" -> board.getPlayerIt.list.map(p => p.getJSON).toList
-            )
-        )
+        Json.obj("test" -> "test")
+//            "board" -> Json.obj(
+//                "state" -> controllerState.toString,
+//                "current_player" -> getCurrentPlayer().get.getName,
+//                "players" -> board.getPlayerIt.list.map(p => p.getJSON).toList
+//            )
     }
 
     def getUndoManager(): UndoManager = {
@@ -287,9 +285,6 @@ class Controller extends IController with Publisher {
         sys.exit(1)
     }
 
-    override def getHouseCost(streetName: String): Int = {
-        board.getHouseCost(streetName)
-    }
 
     override def getHouseCount(streetName: String): Int = {
         board.getHouseCount(streetName)
