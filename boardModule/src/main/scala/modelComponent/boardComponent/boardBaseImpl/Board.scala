@@ -32,13 +32,15 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
     def getPlayerIt: PlayerIterator = playerIt
 
     def replaceField(field: IBuyable, newField: IBuyable): IBoard = {
-        val newPlayers = playerIt.list.map(p => {
-            p.copy(fieldIt = p.getFieldIt.replace(field, newField),
-                currentField = if (p.getCurrentField() == field) newField else p.getCurrentField(),
-                bought = p.getBought.map(f => if (f == field) newField else f))
+        val newPlayers = playerIt.list.map(player => {
+            player.copy(fieldIt = player.getFieldIt.replace(field, newField),
+                currentField = if (player.getCurrentField().getName == field.getName) newField else player.getCurrentField(),
+                bought = player.getBought.map(f => if (f.getName == field.getName) newField else f))
         })
-        copy(fields = fields.updated(fields.indexOf(field), newField), currentPlayer = newPlayers.find(p => p.getName == currentPlayer.getName).get,
-            playerIt = new PlayerIterator(newPlayers.toArray, playerIt.currentIdx), currentDice)
+        copy(fields = fields.updated(fields.indexOf(field), newField),
+            currentPlayer = newPlayers.find(p => p.getName == currentPlayer.getName).get,
+            playerIt = new PlayerIterator(newPlayers.toArray, playerIt.currentIdx),
+            currentDice)
     }
 
     def getPlayerit: PlayerIterator = playerIt
@@ -160,8 +162,8 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
     override def buildHouses(streetName: String, amount: Int): IBoard = {
         val street = getFieldByName(streetName).get.asInstanceOf[IStreet]
         var board = replaceField(field = street, newField = street.buyHouses(amount))
-        board = replacePlayer(getCurrentPlayer().get,
-            getCurrentPlayer().get.copy(money = getCurrentPlayer().get.getMoney - street.getHouseCost * amount))
+        board = board.replacePlayer(board.getCurrentPlayer.get,
+            board.getCurrentPlayer.get.copy(money = board.getCurrentPlayer.get.getMoney - street.getHouseCost * amount))
         board
     }
 
@@ -177,7 +179,8 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
         }
 
         val street = getFieldByName(streetName).get.asInstanceOf[IStreet]
-        getBuyer(street).isDefined && currentPlayer == getBuyer(street)
+        val tmp = getBuyer(street).get
+        getBuyer(street).isDefined && currentPlayer.getName == getBuyer(street).get.getName
     }
 
     def getCurrentPlayerMoney(): Int = {

@@ -33,7 +33,9 @@ case class FieldIterator(fields: List[Field]) extends Iterator[Field] {
         fields.isDefinedAt(current)
     }
 
-    def replace(field: Field, newField: Field) = this.copy(fields = fields.updated(fields.indexOf(field), newField))
+    def replace(field: Field, newField: Field) = {
+        this.copy(fields = fields.updated(fields.indexOf(field), newField))
+    }
 
     def toXml(): Elem = {
         <field-iterator>
