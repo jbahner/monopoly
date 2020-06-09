@@ -48,7 +48,11 @@ class Controller extends IController with Publisher {
     }
 
     def rollDice(): Unit = {
-        currentDice = board.rollDice()
+        val (tmpBoard, d1, d2) = MainComponentServer.rollDice(board.toJson().toString())
+        println("Rolled: " + d1 + " " + d2)
+        currentDice = (d1, d2)
+        board = Board.fromSimplefiedJson(Json.parse(tmpBoard).as[JsObject])
+
         catCurrentGameMessage()
         board = undoManager.doStep(WalkCommand(currentDice, this))
         publish(new UpdateInfo)

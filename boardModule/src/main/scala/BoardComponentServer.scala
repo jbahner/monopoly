@@ -14,7 +14,8 @@ object BoardComponentServer {
     private implicit val materializer: ActorMaterializer = ActorMaterializer()
 
     private val PATH_ROOT = "/"
-    private val PATH_BOARD_NEXT_PLAYER = "/board/next-player"
+    private val PATH_NEXT_PLAYER = "/board/next-player"
+    private val PATH_ROLL_DICE = "/board/roll-dice"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
@@ -29,25 +30,50 @@ object BoardComponentServer {
                     ContentTypes.`text/html(UTF-8)`,
                     "<html><body>Hello world!</body></html>"))
 
-            case HttpRequest(POST, Uri.Path(PATH_BOARD_NEXT_PLAYER), _, entity, _) =>
-
-                println("Called Route: " + PATH_BOARD_NEXT_PLAYER)
+            case HttpRequest(POST, Uri.Path(PATH_NEXT_PLAYER), _, entity, _) =>
+                println("Called Route: " + PATH_NEXT_PLAYER)
 
                 val requestJsonBoardAsString = entityToJson(entity)
-                println("Input:")
-                println("\t" + requestJsonBoardAsString)
+//                println("Input:")
+//                println("\t" + requestJsonBoardAsString)
 
                 val json = Json.parse(requestJsonBoardAsString).as[JsObject]
                 val board = Board.fromSimplefiedJson(json)
 
                 val retBoard = board.nextPlayerTurn()
-                println("Output")
-                println("\t" + retBoard.toJson().toString())
+//                println("Output")
+//                println("\t" + retBoard.toJson().toString())
 
 
                 HttpResponse(entity = HttpEntity(
                     ContentTypes.`text/plain(UTF-8)`,
                     retBoard.toJson().toString()))
+
+            case HttpRequest(POST, Uri.Path(PATH_ROLL_DICE), _, entity, _) =>
+
+                println("Called Route: " + PATH_NEXT_PLAYER)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+//                println("Input:")
+//                println("\t" + requestJsonBoardAsString)
+
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val board = Board.fromSimplefiedJson(json)
+                val (d1, d2) = board.rollDice()
+
+                println("Rolled: " + d1 + " " + d2)
+
+                val returnBoardJson = board.toJson()
+                    .+("d1", Json.toJson(d1))
+                    .+("d2", Json.toJson(d2))
+
+//                println("Output")
+//                println("\t" + retBoard.toJson().toString())
+
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    returnBoardJson.toString()))
 
             //            case HttpRequest(GET, Uri.Path("/crash"), _, _, _) =>
             //                sys.error("BOOM!")

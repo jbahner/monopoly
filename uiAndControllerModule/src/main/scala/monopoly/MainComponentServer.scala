@@ -10,6 +10,7 @@ import com.google.inject.{Guice, Injector}
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
 import monopoly.view.{Gui, IUi, Tui}
+import play.api.libs.json.{JsObject, Json}
 
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -70,6 +71,23 @@ object MainComponentServer {
                 1 seconds)
 
         getStringFromResponse(response)
+    }
+
+    def rollDice(board: String): (String, Int, Int) = {
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(POST,
+                        uri = BOARD_COMPONENT_URL + "/board/roll-dice",
+                        entity = board)),
+                1 seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+        val responseJson = Json.parse(responseString).as[JsObject]
+
+        (responseString,
+            (responseJson \ "d1").as[Int],
+            (responseJson \ "d2").as[Int])
     }
 
 
