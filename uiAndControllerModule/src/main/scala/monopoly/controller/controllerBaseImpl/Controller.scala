@@ -4,9 +4,10 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.google.inject.{Guice, Injector}
 import modelComponent.boardComponent.IBoard
+import modelComponent.boardComponent.boardBaseImpl.Board
 import modelComponent.fieldComponent.{Field, IBuyable}
 import modelComponent.playerComponent.IPlayer
-import monopoly.MonopolyModule
+import monopoly.{MainComponentServer, MonopolyModule}
 import monopoly.controller.gamestate.GameStatus
 import monopoly.controller.gamestate.GameStatus.BuildStatus.BuildStatus
 import monopoly.controller.gamestate.GameStatus._
@@ -120,10 +121,10 @@ class Controller extends IController with Publisher {
 
     def nextPlayer(): Unit = {
 
-        //        val boardString: String = MainComponentServer.requestNextPlayer(board.toJson().toString())
-        //        board = Board.fromSimplefiedJson(Json.parse(boardString).as[JsObject])
+        val boardString: String = MainComponentServer.requestNextPlayer(board.toJson().toString())
+        board = Board.fromSimplefiedJson(Json.parse(boardString).as[JsObject])
 
-        board = board.nextPlayerTurn()
+        //        board = board.nextPlayerTurn()
 
         updateCurrentPlayerInfo()
         publish(new UpdateInfo)
