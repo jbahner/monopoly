@@ -18,6 +18,8 @@ import scala.io.StdIn.readLine
 
 object MainComponentServer {
 
+    val HTTP_RESPONSE_WAIT_TIME = 1000
+
     // Akka Inits
     implicit val system = ActorSystem("my-system")
     implicit val materializer = ActorMaterializer()
@@ -68,7 +70,7 @@ object MainComponentServer {
                     HttpRequest(POST,
                         uri = BOARD_COMPONENT_URL + "/board/next-player",
                         entity = board)),
-                1 seconds)
+                HTTP_RESPONSE_WAIT_TIME seconds)
 
         getStringFromResponse(response)
     }
@@ -80,7 +82,7 @@ object MainComponentServer {
                     HttpRequest(POST,
                         uri = BOARD_COMPONENT_URL + "/board/roll-dice",
                         entity = board)),
-                1 seconds)
+                HTTP_RESPONSE_WAIT_TIME seconds)
 
         val responseString = getStringFromResponse(httpResonse)
         val responseJson = Json.parse(responseString).as[JsObject]
@@ -97,7 +99,7 @@ object MainComponentServer {
                     HttpRequest(POST,
                         uri = BOARD_COMPONENT_URL + "/board/player-walk",
                         entity = board)),
-                1 seconds)
+                HTTP_RESPONSE_WAIT_TIME seconds)
 
         val responseString = getStringFromResponse(httpResonse)
 
@@ -111,11 +113,29 @@ object MainComponentServer {
                     HttpRequest(POST,
                         uri = BOARD_COMPONENT_URL + "/board/pay-rent",
                         entity = board)),
-                10000 seconds)
+                HTTP_RESPONSE_WAIT_TIME seconds)
 
         val responseString = getStringFromResponse(httpResonse)
 
         responseString
+    }
+
+    def canCurrentPlayerBuildOnStreet(board: String, streetName: String): Boolean = {
+        val boardJson = Json.parse(board).as[JsObject]
+            .+("streetNameParam", Json.toJson(streetName))
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/can-current-player-build",
+                        entity = boardJson.toString())),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+        println("Response String: " + responseString)
+
+        responseString.toBoolean
     }
 
 

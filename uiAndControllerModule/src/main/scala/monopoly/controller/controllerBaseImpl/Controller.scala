@@ -151,7 +151,6 @@ class Controller extends IController with Publisher {
             val tmpBoard = MainComponentServer.currentPlayerPaysRent(board.toJson().toString())
             board = Board.fromSimplefiedJson(Json.parse(tmpBoard).as[JsObject])
         }
-        println("Played Rent :: CurrentPlayerMoney: " + getCurrentPlayerMoney())
         publish(new UpdateInfo)
     }
 
@@ -173,7 +172,8 @@ class Controller extends IController with Publisher {
     // TODO put this into the board
     def buildHouses(streetName: String, amount: Int): Unit = {
 
-        if (!board.canCurrentPlayerBuildOnStreet(streetName))
+        
+        if (!MainComponentServer.canCurrentPlayerBuildOnStreet(board.toJson().toString(), streetName))
             buildStatus = BuildStatus.NOT_OWN
         else if (getAmountOfHousesOnStreet(streetName) + amount > 5)
             buildStatus = BuildStatus.TOO_MANY_HOUSES

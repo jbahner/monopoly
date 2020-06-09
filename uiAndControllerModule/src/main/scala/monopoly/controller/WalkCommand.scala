@@ -40,7 +40,6 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
         val board = controller.currentPlayerWalk()
 
         val passedGo = controller.getDidPlayerPassGo()
-        println("passedGo: " + passedGo)
         controller.setBoard(board)
 
         if (passedGo) {
