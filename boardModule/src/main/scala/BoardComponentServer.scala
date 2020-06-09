@@ -29,12 +29,12 @@ object BoardComponentServer {
     private val PATH_CURRENT_FIELD = "/board/current-field"
     private val PATH_CURRENT_PLAYER_BOUGHT_STREET_COUNT = "/board/current-player-bought-streets-count"
     private val PATH_CURRENT_PLAYER_NAME = "/board/current-player-name"
-    private val PATH_CURRENT_FIELD_RENT = "/board/current-field"
+    private val PATH_CURRENT_FIELD_RENT = "/board/current-field-rent"
     private val PATH_CURRENT_PLAYER_BUY_HOUSES = "/board/can-buy-houses"
     private val PATH_POSSIBLE_BUILD_PLACES = "/board/possible-build-places"
     private val PATH_GET_FIELD_GAMESTATE = "/board/get-field-game-state"
     private val PATH_CURRENT_PLAYER_DETAILS = "/board/current-player-details"
-    private val PATH_CURRENT_PLAYER_BOUGHT_FIELDNAMES = "/current-player-bought-fieldnames"
+    private val PATH_CURRENT_PLAYER_BOUGHT_FIELDNAMES = "/board/current-player-bought-fieldnames"
 
     def main(args: Array[String]): Unit = {
 
@@ -159,7 +159,7 @@ object BoardComponentServer {
                     returnNumber.toString))
 
             case HttpRequest(GET, Uri.Path(PATH_GET_HOUSE_COST), _, entity, _) =>
-                println("Called Route: " + PATH_CURRENT_PLAYER_MONEY)
+                println("Called Route: " + PATH_GET_HOUSE_COST)
 
                 val requestJsonBoardAsString = entityToJson(entity)
 
@@ -327,6 +327,8 @@ object BoardComponentServer {
             case HttpRequest(GET, Uri.Path(PATH_CURRENT_PLAYER_BOUGHT_FIELDNAMES), _, entity, _) =>
                 println("Called Route: " + PATH_CURRENT_PLAYER_BOUGHT_FIELDNAMES)
 
+                println("ANSWER IS HEREEEEEEEEEEEEE")
+
                 val requestJsonBoardAsString = entityToJson(entity)
 
                 val json = Json.parse(requestJsonBoardAsString).as[JsObject]
@@ -335,7 +337,7 @@ object BoardComponentServer {
                 var answer = ""
 
                 board.getCurrentPlayer().get.getBought.toSeq.sortBy(_.getName)
-                    .foreach(bought => answer += bought.getName + ";")
+                    .foreach(bought => answer = answer.concat(bought.getName + ";"))
 
                 HttpResponse(entity = HttpEntity(
                     ContentTypes.`text/plain(UTF-8)`,

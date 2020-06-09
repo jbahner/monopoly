@@ -269,9 +269,6 @@ object MainComponentServer {
     def getCurrentFieldType(board: String): String = {
         val currentField = getCurrentField(board)
 
-        println("Current Field!")
-        println(currentField)
-
         val json = Json.parse(currentField).as[JsObject]
 
         (json \ "field" \ "type").get.as[String]
@@ -294,14 +291,14 @@ object MainComponentServer {
     }
 
     def getCurrentFieldRent(board: String): Int = {
-        val boardJson = Json.parse(board).as[JsObject]
+        val boardJson = board
 
         val httpResonse: HttpResponse =
             Await.result(
                 Http().singleRequest(
                     HttpRequest(GET,
-                        uri = BOARD_COMPONENT_URL + "/board/current-field",
-                        entity = boardJson.toString())),
+                        uri = BOARD_COMPONENT_URL + "/board/current-field-rent",
+                        entity = boardJson)),
                 HTTP_RESPONSE_WAIT_TIME seconds)
 
         val responseString = getStringFromResponse(httpResonse)
@@ -374,14 +371,14 @@ object MainComponentServer {
     }
 
     def getCurrentPlayerBoughtFieldnames(board: String) : List[String] = {
-        val boardJson = Json.parse(board).as[JsObject]
+        val boardJson = board
 
         val httpResonse: HttpResponse =
             Await.result(
                 Http().singleRequest(
                     HttpRequest(GET,
                         uri = BOARD_COMPONENT_URL + "/board/current-player-bought-fieldnames",
-                        entity = boardJson.toString())),
+                        entity = boardJson)),
                 HTTP_RESPONSE_WAIT_TIME seconds)
 
         val responseString = getStringFromResponse(httpResonse)

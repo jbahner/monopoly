@@ -114,8 +114,8 @@ class Gui(controller: IController) extends Frame with IUi {
         controller.getControllerState match {
             case GameStatus.CAN_BUILD => new GridPanel(MainComponentServer.getCurrentPlayBoughtStreetsCount(controller.getBoard()), 1)
             {
-                MainComponentServer.getCurrentPlayerBoughtFieldnames(controller.getBoard())
-                    .foreach(bought => contents += generateBuildButton(bought))
+                val boughtFields = MainComponentServer.getCurrentPlayerBoughtFieldnames(controller.getBoard())
+                    boughtFields.foreach(bought => contents += generateBuildButton(bought))
             }
             case _ => new GridPanel(1, 1)
         }
