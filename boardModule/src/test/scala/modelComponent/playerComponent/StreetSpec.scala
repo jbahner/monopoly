@@ -1,7 +1,6 @@
 package modelComponent.playerComponent
 
 import modelComponent.fieldComponent.fieldBaseImpl.Street
-import modelComponent.gamestate.GameStatus
 import modelComponent.playerComponent.playerBaseImpl.Player
 import modelComponent.util.FieldIterator
 import org.scalatest.{Matchers, WordSpec}
@@ -9,7 +8,7 @@ import play.api.libs.json.Json
 
 class StreetSpec extends WordSpec with Matchers {
     "A Street" should {
-        val street = Street("streetName", 100, Array(10, 20, 30, 40 ,50), 50)
+        val street = Street("streetName", 100, Array(10, 20, 30, 40, 50), 50)
         "have a name" in {
             street.getName should be("streetName")
         }
@@ -21,20 +20,20 @@ class StreetSpec extends WordSpec with Matchers {
         }
         "be buyable" in {
             val boughtStreet = street.setBought()
-            boughtStreet.getIsBought should be (true)
+            boughtStreet.getIsBought should be(true)
         }
         "be able to build houses" in {
             val houseStreet = street.buyHouses(3)
-            houseStreet.getNumHouses should be (3)
+            houseStreet.getNumHouses should be(3)
         }
         "have a JSON representation" in {
             val json = Json.parse("""{ "name" : "streetName", "houses" : 0, "houseCost" : 50 }""")
-            street.getJSON shouldEqual(json)
+            street.getJSON shouldEqual (json)
         }
         "have a JSON representation with correct houses" in {
             val street2 = street.copy(isBought = true, numHouses = 3)
             val json = Json.parse("""{ "name" : "streetName", "houses" : 3, "houseCost" : 50 }""")
-            street2.getJSON shouldEqual(json)
+            street2.getJSON shouldEqual (json)
         }
         "get the correct action" should {
             "can buy" in {

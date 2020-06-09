@@ -1,6 +1,5 @@
 package modelComponent.fieldComponent
 
-import modelComponent.gamestate.GameStatus.GameStatus
 import modelComponent.playerComponent.IPlayer
 
 import scala.xml.Elem

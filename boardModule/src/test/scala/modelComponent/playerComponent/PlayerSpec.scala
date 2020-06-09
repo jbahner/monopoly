@@ -10,8 +10,8 @@ class PlayerSpec extends WordSpec with Matchers {
     "A Player" when {
         "new" should {
             val go = ActionField("Go")
-            val street1 = Street("Street1", 50, Array(1,2,3,4,5), 25)
-            val street2 = Street("Street2", 100, Array(2,4,6,8,10), 50)
+            val street1 = Street("Street1", 50, Array(1, 2, 3, 4, 5), 25)
+            val street2 = Street("Street2", 100, Array(2, 4, 6, 8, 10), 50)
             val fields = List(go, street1, street2)
             val player = Player("name", 1500, fields.head, Set(), new FieldIterator(fields))
             "have a name" in {
@@ -32,7 +32,7 @@ class PlayerSpec extends WordSpec with Matchers {
 
             "have a JSON representation" in {
                 val json = Json.parse("""{ "name" : "name", "money" : 1500, "current_field" : "Go", "bought_fields" : [ ]}""")
-                player.getJSON shouldEqual(json)
+                player.getJSON shouldEqual (json)
             }
 
             "have bought fields included in JSON representation" in {
@@ -42,15 +42,15 @@ class PlayerSpec extends WordSpec with Matchers {
                 val json = Json.parse(
                     """{ "name" : "name", "money" : 1500, "current_field" : "Go",
                       |"bought_fields" : [ { "name" : "Street1", "houses" : 3, "houseCost": 25}, { "name" : "Street2", "houses" : 4, "houseCost" : 50 } ]}""".stripMargin)
-                player2.getJSON shouldEqual(json)
+                player2.getJSON shouldEqual (json)
             }
 
             "stand on the first field" in {
                 player.getCurrentField() should be(fields.head)
             }
             "have no bought streets" in {
-                player.getBought.size should be (0)
-                player.listStreets shouldEqual("")
+                player.getBought.size should be(0)
+                player.listStreets shouldEqual ("")
             }
             "only be equal to a player with the same name" in {
                 player.equals(Player(player.getName, 0, fields.head, Set(), new FieldIterator(fields))) should be(true)
@@ -59,8 +59,8 @@ class PlayerSpec extends WordSpec with Matchers {
         }
         "walking" should {
             val go = ActionField("Go")
-            val street1 = Street("Street1", 50, Array(1,2,3,4,5), 25)
-            var street2 = Street("Street2", 100, Array(2,4,6,8,10), 50)
+            val street1 = Street("Street1", 50, Array(1, 2, 3, 4, 5), 25)
+            var street2 = Street("Street2", 100, Array(2, 4, 6, 8, 10), 50)
             val fields = List(go, street1, street2)
             val player = Player("name", 1500, fields.head, Set(), new FieldIterator(fields))
             "stand on the correct field" in {

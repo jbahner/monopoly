@@ -56,6 +56,7 @@ object GameStatus extends Enumeration {
             "TOO_MANY_HOUSES" -> TOO_MANY_HOUSES
         )
 
-        def fromJson(json: JsObject) : BuildStatus = revMap((json \ "controller" \ "build-status").get.as[String])
+        def fromJson(json: JsObject): BuildStatus = revMap((json \ "controller" \ "build-status").get.as[String])
     }
+
 }

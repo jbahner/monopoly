@@ -8,20 +8,20 @@ scalaVersion := "2.12.8"
 
 
 lazy val global = project
-  .in(file("."))
-  .aggregate(
-      boardModule,
-      uiAndControllerModule
-  )
+    .in(file("."))
+    .aggregate(
+        boardModule,
+        uiAndControllerModule
+    )
 
 lazy val uiAndControllerModule = project
-  .settings(name := "UiAndControllerModule",
-      libraryDependencies ++= mainModuleDependencies)
-  .dependsOn(boardModule)
+    .settings(name := "UiAndControllerModule",
+        libraryDependencies ++= mainModuleDependencies)
+    .dependsOn(boardModule)
 
 lazy val boardModule = project
-  .settings(name := "BoardModule",
-      libraryDependencies ++= mainModuleDependencies)
+    .settings(name := "BoardModule",
+        libraryDependencies ++= mainModuleDependencies)
 
 
 lazy val dependencies =
@@ -66,7 +66,7 @@ lazy val mainModuleDependencies = Seq(
     "org.scalafx" %% "scalafx" % "11-R16",
     "junit" % "junit" % "4.11" % Test,
     "com.novocode" % "junit-interface" % "0.11" % Test
-      exclude("junit", "junit-dep"),
+        exclude("junit", "junit-dep"),
     "com.typesafe.akka" %% "akka-http" % "10.1.12",
     "com.typesafe.akka" %% "akka-stream" % "2.5.26" // or whatever the latest version is
 )

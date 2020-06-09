@@ -1,7 +1,6 @@
 package modelComponent.playerComponent
 
 import modelComponent.fieldComponent.fieldBaseImpl.Building
-import modelComponent.gamestate.GameStatus
 import modelComponent.playerComponent.playerBaseImpl.Player
 import modelComponent.util.FieldIterator
 import org.scalatest.{Matchers, WordSpec}

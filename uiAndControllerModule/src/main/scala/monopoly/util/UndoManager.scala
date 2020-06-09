@@ -1,7 +1,5 @@
 package monopoly.util
 
-import modelComponent.boardComponent.IBoard
-
 class UndoManager {
     private var undoStack: List[Command] = Nil
     private var redoStack: List[Command] = Nil

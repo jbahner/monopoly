@@ -20,32 +20,7 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
 
     override def nextPlayer(): IPlayer = playerIt.next()
 
-    override def replacePlayer(player: IPlayer, newPlayer: IPlayer): IBoard = {
-        playerIt.replace(player, newPlayer)
-        copy(getFields, currentPlayer = if (currentPlayer == player) newPlayer else currentPlayer, getPlayerIt, currentDice)
-    }
-
-    def getFields: List[Field] = fields
-
-    def copy(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator, currentDice: Int): IBoard = Board(fields, currentPlayer, playerIt)
-
-    def getPlayerIt: PlayerIterator = playerIt
-
-    def replaceField(field: IBuyable, newField: IBuyable): IBoard = {
-        val newPlayers = playerIt.list.map(player => {
-            player.copy(fieldIt = player.getFieldIt.replace(field, newField),
-                currentField = if (player.getCurrentField().getName == field.getName) newField else player.getCurrentField(),
-                bought = player.getBought.map(f => if (f.getName == field.getName) newField else f))
-        })
-        copy(fields = fields.updated(fields.indexOf(field), newField),
-            currentPlayer = newPlayers.find(p => p.getName == currentPlayer.getName).get,
-            playerIt = new PlayerIterator(newPlayers.toArray, playerIt.currentIdx),
-            currentDice)
-    }
-
     def getPlayerit: PlayerIterator = playerIt
-
-    def getCurrentPlayer(): Option[IPlayer] = Option.apply(currentPlayer)
 
     def toXml(): Elem = {
         <board>
@@ -75,16 +50,8 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
         getFieldByName(streetName).get.asInstanceOf[Street].houseCost
     }
 
-    override def getFieldByName(fieldName: String): Option[Field] = {
-        getFields.find(field => field.getName.equals(fieldName))
-    }
-
     override def getHouseCount(streetName: String): Int = {
         getFieldByName(streetName).get.asInstanceOf[Street].numHouses
-    }
-
-    override def getCurrentField(): Field = {
-        getCurrentPlayer().get.getCurrentField()
     }
 
     override def getCurrentFieldType(): String = {
@@ -94,6 +61,12 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
             case field: Field => "field"
         }
     }
+
+    override def getCurrentField(): Field = {
+        getCurrentPlayer().get.getCurrentField()
+    }
+
+    def getCurrentPlayer(): Option[IPlayer] = Option.apply(currentPlayer)
 
     override def getCurrentFieldName(): String = {
         getCurrentField().getName
@@ -125,6 +98,11 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
         else "Field Owner Could not be fetched."
     }
 
+    def getPossibleBuildPlacesToString(): String = {
+        val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer.get)
+        buildablesToString(wholeGroups)
+    }
+
     def buildablesToString(buildables: List[Set[String]]): String = {
         val sb = new StringBuilder()
         buildables.foreach(set => {
@@ -132,11 +110,6 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
             set.foreach(s => sb.append(s).append(" (").append(getFieldByName(s).get.asInstanceOf[IStreet].getHouseCost).append("€)\n"))
         })
         sb.toString()
-    }
-
-    def getPossibleBuildPlacesToString(): String = {
-        val wholeGroups = GeneralUtil.getWholeGroups(getCurrentPlayer.get)
-        buildablesToString(wholeGroups)
     }
 
     def getCurrentFieldRent(): Int = {
@@ -159,6 +132,27 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
 
         replaceField(buyable, newField)
     }
+
+    override def replacePlayer(player: IPlayer, newPlayer: IPlayer): IBoard = {
+        playerIt.replace(player, newPlayer)
+        copy(getFields, currentPlayer = if (currentPlayer == player) newPlayer else currentPlayer, getPlayerIt, currentDice)
+    }
+
+    def getPlayerIt: PlayerIterator = playerIt
+
+    def replaceField(field: IBuyable, newField: IBuyable): IBoard = {
+        val newPlayers = playerIt.list.map(player => {
+            player.copy(fieldIt = player.getFieldIt.replace(field, newField),
+                currentField = if (player.getCurrentField().getName == field.getName) newField else player.getCurrentField(),
+                bought = player.getBought.map(f => if (f.getName == field.getName) newField else f))
+        })
+        copy(fields = fields.updated(fields.indexOf(field), newField),
+            currentPlayer = newPlayers.find(p => p.getName == currentPlayer.getName).get,
+            playerIt = new PlayerIterator(newPlayers.toArray, playerIt.currentIdx),
+            currentDice)
+    }
+
+    def copy(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator, currentDice: Int): IBoard = Board(fields, currentPlayer, playerIt)
 
     override def buildHouses(streetName: String, amount: Int): IBoard = {
         val street = getFieldByName(streetName).get.asInstanceOf[IStreet]
@@ -191,6 +185,12 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
     def getStreetsHouseCost(streetName: String): Int = {
         getFieldByName(streetName).get.asInstanceOf[IStreet].getHouseCost
     }
+
+    override def getFieldByName(fieldName: String): Option[Field] = {
+        getFields.find(field => field.getName.equals(fieldName))
+    }
+
+    def getFields: List[Field] = fields
 
     override def rollDice(): (Int, Int) = {
         val r = scala.util.Random

@@ -1,10 +1,10 @@
 <controller>
-    <game-status> START_OF_TURN </game-status>
-    <build-status> DEFAULT </build-status>
+    <game-status>START_OF_TURN</game-status>
+    <build-status>DEFAULT</build-status>
     <board>
         <fields>
             <action-field>
-                <name> Go </name>
+                <name>Go</name>
             </action-field>
             <street>
                 <name>Street1</name>
@@ -133,7 +133,7 @@
             <start-idx>0</start-idx>
         </player-iterator>
     </board>
-    <current-dice> 0,0 </current-dice>
+    <current-dice>0,0</current-dice>
     <current-game-message>
         m&quot;r&quot; to roll, &quot;q&quot; to quit, &quot;u&quot; to undo or &quot;re&quot; to redo!
     </current-game-message>

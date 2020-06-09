@@ -14,8 +14,8 @@ case class StreetRentStrategy(board: IBoard, street: IStreet) extends RentStrate
     override def executeStrategy(board: IBoard, buyable: IBuyable): Int = {
         if (street.getNumHouses == 0 &&
             GeneralUtil.hasWholeGroup(
-              board.getBuyer(street.asInstanceOf[IBuyable]).get,
-              street.getName))
+                board.getBuyer(street.asInstanceOf[IBuyable]).get,
+                street.getName))
 
             street.getRentCosts(street.getNumHouses) * 2
         else

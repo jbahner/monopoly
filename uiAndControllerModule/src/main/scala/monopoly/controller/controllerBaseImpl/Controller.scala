@@ -3,17 +3,12 @@ package monopoly.controller.controllerBaseImpl
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.google.inject.{Guice, Injector}
-import modelComponent.boardComponent.IBoard
-import modelComponent.boardComponent.boardBaseImpl.Board
-import modelComponent.fieldComponent.{Field, IBuyable}
-import modelComponent.playerComponent.IPlayer
-import monopoly.{MainComponentServer, MonopolyModule}
-import monopoly.controller.gamestate.GameStatus
+import monopoly.controller._
 import monopoly.controller.gamestate.GameStatus.BuildStatus.BuildStatus
 import monopoly.controller.gamestate.GameStatus._
-import monopoly.controller.{BuyCommand, _}
 import monopoly.util.UndoManager
 import monopoly.util.fileIo.IFileIo
+import monopoly.{MainComponentServer, MonopolyModule}
 import play.api.libs.json.{JsObject, JsValue, Json}
 
 import scala.concurrent.ExecutionContextExecutor
@@ -118,12 +113,14 @@ class Controller extends IController with Publisher {
 
     def errorString(message: String): String = Console.BOLD + Console.RED + message + Console.RESET
 
-
+    def getOwnersName(streetName: String): String = {
+        MainComponentServer.getOwnersName(board, streetName)
+    }
 
     def nextPlayer(): Unit = {
 
         val boardString: String = MainComponentServer.requestNextPlayer(board)
-        board =boardString
+        board = boardString
 
         updateCurrentPlayerInfo()
         publish(new UpdateInfo)
@@ -154,18 +151,16 @@ class Controller extends IController with Publisher {
 
     // TODO enable this again
     def buy(): Unit = {
-//        val currentPlayer = getCurrentPlayer()
-//        val currentField = getCurrentField()
-//        if (currentPlayer.get.getMoney < currentField.getPrice) {
-//            controllerState = MISSING_MONEY
-//            publish(new UpdateInfo)
-//            return
-//        }
-//        board = undoManager.doStep(BuyCommand(this))
+        //        val currentPlayer = getCurrentPlayer()
+        //        val currentField = getCurrentField()
+        //        if (currentPlayer.get.getMoney < currentField.getPrice) {
+        //            controllerState = MISSING_MONEY
+        //            publish(new UpdateInfo)
+        //            return
+        //        }
+        //        board = undoManager.doStep(BuyCommand(this))
 
     }
-
-
 
     def buildHouses(streetName: String, amount: Int): Unit = {
 
@@ -184,11 +179,6 @@ class Controller extends IController with Publisher {
         publish(new UpdateInfo)
     }
 
-    def getOwnersName(streetName: String): String = {
-        MainComponentServer.getOwnersName(board, streetName)
-    }
-
-
     def getCurrentGameMessage: String = {
         currentGameMessage
     }
@@ -199,11 +189,11 @@ class Controller extends IController with Publisher {
 
     def getJSON(): JsValue = {
         Json.obj("test" -> "test")
-//            "board" -> Json.obj(
-//                "state" -> controllerState.toString,
-//                "current_player" -> getCurrentPlayer().get.getName,
-//                "players" -> board.getPlayerIt.list.map(p => p.getJSON).toList
-//            )
+        //            "board" -> Json.obj(
+        //                "state" -> controllerState.toString,
+        //                "current_player" -> getCurrentPlayer().get.getName,
+        //                "players" -> board.getPlayerIt.list.map(p => p.getJSON).toList
+        //            )
     }
 
     def getUndoManager(): UndoManager = {
@@ -249,14 +239,18 @@ class Controller extends IController with Publisher {
             <build-status>
                 {buildStatus}
             </build-status>
-<!--            {board.toXml()}-->
+            <!--            {board.toXml()}-->
             <current-dice>
-            {currentDice._1 + "," + currentDice._2}
-        </current-dice>
+                {currentDice._1 + "," + currentDice._2}
+            </current-dice>
             <current-game-message>
                 {unstyleString(currentGameMessage)}
             </current-game-message>
         </controller>
+    }
+
+    def unstyleString(input: String): String = {
+        input.replaceAll("\\[..", "")
     }
 
     def toJson(): JsObject = {
@@ -264,15 +258,11 @@ class Controller extends IController with Publisher {
             "controller" -> Json.obj(
                 "game-status" -> controllerState,
                 "build-status" -> buildStatus,
-//                "board" -> board.toJson(),
+                //                "board" -> board.toJson(),
                 "current-dice" -> Json.toJson(currentDice._1 + "," + currentDice._2),
                 "current-game-message" -> unstyleString(currentGameMessage)
             )
         )
-    }
-
-    def unstyleString(input: String): String = {
-        input.replaceAll("\\[..", "")
     }
 
     def shutdown(): Unit = {
@@ -281,9 +271,9 @@ class Controller extends IController with Publisher {
     }
 
 
-//    def buyCurrentField(): IBoard = {
-//        board.buyCurrentField()
-//    }
+    //    def buyCurrentField(): IBoard = {
+    //        board.buyCurrentField()
+    //    }
 
     def currentPlayerWalk(): String = {
         MainComponentServer.playerWalk(board)

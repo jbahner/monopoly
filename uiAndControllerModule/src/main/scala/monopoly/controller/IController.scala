@@ -1,9 +1,6 @@
 package monopoly.controller
 
 import com.google.inject.Injector
-import modelComponent.boardComponent.IBoard
-import modelComponent.fieldComponent.{Field, IBuyable}
-import modelComponent.playerComponent.IPlayer
 import monopoly.controller.gamestate.GameStatus.BuildStatus.BuildStatus
 import monopoly.controller.gamestate.GameStatus.GameStatus
 import monopoly.util.UndoManager

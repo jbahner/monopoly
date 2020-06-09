@@ -1,10 +1,9 @@
 package modelComponent.fieldComponent.fieldBaseImpl
 
-import modelComponent.gamestate.GameStatus
-import modelComponent.gamestate.GameStatus.GameStatus
-import play.api.libs.json.{JsObject, Json}
 import modelComponent.fieldComponent.IStreet
+import modelComponent.gamestate.GameStatus
 import modelComponent.playerComponent.IPlayer
+import play.api.libs.json.{JsObject, Json}
 
 import scala.xml.Elem
 

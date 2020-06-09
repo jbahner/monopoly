@@ -1,9 +1,9 @@
 package modelComponent.playerComponent.playerBaseImpl
 
-import play.api.libs.json.{JsNumber, JsObject, JsValue, Json}
 import modelComponent.fieldComponent.{Field, IBuyable, IStreet}
 import modelComponent.playerComponent.IPlayer
 import modelComponent.util.FieldIterator
+import play.api.libs.json.{JsNumber, JsObject, JsValue, Json}
 
 import scala.xml.Elem
 
@@ -90,7 +90,7 @@ case class Player(name: String, money: Int, currentField: Field, bought: Set[IBu
 }
 
 object Player {
-    def fromJson(json : JsObject, fields : List[Field]) : Player = {
+    def fromJson(json: JsObject, fields: List[Field]): Player = {
         var bought = Set[IBuyable]()
         for (j <- 0 until (json \ "num-bought").get.as[Int]) {
             val s = ((json \ "bought") (j) \ "field")

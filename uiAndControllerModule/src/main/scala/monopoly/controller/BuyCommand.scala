@@ -1,11 +1,7 @@
 package monopoly.controller
 
-import modelComponent.boardComponent.IBoard
-import modelComponent.boardComponent.boardBaseImpl.Board
-import monopoly.controller.controllerBaseImpl.UpdateInfo
 import monopoly.controller.gamestate.GameStatus._
 import monopoly.util.Command
-import play.api.libs.json.{JsObject, Json}
 
 case class BuyCommand(controller: IController) extends Command {
     private val backupBoardString: String = controller.getBoard()

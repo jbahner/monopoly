@@ -1,9 +1,7 @@
 package modelComponent.fieldComponent.fieldBaseImpl
 
-import modelComponent.gamestate.GameStatus
-import modelComponent.gamestate.GameStatus.GameStatus
-import play.api.libs.json.{JsObject, Json}
 import modelComponent.fieldComponent.IBuyable
+import modelComponent.gamestate.GameStatus
 import modelComponent.playerComponent.IPlayer
 
 import scala.xml.Elem

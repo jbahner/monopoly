@@ -1,10 +1,10 @@
 package monopoly.view
 
 import monopoly.MainComponentServer
-import monopoly.controller.gamestate.GameStatus
-import monopoly.controller.gamestate.GameStatus._
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
+import monopoly.controller.gamestate.GameStatus
+import monopoly.controller.gamestate.GameStatus._
 
 import scala.swing.Reactor
 import scala.util.{Failure, Success, Try}
@@ -51,7 +51,7 @@ class Tui(controller: IController) extends Reactor with IUi {
                         val args = other.split("_")
                         if (args.length != 2) {
                             userInput("Invalid argument for street or amount of houses!\n" +
-                              "<street name>_<amount of houses>")
+                                "<street name>_<amount of houses>")
                             controller.buildStatus = GameStatus.BuildStatus.INVALID_ARGS
                         }
                         else {
@@ -61,7 +61,7 @@ class Tui(controller: IController) extends Reactor with IUi {
                                 case Success(v: Int) => controller.buildHouses(args(0), v)
                                 case Failure(_) =>
                                     userInput("Invalid argument for street or amount of houses!\n" +
-                                      "<street name>_<amount of houses>")
+                                        "<street name>_<amount of houses>")
                             }
                         }
                 }

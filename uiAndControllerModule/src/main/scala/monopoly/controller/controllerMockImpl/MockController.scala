@@ -1,24 +1,21 @@
 package monopoly.controller.controllerMockImpl
 
-import modelComponent.boardComponent.IBoard
 import com.google.inject.{Guice, Injector}
-import monopoly.controller.gamestate.GameStatus
-.BuildStatus.BuildStatus
-import monopoly.controller.gamestate.GameStatus
-.GameStatus
-import monopoly.MonopolyModule
-import monopoly.controller.IController
-import monopoly.util.UndoManager
-import play.api.libs.json.{JsObject, JsValue}
+import modelComponent.boardComponent.IBoard
 import modelComponent.fieldComponent.{Field, IBuyable}
 import modelComponent.playerComponent.IPlayer
+import monopoly.MonopolyModule
+import monopoly.controller.gamestate.GameStatus.BuildStatus.BuildStatus
+import monopoly.controller.gamestate.GameStatus.GameStatus
+import monopoly.util.UndoManager
+import play.api.libs.json.{JsObject, JsValue}
 
 import scala.swing.Publisher
 import scala.xml.Elem
 
 class MockController
 //    extends IController 
-        extends Publisher {
+    extends Publisher {
     val injector: Injector = Guice.createInjector(new MonopolyModule)
     var controllerState: GameStatus = _
     var buildStatus: BuildStatus = _

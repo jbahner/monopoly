@@ -1,11 +1,10 @@
 package modelComponent.fieldComponent.fieldBaseImpl
 
 import com.google.inject.Inject
-import modelComponent.gamestate.GameStatus
-import modelComponent.gamestate.GameStatus.GameStatus
-import play.api.libs.json.{JsObject, Json}
 import modelComponent.fieldComponent.IActionField
+import modelComponent.gamestate.GameStatus
 import modelComponent.playerComponent.IPlayer
+import play.api.libs.json.{JsObject, Json}
 
 import scala.xml.Elem
 
@@ -46,7 +45,7 @@ case class ActionField @Inject()(name: String) extends IActionField {
 }
 
 object ActionField {
-    def fromJson(json: JsObject) : ActionField = {
+    def fromJson(json: JsObject): ActionField = {
         ActionField(
             name = (json \ "name").get.as[String]
         )

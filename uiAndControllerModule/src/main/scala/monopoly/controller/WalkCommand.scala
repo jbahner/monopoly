@@ -1,14 +1,9 @@
 package monopoly.controller
 
-import akka.Main
-import modelComponent.boardComponent.IBoard
-import modelComponent.fieldComponent.IBuyable
 import monopoly.MainComponentServer
 import monopoly.controller.controllerBaseImpl.{CatGuiMessage, UpdateInfo}
-import monopoly.controller.gamestate.GameStatus
 import monopoly.controller.gamestate.GameStatus._
 import monopoly.util.Command
-
 
 
 case class WalkCommand(dice: (Int, Int), controller: IController) extends Command {
@@ -60,7 +55,7 @@ case class WalkCommand(dice: (Int, Int), controller: IController) extends Comman
         controller.controllerState match {
             case BOUGHT_BY_OTHER =>
                 // RentPay 3
-            controller.payRent()
+                controller.payRent()
             case _ =>
         }
 

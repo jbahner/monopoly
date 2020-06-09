@@ -1,9 +1,9 @@
 package modelComponent.boardComponent
 
-import play.api.libs.json.JsObject
 import modelComponent.fieldComponent.{Field, IBuyable}
 import modelComponent.playerComponent.IPlayer
-import modelComponent.util.{GeneralUtil, PlayerIterator}
+import modelComponent.util.PlayerIterator
+import play.api.libs.json.JsObject
 
 import scala.xml.Elem
 
@@ -60,7 +60,7 @@ trait IBoard {
 
     def getAmountOfHousesOnStreet(streetName: String): Int
 
-    def canCurrentPlayerBuildOnStreet(streetName: String) : Boolean
+    def canCurrentPlayerBuildOnStreet(streetName: String): Boolean
 
     def getCurrentPlayerMoney(): Int
 

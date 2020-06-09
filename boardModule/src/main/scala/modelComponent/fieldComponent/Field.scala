@@ -1,8 +1,7 @@
 package modelComponent.fieldComponent
 
-import modelComponent.gamestate.GameStatus.GameStatus
-import play.api.libs.json.JsObject
 import modelComponent.playerComponent.IPlayer
+import play.api.libs.json.JsObject
 
 import scala.xml.Elem
 
