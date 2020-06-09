@@ -227,7 +227,6 @@ class Gui(controller: IController) extends Frame with IUi {
             contents += new Label("  " + controller.getCurrentPlayer.get.getName + "    ")
             // TODO current Players money is not displayed correctly
             contents += new Label(controller.getCurrentPlayerMoney() + " €")
-            println("CurrentPlayer Money Gui: " + controller.getCurrentPlayerMoney())
             contents += new Label("")
         }
     }

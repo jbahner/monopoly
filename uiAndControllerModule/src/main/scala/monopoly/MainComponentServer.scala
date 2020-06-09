@@ -7,6 +7,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import com.google.inject.{Guice, Injector}
+import modelComponent.boardComponent.boardBaseImpl.Board
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
 import monopoly.view.{Gui, IUi, Tui}
@@ -221,6 +222,31 @@ object MainComponentServer {
 
         responseString
     }
+
+    def getCurrentField(board: String): String = {
+        val boardJson = Json.parse(board).as[JsObject]
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/current-field",
+                        entity = boardJson.toString())),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString
+    }
+
+    def getCurrentFieldName(board: String): String = {
+        val currentField = getCurrentField(board)
+
+        val json = Json.parse(currentField).as[JsObject]
+
+        (json \ "field" \ "name").get.as[String]
+    }
+
 
 
     def getStringFromResponse(input: HttpResponse): String = {

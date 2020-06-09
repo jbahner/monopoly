@@ -74,8 +74,8 @@ class Controller extends IController with Publisher {
                 currentGameMessage += userInputString("Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice) + "\n")
                 currentGameMessage
             case BOUGHT_BY_OTHER =>
-                val field = getCurrentField().asInstanceOf[IBuyable]
-                currentGameMessage += infoString("Field already bought by " + getOwnersName(field.getName) + ".\n" +
+                val currentFieldName = MainComponentServer.getCurrentFieldName(board.toJson().toString())
+                currentGameMessage += infoString("Field already bought by " + getOwnersName(currentFieldName) + ".\n" +
                     // RentPay 1
                     "You must pay " + getCurrentFieldRent() + " rent!\n")
                 currentGameMessage
