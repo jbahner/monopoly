@@ -5,6 +5,7 @@ import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpRequest, HttpResp
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import modelComponent.boardComponent.boardBaseImpl.Board
+import modelComponent.fieldComponent.IBuyable
 import play.api.libs.json.{JsObject, Json}
 
 object BoardComponentServer {
@@ -23,6 +24,7 @@ object BoardComponentServer {
     private val PATH_CURRENT_PLAYER_MONEY = "/board/current-player-money"
     private val PATH_GET_HOUSE_COST = "/board/get-house-cost"
     private val PATH_BUILD_HOUSES = "/board/build-houses"
+    private val PATH_GET_OWNERS_NAME = "/board/get-owners-name"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
@@ -179,6 +181,26 @@ object BoardComponentServer {
                     ContentTypes.`text/plain(UTF-8)`,
                     returnBoard.toJson().toString))
 
+
+            case HttpRequest(GET, Uri.Path(PATH_GET_OWNERS_NAME), _, entity, _) =>
+                println("Called Route: " + PATH_GET_OWNERS_NAME)
+
+
+                try {
+                    val requestJsonBoardAsString = entityToJson(entity)
+
+                    val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                    val board = Board.fromSimplefiedJson(json)
+                    val steetName = (json \ "streetNameParam").get.as[String]
+                    val ownersName = board.getBuyer(board.getFieldByName(steetName).get.asInstanceOf[IBuyable]).get.getName
+
+                    HttpResponse(entity = HttpEntity(
+                        ContentTypes.`text/plain(UTF-8)`,
+                        ownersName))
+                } catch {
+                    case e:Exception => e.printStackTrace()
+                        throw e
+                }
 
 
 

@@ -205,6 +205,23 @@ object MainComponentServer {
         responseString
     }
 
+    def getOwnersName(board: String, streetName: String): String = {
+        val boardJson = Json.parse(board).as[JsObject]
+            .+("streetNameParam", Json.toJson(streetName))
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/get-owners-name",
+                        entity = boardJson.toString())),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString
+    }
+
 
     def getStringFromResponse(input: HttpResponse): String = {
         Unmarshal(input).to[String].toString.replace("FulfilledFuture(", "").replace(")", "")

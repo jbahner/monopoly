@@ -37,12 +37,12 @@ class ControllerSpec extends WordSpec with Matchers {
         }
         "get the correct buyer" in {
             controller.setBoard(Board(fields, player1, new PlayerIterator(Array(player1, player2))))
-            val noneBuyer = controller.getBuyer(fields(1).asInstanceOf[IBuyable])
-            noneBuyer should be(None)
+//            val noneBuyer = controller.getOwnersName(fields(1).asInstanceOf[IBuyable])
+//            noneBuyer should be(None)
             val newPlayer2 = player2.copy(bought = player2.getBought + fields(1).asInstanceOf[IBuyable])
             controller.setBoard(controller.getBoard().replacePlayer(player2, newPlayer2))
-            val buyer = controller.getBuyer(fields(1).asInstanceOf[IBuyable])
-            buyer.get should be(newPlayer2)
+//            val buyer = controller.getOwnersName(fields(1).asInstanceOf[IBuyable])
+//            buyer.get should be(newPlayer2)
         }
         "roll the dice correctly" in {
             controller.setBoard(Board(fields, player1, new PlayerIterator(Array(player1, player2))))

@@ -26,7 +26,7 @@ trait IController extends Publisher {
 
     def setUp(): Unit
 
-    def getBuyer(buyable: IBuyable): Option[IPlayer]
+    def getOwnersName(streetName: String): String
 
     def rollDice(): Unit
 
