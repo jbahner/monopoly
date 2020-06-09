@@ -38,8 +38,6 @@ trait IController extends Publisher {
 
     def buy(): Unit
 
-    def getFieldByName(name: String): Option[Field]
-
     def buildHouses(streetName: String, amount: Int): Unit
 
     def getCurrentField(): Field

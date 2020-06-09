@@ -169,9 +169,7 @@ class Controller extends IController with Publisher {
 
 
 
-    // TODO put this into the board
     def buildHouses(streetName: String, amount: Int): Unit = {
-
 
         if (!MainComponentServer.canCurrentPlayerBuildOnStreet(board.toJson().toString(), streetName))
             buildStatus = BuildStatus.NOT_OWN
@@ -180,7 +178,7 @@ class Controller extends IController with Publisher {
         else if (MainComponentServer.getCurrentPlayerMoney(board.toJson().toString()) < MainComponentServer.getHouseCost(board.toJson().toString(), streetName) * amount)
             buildStatus = BuildStatus.MISSING_MONEY
         else {
-            board = board.buildHouses(streetName, amount)
+            board = Board.fromSimplefiedJson(Json.parse(MainComponentServer.buildHouses(board.toJson().toString(), streetName, amount)).as[JsObject])
             buildStatus = BuildStatus.BUILT
         }
 
@@ -192,9 +190,6 @@ class Controller extends IController with Publisher {
         board.getBuyer(buyable)
     }
 
-    def getFieldByName(fieldName: String): Option[Field] = {
-        board.getFieldByName(fieldName)
-    }
 
     def getCurrentGameMessage: String = {
         currentGameMessage
