@@ -28,9 +28,9 @@ trait IPlayer {
 
     def getName: String
 
-    def copy(name: String = IPlayer.this.name, money: Int = IPlayer.this.money, currentField: Field = IPlayer.this.getCurrentField, bought: Set[IBuyable] = IPlayer.this.getBought, fieldIt: FieldIterator = IPlayer.this.fieldIt): Player
+    def copy(name: String = IPlayer.this.name, money: Int = IPlayer.this.money, currentField: Field = IPlayer.this.getCurrentField(), bought: Set[IBuyable] = IPlayer.this.getBought, fieldIt: FieldIterator = IPlayer.this.fieldIt): Player
 
-    def getCurrentField: Field
+    def getCurrentField(): Field
 
     override def getFieldIt: FieldIterator
 

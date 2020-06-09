@@ -235,7 +235,7 @@ class Gui(controller: IController) extends Frame with IUi {
             case GameStatus.ROLLED =>
                 bufferedMessage = "  Rolled " + controller.getCurrentDice._1 + " and " + controller.getCurrentDice._2 + "  \n"
             case GameStatus.NEW_FIELD =>
-                bufferedMessage = bufferedMessage + "  Your new Field is " + controller.getCurrentField.getName + ".  \n"
+                bufferedMessage = bufferedMessage + "  Your new Field is " + controller.getCurrentField().getName + ".  \n"
             case GameStatus.ALREADY_BOUGHT =>
                 bufferedMessage = bufferedMessage + "  You already own this street.  \n"
             case GameStatus.BOUGHT_BY_OTHER =>

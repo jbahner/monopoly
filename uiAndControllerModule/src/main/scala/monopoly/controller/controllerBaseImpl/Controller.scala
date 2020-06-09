@@ -7,13 +7,15 @@ import modelComponent.boardComponent.IBoard
 import modelComponent.fieldComponent.{Field, IBuyable, IStreet}
 import modelComponent.playerComponent.IPlayer
 import monopoly.MonopolyModule
-import monopoly.controller._
+import monopoly.controller.gamestate.GameStatus
+import monopoly.controller.{BuyCommand, _}
 import monopoly.controller.gamestate.GameStatus.BuildStatus.BuildStatus
 import monopoly.controller.gamestate.GameStatus._
 import monopoly.util.UndoManager
 import monopoly.util.fileIo.IFileIo
 import play.api.libs.json.{JsObject, JsValue, Json}
 
+import scala.concurrent.ExecutionContextExecutor
 import scala.swing.Publisher
 import scala.swing.event.Event
 import scala.xml.Elem
@@ -21,10 +23,10 @@ import scala.xml.Elem
 // TODO put this into the board -> The RentContext
 class Controller extends IController with Publisher {
 
-    implicit val system = ActorSystem("Controller-System-Actor")
-    implicit val materializer = ActorMaterializer()
+    implicit val system: ActorSystem = ActorSystem("Controller-System-Actor")
+    implicit val materializer: ActorMaterializer = ActorMaterializer()
     // needed for the future flatMap/onComplete in the end
-    implicit val executionContext = system.dispatcher
+    implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
     val injector: Injector = Guice.createInjector(new MonopolyModule)
     val undoManager = new UndoManager
@@ -38,21 +40,20 @@ class Controller extends IController with Publisher {
     var currentDice: (Int, Int) = (0, 0)
     var currentGameMessage: String = _
 
-    def setUp: Unit = {
-        undoManager.doStep(new SetupCommand(Set("Player1", "Player2"), this))
+    def setUp(): Unit = {
+        board = undoManager.doStep(new SetupCommand(Set("Player1", "Player2"), this))
         controllerState = START_OF_TURN
         publish(new UpdateInfo)
     }
 
-    def rollDice: Unit = {
-        val r = scala.util.Random
-        currentDice = (r.nextInt(6) + 1, r.nextInt(6) + 1)
-        catCurrentGameMessage
-        undoManager.doStep(WalkCommand(currentDice, this))
+    def rollDice(): Unit = {
+        currentDice = board.rollDice()
+        catCurrentGameMessage()
+        board = undoManager.doStep(WalkCommand(currentDice, this))
         publish(new UpdateInfo)
     }
 
-    def catCurrentGameMessage: String = {
+    def catCurrentGameMessage(): String = {
         controllerState match {
             case START_OF_TURN => currentGameMessage = userInputString("\"r\" to roll, \"q\" to quit, \"u\" to undo or \"re\" to redo!")
                 currentGameMessage
@@ -60,16 +61,16 @@ class Controller extends IController with Publisher {
                 currentGameMessage
             case PASSED_GO => currentGameMessage += infoString("Received 200€ by passing Go\n")
                 currentGameMessage
-            case NEW_FIELD => currentGameMessage = infoString("New Field: " + getCurrentField.getName + "\n")
+            case NEW_FIELD => currentGameMessage = infoString("New Field: " + getCurrentField().getName + "\n")
                 currentGameMessage
             case ALREADY_BOUGHT => currentGameMessage += infoString("You already own this street\n")
                 currentGameMessage
             case CAN_BUY =>
-                val field: IBuyable = getCurrentField.asInstanceOf[IBuyable]
+                val field: IBuyable = getCurrentField().asInstanceOf[IBuyable]
                 currentGameMessage += userInputString("Do you want to buy %s for %d€? (Y/N)".format(field.getName, field.getPrice) + "\n")
                 currentGameMessage
             case BOUGHT_BY_OTHER =>
-                val field = getCurrentField.asInstanceOf[IBuyable]
+                val field = getCurrentField().asInstanceOf[IBuyable]
                 currentGameMessage += infoString("Field already bought by " + getBuyer(field).get.getName + ".\n" +
                     // RentPay 1
                     "You must pay " + getCurrentFieldRent() + " rent!\n")
@@ -88,13 +89,10 @@ class Controller extends IController with Publisher {
                         currentGameMessage
                     case BuildStatus.MISSING_MONEY => currentGameMessage += errorString("You don't have enough money!\n")
                         currentGameMessage
-                    //TODO delete if not needed
-                    //case BuildStatus.DONE => currentGameMessageString = ""
-                    //    currentGameMessageString
                 }
-            case DONE => currentGameMessage = turnString(getCurrentPlayer.get.getName + " ended his turn.\n\n")
+            case DONE => currentGameMessage = turnString(getCurrentPlayer().get.getName + " ended his turn.\n\n")
                 currentGameMessage
-            case NEXT_PLAYER => currentGameMessage = turnString("Next player: " + getCurrentPlayer.get.getName + "\n") + playerInfoString(getCurrentPlayer.get.getDetails)
+            case NEXT_PLAYER => currentGameMessage = turnString("Next player: " + getCurrentPlayer().get.getName + "\n") + playerInfoString(getCurrentPlayer().get.getDetails)
                 currentGameMessage
             case MISSING_MONEY => currentGameMessage = "You do not have enough money!"
                 currentGameMessage
@@ -120,18 +118,18 @@ class Controller extends IController with Publisher {
         board.buildablesToString(buildables)
     }
 
-    def nextPlayer: Unit = {
+    def nextPlayer(): Unit = {
 
         //        val boardString: String = MainComponentServer.requestNextPlayer(board.toJson().toString())
         //        board = Board.fromSimplefiedJson(Json.parse(boardString).as[JsObject])
 
         board = board.nextPlayerTurn()
 
-        updateCurrentPlayerInfo
+        updateCurrentPlayerInfo()
         publish(new UpdateInfo)
     }
 
-    def updateCurrentPlayerInfo: Unit = {
+    def updateCurrentPlayerInfo(): Unit = {
         controllerState = NEXT_PLAYER
         publish(new UpdateInfo)
         controllerState = START_OF_TURN
@@ -146,6 +144,7 @@ class Controller extends IController with Publisher {
             controllerState = MISSING_MONEY
             publish(new UpdateInfo)
         } else {
+            // TODO refactor this method
             board.replacePlayer(currentPlayer, currentPlayer.copy(money = currentPlayer.getMoney - payAmount))
             board.replacePlayer(receiver, receiver.copy(money = receiver.getMoney + payAmount))
         }
@@ -153,42 +152,40 @@ class Controller extends IController with Publisher {
     }
 
     // TODO put this into the board
-    def buy: Unit = {
-        val currentPlayer = getCurrentPlayer
-        val currentField = getCurrentField
+    def buy(): Unit = {
+        val currentPlayer = getCurrentPlayer()
+        val currentField = getCurrentField()
         if (currentPlayer.get.getMoney < currentField.getPrice) {
             controllerState = MISSING_MONEY
             publish(new UpdateInfo)
             return
         }
-        undoManager.doStep(BuyCommand(currentField.asInstanceOf[IBuyable], this))
+        board = undoManager.doStep(BuyCommand(this))
 
     }
 
-    def getCurrentField: Field = board.getCurrentField()
+    def getCurrentField(): Field = board.getCurrentField()
 
-    // TODO put this into the board -> Option should come from board anot from controller
-    def getCurrentPlayer: Option[IPlayer] = {
-        Option(board.getCurrentPlayer)
+    def getCurrentPlayer(): Option[IPlayer] = {
+        board.getCurrentPlayer
     }
 
     // TODO put this into the board
     def buildHouses(streetName: String, amount: Int): Unit = {
-        val field = getFieldByName(streetName)
-        if (field.isEmpty || !field.get.isInstanceOf[IStreet]) {
-            buildStatus = BuildStatus.INVALID_ARGS
-            return
-        }
-        val street = field.get.asInstanceOf[IStreet]
-        val buyer = getBuyer(street)
-        if (buyer.isEmpty || !buyer.get.equals(getCurrentPlayer.get))
+
+        if (!board.canCurrentPlayerBuildOnStreet(streetName))
             buildStatus = BuildStatus.NOT_OWN
-        else if (street.getNumHouses + amount > 5)
+        else if (getAmountOfHousesOnStreet(streetName) + amount > 5)
             buildStatus = BuildStatus.TOO_MANY_HOUSES
-        else if (getCurrentPlayer.get.getMoney < street.getHouseCost * amount)
+        else if (board.getCurrentPlayerMoney() < board.getHouseCost(streetName) * amount)
             buildStatus = BuildStatus.MISSING_MONEY
-        else
-            undoManager.doStep(BuildCommand(street, amount, this))
+        else {
+            board = board.buildHouses(streetName, amount)
+            // undoManager.doStep(BuildCommand(streetName, amount, this))
+            buildStatus = BuildStatus.BUILT
+        }
+
+
         publish(new UpdateInfo)
     }
 
@@ -204,25 +201,25 @@ class Controller extends IController with Publisher {
         currentGameMessage
     }
 
-    def getControllerState: GameStatus = {
+    def getControllerState(): GameStatus = {
         controllerState
     }
 
-    def getJSON: JsValue = {
+    def getJSON(): JsValue = {
         Json.obj(
             "board" -> Json.obj(
                 "state" -> controllerState.toString,
-                "current_player" -> getCurrentPlayer.get.getName,
+                "current_player" -> getCurrentPlayer().get.getName,
                 "players" -> board.getPlayerIt.list.map(p => p.getJSON).toList
             )
         )
     }
 
-    def getUndoManager: UndoManager = {
+    def getUndoManager(): UndoManager = {
         undoManager
     }
 
-    def getBuildStatus: BuildStatus = {
+    def getBuildStatus(): BuildStatus = {
         buildStatus
     }
 
@@ -230,23 +227,23 @@ class Controller extends IController with Publisher {
         currentDice
     }
 
-    def getBoard: IBoard = board
+    def getBoard(): IBoard = board
 
     def setBoard(board: IBoard): Unit = {
         this.board = board
     }
 
-    def saveGame() = {
+    def saveGame(): Unit = {
         fileIo.save(this)
     }
 
-    def loadGame(path: String = "save-game"): Unit = {
+    def loadGame(path: String = "save-game"): IBoard = {
         val (lBoard, lControllerState, lBuildStatus) = fileIo.load(path)
-        board = lBoard
         controllerState = lControllerState
         buildStatus = lBuildStatus
         currentGameMessage = ""
         publish(new UpdateInfo)
+        lBoard
     }
 
     def toXml(): Elem = {
@@ -322,6 +319,21 @@ class Controller extends IController with Publisher {
         board.getPossibleBuildPlacesToString()
     }
 
+    override def buyCurrentField(): IBoard = {
+        board.buyCurrentField()
+    }
+
+    override def getAmountOfHousesOnStreet(streetName: String): Int = {
+        board.getAmountOfHousesOnStreet(streetName)
+    }
+
+    override def currentPlayerWalk(): IBoard = {
+        board.currentPlayerWalk()
+    }
+
+    override def getNewGameStateAfterWalk(): GameStatus = {
+        GameStatus.revMap(board.getNewGameStateAfterWalk())
+    }
 }
 
 class UpdateInfo extends Event

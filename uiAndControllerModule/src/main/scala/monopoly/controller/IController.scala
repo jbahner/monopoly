@@ -20,33 +20,33 @@ trait IController extends Publisher {
     var currentGameMessage: String
     var currentDice: (Int, Int)
 
-    def getBoard: IBoard
+    def getBoard(): IBoard
 
     def setBoard(board: IBoard): Unit
 
-    def setUp: Unit
+    def setUp(): Unit
 
     def getBuyer(buyable: IBuyable): Option[IPlayer]
 
-    def rollDice: Unit
+    def rollDice(): Unit
 
-    def nextPlayer: Unit
+    def nextPlayer(): Unit
 
-    def updateCurrentPlayerInfo: Unit
+    def updateCurrentPlayerInfo(): Unit
 
     def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer)
 
-    def buy: Unit
+    def buy(): Unit
 
     def getFieldByName(name: String): Option[Field]
 
     def buildHouses(streetName: String, amount: Int): Unit
 
-    def getCurrentField: Field
+    def getCurrentField(): Field
 
-    def getCurrentPlayer: Option[IPlayer]
+    def getCurrentPlayer(): Option[IPlayer]
 
-    def catCurrentGameMessage: String
+    def catCurrentGameMessage(): String
 
     def turnString(message: String): String
 
@@ -62,13 +62,13 @@ trait IController extends Publisher {
 
     def buildablesToString(buildables: List[Set[String]]): String
 
-    def getJSON: JsValue
+    def getJSON(): JsValue
 
-    def getControllerState: GameStatus
+    def getControllerState(): GameStatus
 
-    def getUndoManager: UndoManager
+    def getUndoManager(): UndoManager
 
-    def getBuildStatus: BuildStatus
+    def getBuildStatus(): BuildStatus
 
     def getCurrentDice: (Int, Int)
 
@@ -78,9 +78,9 @@ trait IController extends Publisher {
 
     def toJson(): JsObject
 
-    def saveGame()
+    def saveGame(): Unit
 
-    def loadGame(path: String = "save-game")
+    def loadGame(path: String = "save-game"): IBoard
 
     def getHouseCost(streetName: String): Int
 
@@ -99,4 +99,12 @@ trait IController extends Publisher {
     def shutdown(): Unit
 
     def getPossibleBuildPlacesToString(): String
+
+    def buyCurrentField(): IBoard
+
+    def getAmountOfHousesOnStreet(streetName: String): Int
+
+    def currentPlayerWalk(): IBoard
+
+    def getNewGameStateAfterWalk(): GameStatus
 }

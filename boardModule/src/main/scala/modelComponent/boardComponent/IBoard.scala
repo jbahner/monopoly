@@ -8,7 +8,7 @@ import modelComponent.util.{GeneralUtil, PlayerIterator}
 import scala.xml.Elem
 
 trait IBoard {
-    val currentDice: Int
+    var currentDice: Int
 
     def nextPlayer(): IPlayer
 
@@ -22,7 +22,7 @@ trait IBoard {
 
     def getFields: List[Field]
 
-    def getCurrentPlayer: IPlayer
+    def getCurrentPlayer: Option[IPlayer]
 
     def copy(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIterator, currentDice: Int): IBoard
 
@@ -53,4 +53,24 @@ trait IBoard {
     def getPossibleBuildPlacesToString(): String
 
     def getCurrentFieldRent(): Int
+
+    def buyCurrentField(): IBoard
+
+    def buildHouses(streetName: String, amount: Int): IBoard
+
+    def getAmountOfHousesOnStreet(streetName: String): Int
+
+    def canCurrentPlayerBuildOnStreet(streetName: String) : Boolean
+
+    def getCurrentPlayerMoney(): Int
+
+    def getStreetsHouseCost(streetName: String): Int
+
+    def rollDice(): (Int, Int)
+
+    def currentPlayerWalk(): IBoard
+
+    def getDidPlayerPassGo(): Boolean
+
+    def getNewGameStateAfterWalk(): String
 }

@@ -46,7 +46,7 @@ class PlayerSpec extends WordSpec with Matchers {
             }
 
             "stand on the first field" in {
-                player.getCurrentField should be(fields.head)
+                player.getCurrentField() should be(fields.head)
             }
             "have no bought streets" in {
                 player.getBought.size should be (0)
@@ -65,7 +65,7 @@ class PlayerSpec extends WordSpec with Matchers {
             val player = Player("name", 1500, fields.head, Set(), new FieldIterator(fields))
             "stand on the correct field" in {
                 val (movedPlayer, _) = player.walk(1)
-                movedPlayer.getCurrentField should be(fields(1))
+                movedPlayer.getCurrentField() should be(fields(1))
             }
             "earn 200 when passing Go" in {
                 val (movedPlayer, passedGo) = player.walk(4)

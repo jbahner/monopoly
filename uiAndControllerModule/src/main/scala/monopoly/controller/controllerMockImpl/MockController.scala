@@ -25,7 +25,7 @@ class MockController
     var currentGameMessage: String = _
     var currentDice: (Int, Int) = _
 
-    def getBoard: IBoard = ???
+    def getBoard(): IBoard = ???
 
     def setBoard(board: IBoard): Unit = ???
 
@@ -50,11 +50,11 @@ class MockController
 
     def buildHouses(streetName: String, amount: Int): Unit = ???
 
-    def getCurrentField: Field = ???
+    def getCurrentField(): Field = ???
 
     def getCurrentPlayer: Option[IPlayer] = ???
 
-    def catCurrentGameMessage: String = ???
+    def catCurrentGameMessage(): String = ???
 
     def turnString(message: String): String = ???
 

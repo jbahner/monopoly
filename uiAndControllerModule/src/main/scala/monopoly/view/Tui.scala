@@ -72,7 +72,7 @@ class Tui(controller: IController) extends Reactor with IUi {
     }
 
     reactions += {
-        case event: UpdateInfo => info(controller.catCurrentGameMessage)
+        case event: UpdateInfo => info(controller.catCurrentGameMessage())
     }
 
     def userInput(message: String): Unit = {

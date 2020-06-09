@@ -1,11 +1,13 @@
 package monopoly.util
 
+import modelComponent.boardComponent.IBoard
+
 trait Command {
 
-    def doStep(): Unit
+    def doStep(): IBoard
 
-    def undoStep(): Unit
+    def undoStep(): IBoard
 
-    def redoStep(): Unit
+    def redoStep(): IBoard
 
 }

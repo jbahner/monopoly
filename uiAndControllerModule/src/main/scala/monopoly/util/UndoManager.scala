@@ -1,31 +1,33 @@
 package monopoly.util
 
+import modelComponent.boardComponent.IBoard
+
 class UndoManager {
     private var undoStack: List[Command] = Nil
     private var redoStack: List[Command] = Nil
 
-    def doStep(command: Command): Unit = {
+    def doStep(command: Command): IBoard = {
         undoStack = command :: undoStack
         command.doStep()
     }
 
-    def undoStep(): Unit = {
+    def undoStep(): IBoard = {
         undoStack match {
-            case Nil =>
             case head :: stack =>
-                head.undoStep()
+                val board = head.undoStep()
                 undoStack = stack
                 redoStack = head :: redoStack
+                board
         }
     }
 
-    def redoStep(): Unit = {
+    def redoStep(): IBoard = {
         redoStack match {
-            case Nil =>
             case head :: stack =>
-                head.redoStep()
+                val board = head.redoStep()
                 redoStack = stack
                 undoStack = head :: undoStack
+                board
         }
     }
 

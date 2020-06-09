@@ -15,42 +15,42 @@ class BoardSpec extends WordSpec with Matchers {
         val player2 = Player("player2", 1500, fields.head, Set(), new FieldIterator(fields))
         val currentDice = 0
         "have a list of fields" in {
-            val board = Board(fields, player1, new PlayerIterator(Array(player1, player2)), currentDice)
+            val board = Board(fields, player1, new PlayerIterator(Array(player1, player2)))
             board.fields should be(fields)
         }
         "have a player iterator" in {
             val playerIterator = new PlayerIterator(Array(player1, player2))
-            val board = boardComponent.boardBaseImpl.Board(fields, player1, playerIterator, currentDice)
+            val board = boardComponent.boardBaseImpl.Board(fields, player1, playerIterator)
             board.playerIt should be(playerIterator)
         }
         "have a current player" in {
-            val board = boardComponent.boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)), currentDice)
+            val board = boardComponent.boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
             board.currentPlayer should be(player1)
         }
         "switch to the next player" in {
-            var board: IBoard = boardComponent.boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)), currentDice)
+            var board: IBoard = boardComponent.boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
             board = board.copy(board.getFields, board.nextPlayer(), board.getPlayerIt, currentDice)
             board.getCurrentPlayer should be(player2)
         }
         "be able to replace a player" in {
-            var board: IBoard = boardComponent.boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)), currentDice)
+            var board: IBoard = boardComponent.boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
             val newPlayer = Player("newPlayer", 50, fields.head, Set(), new FieldIterator(fields))
-            board = board.replacePlayer(board.getCurrentPlayer, newPlayer)
+            board = board.replacePlayer(board.getCurrentPlayer.get, newPlayer)
             board.getCurrentPlayer should be(newPlayer)
-            board = boardComponent.boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)), currentDice)
+            board = boardComponent.boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
         }
         "be able to replace a field" in {
-            var board: IBoard = boardComponent.boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)), currentDice)
+            var board: IBoard = boardComponent.boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
             val newField = Street("NewField", 1000, Array(0, 0, 0, 0, 0), 1000)
             board = board.replaceField(fields(1).asInstanceOf[IBuyable], newField)
             board.getFields(1) should be(newField)
         }
         "be able to replace a field that belongs to a player" in {
-            var board: IBoard = boardComponent.boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)), currentDice)
+            var board: IBoard = boardComponent.boardBaseImpl.Board(fields, player1, new PlayerIterator(Array(player1, player2)))
             val newField = Street("street1", 1000, Array(0, 0, 0, 0, 0), 1000)
             board = board.replacePlayer(player1, player1.copy(bought = player1.getBought + fields(1).asInstanceOf[IBuyable]))
             board = board.replaceField(board.getFields(1).asInstanceOf[IBuyable], newField)
-            board.getCurrentPlayer.getBought.contains(newField) should be(true)
+            board.getCurrentPlayer.get.getBought.contains(newField) should be(true)
         }
     }
 }

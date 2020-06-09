@@ -52,7 +52,7 @@ case class Player(name: String, money: Int, currentField: Field, bought: Set[IBu
 
     override def getName: String = name
 
-    override def getCurrentField: Field = currentField
+    override def getCurrentField(): Field = currentField
 
     override def getFieldIt: FieldIterator = fieldIt
 
