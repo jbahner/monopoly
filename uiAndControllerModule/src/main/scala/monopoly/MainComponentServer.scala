@@ -170,6 +170,23 @@ object MainComponentServer {
         responseString.toInt
     }
 
+    def getHouseCost(board: String, streetName: String): Int = {
+        val boardJson = Json.parse(board).as[JsObject]
+            .+("streetNameParam", Json.toJson(streetName))
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/get-house-cost",
+                        entity = boardJson.toString())),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString.toInt
+    }
+
 
     def getStringFromResponse(input: HttpResponse): String = {
         Unmarshal(input).to[String].toString.replace("FulfilledFuture(", "").replace(")", "")
