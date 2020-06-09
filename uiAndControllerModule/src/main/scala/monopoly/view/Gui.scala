@@ -225,7 +225,9 @@ class Gui(controller: IController) extends Frame with IUi {
         new GridPanel(10, 1) {
             contents += new Label("")
             contents += new Label("  " + controller.getCurrentPlayer.get.getName + "    ")
-            contents += new Label(controller.getCurrentPlayer.get.getMoney + " €")
+            // TODO current Players money is not displayed correctly
+            contents += new Label(controller.getCurrentPlayerMoney() + " €")
+            println("CurrentPlayer Money Gui: " + controller.getCurrentPlayerMoney())
             contents += new Label("")
         }
     }

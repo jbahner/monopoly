@@ -118,9 +118,7 @@ class Controller extends IController with Publisher {
 
     def errorString(message: String): String = Console.BOLD + Console.RED + message + Console.RESET
 
-    def buildablesToString(buildables: List[Set[String]]): String = {
-        board.buildablesToString(buildables)
-    }
+
 
     def nextPlayer(): Unit = {
 
@@ -142,37 +140,35 @@ class Controller extends IController with Publisher {
     }
 
     // TODO put this into the board
-    def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer): Unit = {
+    def payRent(): Unit = {
         val payAmount = getCurrentFieldRent()
-        if (currentPlayer.getMoney < payAmount) {
+        val currentPlayerMoney = getCurrentPlayerMoney()
+        if (currentPlayerMoney < payAmount) {
             controllerState = MISSING_MONEY
             publish(new UpdateInfo)
         } else {
-            // TODO refactor this method
-            board.replacePlayer(currentPlayer, currentPlayer.copy(money = currentPlayer.getMoney - payAmount))
-            board.replacePlayer(receiver, receiver.copy(money = receiver.getMoney + payAmount))
+
+            val tmpBoard = MainComponentServer.currentPlayerPaysRent(board.toJson().toString())
+            board = Board.fromSimplefiedJson(Json.parse(tmpBoard).as[JsObject])
         }
-        //publish(new UpdateGui)
+        println("Played Rent :: CurrentPlayerMoney: " + getCurrentPlayerMoney())
+        publish(new UpdateInfo)
     }
 
-    // TODO put this into the board
+    // TODO enable this again
     def buy(): Unit = {
-        val currentPlayer = getCurrentPlayer()
-        val currentField = getCurrentField()
-        if (currentPlayer.get.getMoney < currentField.getPrice) {
-            controllerState = MISSING_MONEY
-            publish(new UpdateInfo)
-            return
-        }
-        board = undoManager.doStep(BuyCommand(this))
+//        val currentPlayer = getCurrentPlayer()
+//        val currentField = getCurrentField()
+//        if (currentPlayer.get.getMoney < currentField.getPrice) {
+//            controllerState = MISSING_MONEY
+//            publish(new UpdateInfo)
+//            return
+//        }
+//        board = undoManager.doStep(BuyCommand(this))
 
     }
 
-    def getCurrentField(): Field = board.getCurrentField()
 
-    def getCurrentPlayer(): Option[IPlayer] = {
-        board.getCurrentPlayer
-    }
 
     // TODO put this into the board
     def buildHouses(streetName: String, amount: Int): Unit = {
@@ -286,6 +282,12 @@ class Controller extends IController with Publisher {
         input.replaceAll("\\[..", "")
     }
 
+    def getCurrentField(): Field = board.getCurrentField()
+
+    def getCurrentPlayer(): Option[IPlayer] = {
+        board.getCurrentPlayer
+    }
+
     def shutdown(): Unit = {
         // TODO maybe shutdown other services too?
         sys.exit(1)
@@ -346,6 +348,11 @@ class Controller extends IController with Publisher {
     override def getDidPlayerPassGo(): Boolean = {
         (board.toJson() \ "passedGo").as[Boolean]
     }
+
+    def getCurrentPlayerMoney(): Int = {
+        board.getCurrentPlayerMoney()
+    }
+
 }
 
 class UpdateInfo extends Event

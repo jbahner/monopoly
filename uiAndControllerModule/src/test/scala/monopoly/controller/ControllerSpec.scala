@@ -103,7 +103,7 @@ class ControllerSpec extends WordSpec with Matchers {
             val board = Board(rentFields, player, new PlayerIterator(Array(player, buyer)))
             controller.setBoard(board)
 //            RentContext.controller = controller
-            controller.payRent(player, rentFields.head, buyer)
+            controller.payRent()
 
             val amount = RentContext.rentStrategy.executeStrategy(board, rentFields.head.asInstanceOf[IBuyable])
             controller.getBoard().getPlayerIt.list.head.getMoney should be(player.getMoney - amount)
@@ -177,9 +177,6 @@ class ControllerSpec extends WordSpec with Matchers {
             controller.currentDice = (1, 2)
             controller.getUndoManager.doStep(WalkCommand((1, 2), controller))
             controller.controllerState should be(GameStatus.CAN_BUILD)
-        }
-        "concat buildables to String" in {
-            controller.buildablesToString(GeneralUtil.getWholeGroups(player1)) shouldBe a[String]
         }
     }
 

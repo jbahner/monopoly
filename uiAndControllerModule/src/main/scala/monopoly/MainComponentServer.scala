@@ -104,6 +104,20 @@ object MainComponentServer {
         responseString
     }
 
+    def currentPlayerPaysRent(board: String): (String) = {
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(POST,
+                        uri = BOARD_COMPONENT_URL + "/board/pay-rent",
+                        entity = board)),
+                10000 seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString
+    }
+
 
     def getStringFromResponse(input: HttpResponse): String = {
         Unmarshal(input).to[String].toString.replace("FulfilledFuture(", "").replace(")", "")

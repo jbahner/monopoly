@@ -34,7 +34,7 @@ trait IController extends Publisher {
 
     def updateCurrentPlayerInfo(): Unit
 
-    def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer)
+    def payRent()
 
     def buy(): Unit
 
@@ -59,8 +59,6 @@ trait IController extends Publisher {
     def errorString(message: String): String
 
     def getCurrentGameMessage: String
-
-    def buildablesToString(buildables: List[Set[String]]): String
 
     def getJSON(): JsValue
 
@@ -111,4 +109,7 @@ trait IController extends Publisher {
     def canCurrentPlayerBuyHouses(): Boolean
 
     def getDidPlayerPassGo(): Boolean
+
+    def getCurrentPlayerMoney(): Int
+
 }

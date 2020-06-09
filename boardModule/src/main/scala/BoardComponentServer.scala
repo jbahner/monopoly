@@ -17,7 +17,7 @@ object BoardComponentServer {
     private val PATH_NEXT_PLAYER = "/board/next-player"
     private val PATH_ROLL_DICE = "/board/roll-dice"
     private val PATH_PLAYER_WALK = "/board/player-walk"
-    private val PATH_PASS_GO = "/board/passed-go"
+    private val PATH_PAY_RENT = "/board/pay-rent"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
@@ -65,7 +65,6 @@ object BoardComponentServer {
                     returnBoardJson.toString()))
 
             case HttpRequest(POST, Uri.Path(PATH_PLAYER_WALK), _, entity, _) =>
-
                 println("Called Route: " + PATH_PLAYER_WALK)
 
                 val requestJsonBoardAsString = entityToJson(entity)
@@ -80,6 +79,21 @@ object BoardComponentServer {
                     ContentTypes.`text/plain(UTF-8)`,
                     returnBoardJson.toString()))
 
+
+            case HttpRequest(POST, Uri.Path(PATH_PAY_RENT), _, entity, _) =>
+                println("Called Route: " + PATH_PAY_RENT)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val board = Board.fromSimplefiedJson(json)
+                val newBoard = board.currentPlayerPaysRent()
+
+                val returnBoardJson = newBoard.toJson()
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    returnBoardJson.toString()))
 
 
 

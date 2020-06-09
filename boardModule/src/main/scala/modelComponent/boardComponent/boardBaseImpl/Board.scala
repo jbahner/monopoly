@@ -220,6 +220,13 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
     override def canCurrentPlayerBuyHouses(): Boolean = {
         GeneralUtil.getWholeGroups(getCurrentPlayer().get) != Nil
     }
+
+    override def currentPlayerPaysRent(): IBoard = {
+        replacePlayer(currentPlayer, currentPlayer.copy(money = currentPlayer.getMoney - getCurrentFieldRent()))
+
+        val receiver = getBuyer(getCurrentField().asInstanceOf[IBuyable]).get
+        replacePlayer(receiver, receiver.copy(money = receiver.getMoney + getCurrentFieldRent()))
+    }
 }
 
 object Board {
