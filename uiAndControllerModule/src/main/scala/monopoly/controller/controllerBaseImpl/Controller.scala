@@ -286,9 +286,6 @@ class Controller extends IController with Publisher {
     }
 
 
-    override def getHouseCount(streetName: String): Int = {
-        board.getHouseCount(streetName)
-    }
 
     override def getCurrentFieldType(): String = {
         board.getCurrentFieldType()

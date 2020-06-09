@@ -26,6 +26,7 @@ object BoardComponentServer {
     private val PATH_BUILD_HOUSES = "/board/build-houses"
     private val PATH_GET_OWNERS_NAME = "/board/get-owners-name"
     private val PATH_CURRENT_FIELD = "/board/current-field"
+    private val PATH_CURRENT_PLAYER_BOUGHT_STREET_COUNT = "/board/current-player-bought-streets-count"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
     //    private val PATH_ROOT = "/"
@@ -212,6 +213,21 @@ object BoardComponentServer {
                 HttpResponse(entity = HttpEntity(
                     ContentTypes.`text/plain(UTF-8)`,
                     currentField.toString()))
+
+
+            case HttpRequest(GET, Uri.Path(PATH_CURRENT_PLAYER_BOUGHT_STREET_COUNT), _, entity, _) =>
+                println("Called Route: " + PATH_CURRENT_PLAYER_BOUGHT_STREET_COUNT)
+
+                val requestJsonBoardAsString = entityToJson(entity)
+
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val board = Board.fromSimplefiedJson(json)
+
+                val boughtSize = board.getCurrentPlayer().get.getBought.size
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    boughtSize.toString))
 
 
 

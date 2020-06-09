@@ -89,9 +89,9 @@ case class Board(fields: List[Field], currentPlayer: IPlayer, playerIt: PlayerIt
 
     override def getCurrentFieldType(): String = {
         getCurrentField() match {
-            case building: IBuyable => "Building"
-            case street: IStreet => "Street"
-            case field: Field => "Field"
+            case building: IBuyable => "building"
+            case street: IStreet => "street"
+            case field: Field => "field"
         }
     }
 

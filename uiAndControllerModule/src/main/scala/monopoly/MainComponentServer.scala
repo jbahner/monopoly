@@ -247,6 +247,31 @@ object MainComponentServer {
         (json \ "field" \ "name").get.as[String]
     }
 
+    // TODO owner of field is not displayed in Gui
+    def getCurrentFieldType(board: String): String = {
+        val currentField = getCurrentField(board)
+
+        val json = Json.parse(currentField).as[JsObject]
+
+        (json \ "field" \ "type").get.as[String]
+    }
+
+    def getCurrentPlayBoughtStreetsCount(board: String): Int = {
+        val boardJson = Json.parse(board).as[JsObject]
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/current-player-bought-streets-count",
+                        entity = boardJson.toString())),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString.toInt
+    }
+
 
 
     def getStringFromResponse(input: HttpResponse): String = {

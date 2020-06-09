@@ -5,9 +5,9 @@ import java.util
 
 import javax.swing.{BorderFactory, ImageIcon}
 import monopoly.MainComponentServer
-import monopoly.controller.gamestate.GameStatus
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.{CatGuiMessage, UpdateGui, UpdateInfo}
+import monopoly.controller.gamestate.GameStatus
 
 import scala.swing._
 import scala.swing.event._
@@ -112,7 +112,9 @@ class Gui(controller: IController) extends Frame with IUi {
 
     def generateBuildButtons(): GridPanel = {
         controller.getControllerState match {
-            case GameStatus.CAN_BUILD => new GridPanel(controller.getCurrentPlayer.get.getBought.size, 1) {
+            case GameStatus.CAN_BUILD => new GridPanel(MainComponentServer.getCurrentPlayBoughtStreetsCount(controller.getBoard().toJson().toString()),
+
+                1) {
                 if (controller.getCurrentPlayer.isDefined)
                     controller.getCurrentPlayer.get.getBought.toSeq.sortBy(_.getName)
                         .foreach(bought => contents += generateBuildButton(bought.getName))
@@ -146,7 +148,7 @@ class Gui(controller: IController) extends Frame with IUi {
 
     def generateCenterCurrentFieldDetails(): GridPanel = {
         new GridPanel(2, 1) {
-            val curFieldType: String = controller.getCurrentFieldType()
+            val curFieldType: String = MainComponentServer.getCurrentFieldType(controller.getBoard().toJson().toString())
 
 
             contents += new GridPanel(7, 1) {
