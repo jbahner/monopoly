@@ -1,5 +1,7 @@
 package monopoly
 
+import java.io.File
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
@@ -7,7 +9,6 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import com.google.inject.{Guice, Injector}
-import modelComponent.boardComponent.boardBaseImpl.Board
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
 import monopoly.controller.gamestate.GameStatus
@@ -32,13 +33,19 @@ object MainComponentServer {
     private val BOARD_COMPONENT_URL = "http://localhost:8082"
     val injector: Injector = Guice.createInjector(new MonopolyModule)
     val controller: IController = injector.getInstance(classOf[IController])
-    controller.setUp
+
+
+    val resourcesPath = getClass.getResource("/save-game.json")
+    println(resourcesPath.getPath)
+
+    controller.setUp()
     val tui: IUi = new Tui(controller)
 
     val gui: IUi = new Gui(controller)
 
 
     def main(args: Array[String]): Unit = {
+
 
         val requestHandler: HttpRequest => HttpResponse = {
 
@@ -51,7 +58,7 @@ object MainComponentServer {
                 HttpResponse(entity = "Health is feeling good!")
         }
 
-        val bindingFuture = Http().bindAndHandleSync(requestHandler, "localhost", 8081)
+        val bindingFuture = Http().bindAndHandleSync(requestHandler, "localhost", 8080)
 
         controller.publish(new UpdateInfo)
 

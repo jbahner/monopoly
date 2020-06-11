@@ -15,26 +15,26 @@ object BoardComponentServer {
     private implicit val system: ActorSystem = ActorSystem("my-system")
     private implicit val materializer: ActorMaterializer = ActorMaterializer()
 
-    private val PATH_ROOT = "/"
-    private val PATH_NEXT_PLAYER = "/board/next-player"
-    private val PATH_ROLL_DICE = "/board/roll-dice"
-    private val PATH_PLAYER_WALK = "/board/player-walk"
-    private val PATH_PAY_RENT = "/board/pay-rent"
-    private val PATH_CAN_CURRENT_PLAYER_BUILT = "/board/can-current-player-build"
-    private val PATH_AMOUNT_OF_HOUSES = "/board/amount-of-houses"
-    private val PATH_CURRENT_PLAYER_MONEY = "/board/current-player-money"
-    private val PATH_GET_HOUSE_COST = "/board/get-house-cost"
-    private val PATH_BUILD_HOUSES = "/board/build-houses"
-    private val PATH_GET_OWNERS_NAME = "/board/get-owners-name"
-    private val PATH_CURRENT_FIELD = "/board/current-field"
-    private val PATH_CURRENT_PLAYER_BOUGHT_STREET_COUNT = "/board/current-player-bought-streets-count"
-    private val PATH_CURRENT_PLAYER_NAME = "/board/current-player-name"
-    private val PATH_CURRENT_FIELD_RENT = "/board/current-field-rent"
-    private val PATH_CURRENT_PLAYER_BUY_HOUSES = "/board/can-buy-houses"
-    private val PATH_POSSIBLE_BUILD_PLACES = "/board/possible-build-places"
-    private val PATH_GET_FIELD_GAMESTATE = "/board/get-field-game-state"
-    private val PATH_CURRENT_PLAYER_DETAILS = "/board/current-player-details"
-    private val PATH_CURRENT_PLAYER_BOUGHT_FIELDNAMES = "/board/current-player-bought-fieldnames"
+    private val PATH_ROOT =                                 "/"
+    private val PATH_NEXT_PLAYER =                          "/board/next-player"
+    private val PATH_ROLL_DICE =                            "/board/roll-dice"
+    private val PATH_PLAYER_WALK =                          "/board/player-walk"
+    private val PATH_PAY_RENT =                             "/board/pay-rent"
+    private val PATH_CAN_CURRENT_PLAYER_BUILT =             "/board/can-current-player-build"
+    private val PATH_AMOUNT_OF_HOUSES =                     "/board/amount-of-houses"
+    private val PATH_CURRENT_PLAYER_MONEY =                 "/board/current-player-money"
+    private val PATH_GET_HOUSE_COST =                       "/board/get-house-cost"
+    private val PATH_BUILD_HOUSES =                         "/board/build-houses"
+    private val PATH_GET_OWNERS_NAME =                      "/board/get-owners-name"
+    private val PATH_CURRENT_FIELD =                        "/board/current-field"
+    private val PATH_CURRENT_PLAYER_BOUGHT_STREET_COUNT =   "/board/current-player-bought-streets-count"
+    private val PATH_CURRENT_PLAYER_NAME =                  "/board/current-player-name"
+    private val PATH_CURRENT_FIELD_RENT =                   "/board/current-field-rent"
+    private val PATH_CURRENT_PLAYER_BUY_HOUSES =            "/board/can-buy-houses"
+    private val PATH_POSSIBLE_BUILD_PLACES =                "/board/possible-build-places"
+    private val PATH_GET_FIELD_GAMESTATE =                  "/board/get-field-game-state"
+    private val PATH_CURRENT_PLAYER_DETAILS =               "/board/current-player-details"
+    private val PATH_CURRENT_PLAYER_BOUGHT_FIELDNAMES =     "/board/current-player-bought-fieldnames"
 
     def main(args: Array[String]): Unit = {
 
@@ -313,8 +313,6 @@ object BoardComponentServer {
 
                 val requestJsonBoardAsString = entityToJson(entity)
 
-                println(requestJsonBoardAsString)
-
                 val json = Json.parse(requestJsonBoardAsString).as[JsObject]
                 val board = Board.fromSimplefiedJson(json)
 
@@ -327,7 +325,6 @@ object BoardComponentServer {
             case HttpRequest(GET, Uri.Path(PATH_CURRENT_PLAYER_BOUGHT_FIELDNAMES), _, entity, _) =>
                 println("Called Route: " + PATH_CURRENT_PLAYER_BOUGHT_FIELDNAMES)
 
-                println("ANSWER IS HEREEEEEEEEEEEEE")
 
                 val requestJsonBoardAsString = entityToJson(entity)
 

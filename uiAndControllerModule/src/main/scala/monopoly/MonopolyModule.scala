@@ -3,10 +3,6 @@ package monopoly
 ;
 
 import com.google.inject.AbstractModule
-import modelComponent.fieldComponent.fieldBaseImpl.ActionField
-import modelComponent.playerComponent.IPlayer
-import modelComponent.playerComponent.playerBaseImpl.Player
-import modelComponent.util.FieldIterator
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.Controller
 import monopoly.util.fileIo.IFileIo
@@ -20,7 +16,7 @@ class MonopolyModule extends AbstractModule with ScalaModule {
         bind[IController].to[Controller]
         //bind[IController].to[MockController]
 
-        bind[IPlayer].toInstance(Player("", 0, ActionField(""), Set(), FieldIterator(List())))
+//        bind[IPlayer].toInstance(Player("", 0, ActionField(""), Set(), FieldIterator(List())))
         //bind[IBoard].toInstance(Board(List(), null, PlayerIterator(Array())))
         //        bind[IFileIo].to[FileIoXml]
         bind[IFileIo].to[FileIoJson]

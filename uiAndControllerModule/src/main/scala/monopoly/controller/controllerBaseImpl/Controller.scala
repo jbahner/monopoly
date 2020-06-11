@@ -1,5 +1,8 @@
 package monopoly.controller.controllerBaseImpl
 
+import java.io
+import java.io.{File, FileInputStream, InputStream}
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.google.inject.{Guice, Injector}
@@ -219,7 +222,7 @@ class Controller extends IController with Publisher {
     }
 
     def loadGame(path: String = "save-game"): String = {
-        val (lBoard, lControllerState, lBuildStatus) = fileIo.load(path)
+        val (lBoard, lControllerState, lBuildStatus) = fileIo.load(new FileInputStream(path))
         controllerState = lControllerState
         buildStatus = lBuildStatus
         currentGameMessage = ""
@@ -284,6 +287,15 @@ class Controller extends IController with Publisher {
         (Json.parse(board).as[JsObject] \ "passedGo").as[Boolean]
     }
 
+    override def loadDefaultGame(): String = {
+        val (lBoard, lControllerState, lBuildStatus) = fileIo.load(getClass.getResourceAsStream("/save-game.json"))
+
+        controllerState = lControllerState
+        buildStatus = lBuildStatus
+        currentGameMessage = ""
+        publish(new UpdateInfo)
+        lBoard
+    }
 }
 
 class UpdateInfo extends Event

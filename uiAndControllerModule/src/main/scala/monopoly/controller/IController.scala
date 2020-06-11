@@ -71,6 +71,8 @@ trait IController extends Publisher {
 
     def loadGame(path: String = "save-game"): String
 
+    def loadDefaultGame(): String
+
     def shutdown(): Unit
 
     def currentPlayerWalk(): String

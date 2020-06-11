@@ -1,9 +1,6 @@
 package monopoly.controller.controllerMockImpl
 
 import com.google.inject.{Guice, Injector}
-import modelComponent.boardComponent.IBoard
-import modelComponent.fieldComponent.{Field, IBuyable}
-import modelComponent.playerComponent.IPlayer
 import monopoly.MonopolyModule
 import monopoly.controller.gamestate.GameStatus.BuildStatus.BuildStatus
 import monopoly.controller.gamestate.GameStatus.GameStatus
@@ -22,16 +19,11 @@ class MockController
     var currentGameMessage: String = _
     var currentDice: (Int, Int) = _
 
-    def getBoard(): IBoard = ???
-
-    def setBoard(board: IBoard): Unit = ???
 
     def setUp: Unit = {
         print("THIS IS A MOCK IMPLEMENTATION\n")
         throw new Exception("MOCK IMPLEMENTATION")
     }
-
-    def getBuyer(buyable: IBuyable): Option[IPlayer] = ???
 
     def rollDice: Unit = ???
 
@@ -39,17 +31,9 @@ class MockController
 
     def updateCurrentPlayerInfo: Unit = ???
 
-    def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer): Unit = ???
-
     def buy: Unit = ???
 
-    def getFieldByName(name: String): Option[Field] = ???
-
     def buildHouses(streetName: String, amount: Int): Unit = ???
-
-    def getCurrentField(): Field = ???
-
-    def getCurrentPlayer: Option[IPlayer] = ???
 
     def catCurrentGameMessage(): String = ???
 
