@@ -58,8 +58,6 @@ object MainComponentServer {
                 HttpResponse(entity = "Health is feeling good!")
         }
 
-        val bindingFuture = Http().bindAndHandleSync(requestHandler, "localhost", 8080)
-
         controller.publish(new UpdateInfo)
 
         var input = readLine()
