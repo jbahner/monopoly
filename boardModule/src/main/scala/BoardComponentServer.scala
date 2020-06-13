@@ -350,7 +350,7 @@ object BoardComponentServer {
             //                HttpResponse(404, entity = "Unknown resource!")
         }
 
-        val bindingFuture = Http().bindAndHandleSync(requestHandler, "localhost", 8082)
+        val bindingFuture = Http().bindAndHandleSync(requestHandler, "0.0.0.0", 8082)
 
         println("BoardComponentServer is running and waiting for requests.")
 

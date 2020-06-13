@@ -30,7 +30,7 @@ object MainComponentServer {
     // needed for the future flatMap/onComplete in the end
     implicit val executionContext = system.dispatcher
 
-    private val BOARD_COMPONENT_URL = "http://localhost:8082"
+    private val BOARD_COMPONENT_URL = "http://myboard:8082"
     val injector: Injector = Guice.createInjector(new MonopolyModule)
     val controller: IController = injector.getInstance(classOf[IController])
 
@@ -41,7 +41,7 @@ object MainComponentServer {
     controller.setUp()
     val tui: IUi = new Tui(controller)
 
-    val gui: IUi = new Gui(controller)
+    // val gui: IUi = new Gui(controller)
 
 
     def main(args: Array[String]): Unit = {
