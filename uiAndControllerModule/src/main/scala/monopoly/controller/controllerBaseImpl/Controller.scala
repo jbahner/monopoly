@@ -219,15 +219,19 @@ class Controller extends IController with Publisher {
 
     def saveGame(): Unit = {
         fileIo.save(this)
+        MainComponentServer.saveCurrentBoard(board)
     }
 
     def loadGame(path: String = "save-game"): String = {
-        val (lBoard, lControllerState, lBuildStatus) = fileIo.load(new FileInputStream(path))
+        val (_, lControllerState, lBuildStatus) = fileIo.load(new FileInputStream(path), false)
         controllerState = lControllerState
         buildStatus = lBuildStatus
         currentGameMessage = ""
+
+        board = MainComponentServer.loadCurrentBoard()
+
         publish(new UpdateInfo)
-        lBoard
+        board
     }
 
     def toXml(): Elem = {
@@ -288,7 +292,7 @@ class Controller extends IController with Publisher {
     }
 
     override def loadDefaultGame(): String = {
-        val (lBoard, lControllerState, lBuildStatus) = fileIo.load(getClass.getResourceAsStream("/save-game.json"))
+        val (lBoard, lControllerState, lBuildStatus) = fileIo.load(getClass.getResourceAsStream("/save-game.json"), true)
 
         controllerState = lControllerState
         buildStatus = lBuildStatus

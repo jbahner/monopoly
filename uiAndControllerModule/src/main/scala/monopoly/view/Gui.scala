@@ -56,7 +56,9 @@ class Gui(controller: IController) extends Frame with IUi {
                     chooser.setCurrentDirectory(new java.io.File("."));
 
                     if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                        controller.loadGame(chooser.getSelectedFile.getAbsolutePath)
+                        controller.setBoard(controller.loadGame(chooser.getSelectedFile.getAbsolutePath))
+                        publish(new UpdateInfo)
+
                     }
 
                 })

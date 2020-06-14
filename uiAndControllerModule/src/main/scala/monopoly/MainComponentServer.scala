@@ -1,7 +1,5 @@
 package monopoly
 
-import java.io.File
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
@@ -375,7 +373,7 @@ object MainComponentServer {
         responseString
     }
 
-    def getCurrentPlayerBoughtFieldnames(board: String) : List[String] = {
+    def getCurrentPlayerBoughtFieldnames(board: String): List[String] = {
         val boardJson = board
 
         val httpResonse: HttpResponse =
@@ -393,6 +391,35 @@ object MainComponentServer {
         boughtStreets.toList
     }
 
+    def saveCurrentBoard(board: String): Unit = {
+        val boardJson = board
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(POST,
+                        uri = BOARD_COMPONENT_URL + "/board/save-current-board",
+                        entity = boardJson)),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        println("Saving in Database was -> " + responseString)
+    }
+
+    def loadCurrentBoard(): String = {
+
+        val httpResonse: HttpResponse =
+            Await.result(
+                Http().singleRequest(
+                    HttpRequest(GET,
+                        uri = BOARD_COMPONENT_URL + "/board/load-current-board")),
+                HTTP_RESPONSE_WAIT_TIME seconds)
+
+        val responseString = getStringFromResponse(httpResonse)
+
+        responseString
+    }
 
 
     def getStringFromResponse(input: HttpResponse): String = {

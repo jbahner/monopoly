@@ -14,7 +14,7 @@ import scala.io.Source
 import scala.util.{Failure, Success, Try}
 
 class FileIoJson extends IFileIo {
-    override def load(is: InputStream): (String, GameStatus, BuildStatus) = {
+    override def load(is: InputStream, loadFullGame: Boolean): (String, GameStatus, BuildStatus) = {
 
         val result = new BufferedReader(new InputStreamReader(is))
           .lines().collect(Collectors.joining("\n"));
@@ -28,9 +28,14 @@ class FileIoJson extends IFileIo {
 
         is.close()
 
-        val tmp1 = (json \ "controller" \ "board")
-        val tmp2 = tmp1.get
-        val tmp3 = tmp2.toString
+        var tmp3 = ""
+        if (loadFullGame) {
+            val tmp1 = (json \ "controller" \ "board")
+            val tmp2 = tmp1.get
+            tmp3 = tmp2.toString
+        }
+
+
 
         (tmp3,
             GameStatus.fromJson(json),
@@ -39,6 +44,9 @@ class FileIoJson extends IFileIo {
 
     def save(controller: IController): Unit = {
         import java.io._
+
+        println("Saved from basic FileIO to Filesystem")
+
         val pw = new PrintWriter(new File("save-game.json"))
         pw.write(Json.prettyPrint(controller.toJson()))
         pw.close()

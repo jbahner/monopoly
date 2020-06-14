@@ -6,6 +6,8 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import modelComponent.boardComponent.boardBaseImpl.Board
 import modelComponent.fieldComponent.IBuyable
+import modelComponent.persistence.IDaoBoard
+import modelComponent.persistence.relational.RelationalAdapter
 import modelComponent.util.RentContext
 import play.api.libs.json.{JsObject, Json}
 
@@ -14,6 +16,7 @@ object BoardComponentServer {
     // Akka Inits
     private implicit val system: ActorSystem = ActorSystem("my-system")
     private implicit val materializer: ActorMaterializer = ActorMaterializer()
+    private val database: IDaoBoard = RelationalAdapter
 
     private val PATH_ROOT =                                 "/"
     private val PATH_NEXT_PLAYER =                          "/board/next-player"
@@ -35,6 +38,8 @@ object BoardComponentServer {
     private val PATH_GET_FIELD_GAMESTATE =                  "/board/get-field-game-state"
     private val PATH_CURRENT_PLAYER_DETAILS =               "/board/current-player-details"
     private val PATH_CURRENT_PLAYER_BOUGHT_FIELDNAMES =     "/board/current-player-bought-fieldnames"
+    private val PATH_SAVE_CURRENT_BOARD =                   "/board/save-current-board"
+    private val PATH_LOAD_CURRENT_BOARD =                   "/board/load-current-board"
 
     def main(args: Array[String]): Unit = {
 
@@ -339,6 +344,35 @@ object BoardComponentServer {
                 HttpResponse(entity = HttpEntity(
                     ContentTypes.`text/plain(UTF-8)`,
                     answer))
+
+
+            case HttpRequest(POST, Uri.Path(PATH_SAVE_CURRENT_BOARD), _, entity, _) =>
+                println("Called Route: " + PATH_SAVE_CURRENT_BOARD)
+
+
+                val requestJsonBoardAsString = entityToJson(entity)
+
+                val json = Json.parse(requestJsonBoardAsString).as[JsObject]
+                val board = Board.fromSimplefiedJson(json)
+
+                val saveAnser = database.saveBoard(board)
+
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    saveAnser.toString))
+
+
+            case HttpRequest(GET, Uri.Path(PATH_LOAD_CURRENT_BOARD), _, _, _) =>
+                println("Called Route: " + PATH_LOAD_CURRENT_BOARD)
+
+
+                val board = database.loadBoard()
+
+
+                HttpResponse(entity = HttpEntity(
+                    ContentTypes.`text/plain(UTF-8)`,
+                    board.toJson().toString()))
 
 
 
