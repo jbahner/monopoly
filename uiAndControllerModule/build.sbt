@@ -30,3 +30,4 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-nop" % "1.6.4"
 )
 libraryDependencies += "com.h2database" % "h2" % "1.4.199"
+libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.9.0"

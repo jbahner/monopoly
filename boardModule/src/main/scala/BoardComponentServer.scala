@@ -7,6 +7,7 @@ import akka.stream.ActorMaterializer
 import modelComponent.boardComponent.boardBaseImpl.Board
 import modelComponent.fieldComponent.IBuyable
 import modelComponent.persistence.IDaoBoard
+import modelComponent.persistence.documentBased.MongoDbAdapter
 import modelComponent.persistence.relational.RelationalAdapter
 import modelComponent.util.RentContext
 import play.api.libs.json.{JsObject, Json}
@@ -16,7 +17,8 @@ object BoardComponentServer {
     // Akka Inits
     private implicit val system: ActorSystem = ActorSystem("my-system")
     private implicit val materializer: ActorMaterializer = ActorMaterializer()
-    private val database: IDaoBoard = RelationalAdapter
+//    private val database: IDaoBoard = RelationalAdapter
+    private val database: IDaoBoard = new MongoDbAdapter()
 
     private val PATH_ROOT =                                 "/"
     private val PATH_NEXT_PLAYER =                          "/board/next-player"

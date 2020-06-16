@@ -10,6 +10,7 @@ import monopoly.controller._
 import monopoly.controller.gamestate.GameStatus.BuildStatus.BuildStatus
 import monopoly.controller.gamestate.GameStatus._
 import monopoly.persistence.IDaoController
+import monopoly.persistence.documentBased.MongoDbAdapter
 import monopoly.persistence.relational.RelationalAdapter
 import monopoly.util.UndoManager
 import monopoly.util.fileIo.IFileIo
@@ -32,7 +33,8 @@ class Controller extends IController with Publisher {
     val injector: Injector = Guice.createInjector(new MonopolyModule)
     val undoManager = new UndoManager
 
-    private val database: IDaoController = RelationalAdapter
+    private val database: IDaoController = new MongoDbAdapter()
+//    private val database: IDaoController = RelationalAdapter
 
 
 
