@@ -79,4 +79,8 @@ trait IController extends Publisher {
 
     def getDidPlayerPassGo(): Boolean
 
+    def loadControllerFromDb(): Unit
+
+    def loadBoardFromDb(): Unit
+
 }

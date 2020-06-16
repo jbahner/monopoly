@@ -9,6 +9,8 @@ import com.google.inject.{Guice, Injector}
 import monopoly.controller._
 import monopoly.controller.gamestate.GameStatus.BuildStatus.BuildStatus
 import monopoly.controller.gamestate.GameStatus._
+import monopoly.persistence.IDaoController
+import monopoly.persistence.relational.RelationalAdapter
 import monopoly.util.UndoManager
 import monopoly.util.fileIo.IFileIo
 import monopoly.{MainComponentServer, MonopolyModule}
@@ -29,6 +31,9 @@ class Controller extends IController with Publisher {
 
     val injector: Injector = Guice.createInjector(new MonopolyModule)
     val undoManager = new UndoManager
+
+    private val database: IDaoController = RelationalAdapter
+
 
 
     private val fileIo = injector.getInstance(classOf[IFileIo])
@@ -218,7 +223,7 @@ class Controller extends IController with Publisher {
     }
 
     def saveGame(): Unit = {
-        fileIo.save(this)
+        if (database.saveController(this)) println("Saving controller in Database was true!")
         MainComponentServer.saveCurrentBoard(board)
     }
 
@@ -299,6 +304,21 @@ class Controller extends IController with Publisher {
         currentGameMessage = ""
         publish(new UpdateInfo)
         lBoard
+    }
+
+    def loadControllerFromDb(): Unit = {
+        val (gamestate, buildstate, (d1, d2), msg) = database.loadController()
+        controllerState = gamestate
+        buildStatus = buildstate
+        currentDice = (d1, d2)
+        currentGameMessage = msg
+
+        publish(new UpdateInfo)
+
+    }
+
+    override def loadBoardFromDb(): Unit = {
+        board = MainComponentServer.loadCurrentBoard()
     }
 }
 

@@ -403,7 +403,7 @@ object MainComponentServer {
 
         val responseString = getStringFromResponse(httpResonse)
 
-        println("Saving in Database was -> " + responseString)
+        println("Saving board in Database was -> " + responseString)
     }
 
     def loadCurrentBoard(): String = {

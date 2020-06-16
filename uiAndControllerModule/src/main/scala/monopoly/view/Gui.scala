@@ -51,15 +51,8 @@ class Gui(controller: IController) extends Frame with IUi {
                     controller.setUp
                 })
                 contents += new MenuItem(Action("Load") {
-                    import javax.swing.JFileChooser
-                    val chooser = new JFileChooser();
-                    chooser.setCurrentDirectory(new java.io.File("."));
-
-                    if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                        controller.setBoard(controller.loadGame(chooser.getSelectedFile.getAbsolutePath))
-                        publish(new UpdateInfo)
-
-                    }
+                    controller.loadBoardFromDb()
+                    controller.loadControllerFromDb()
 
                 })
                 contents += new MenuItem(Action("Save") {
