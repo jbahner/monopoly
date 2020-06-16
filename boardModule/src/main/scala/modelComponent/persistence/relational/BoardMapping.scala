@@ -22,7 +22,7 @@ object BoardMapping {
     )), Duration.Inf)
 
     def saveBoard(board: IBoard): Boolean = {
-        println("Saving in Database")
+        println("Saving in H2 Database")
         println(board.toJson().toString())
 
         try {
@@ -37,7 +37,7 @@ object BoardMapping {
 
     def loadBoard(): Option[IBoard] = {
         var board: Option[IBoard] = Option.empty
-        println("Loading from Database")
+        println("Loading from H2 Database")
 
         Await.result(db.run(DBIO.seq(
             boards.result.map(pl => {
