@@ -17,8 +17,8 @@ object BoardComponentServer {
     // Akka Inits
     private implicit val system: ActorSystem = ActorSystem("my-system")
     private implicit val materializer: ActorMaterializer = ActorMaterializer()
-//    private val database: IDaoBoard = RelationalAdapter
-    private val database: IDaoBoard = new MongoDbAdapter()
+    private val database: IDaoBoard = RelationalAdapter
+//    private val database: IDaoBoard = new MongoDbAdapter()
 
     private val PATH_ROOT =                                 "/"
     private val PATH_NEXT_PLAYER =                          "/board/next-player"

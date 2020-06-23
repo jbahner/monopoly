@@ -33,8 +33,8 @@ class Controller extends IController with Publisher {
     val injector: Injector = Guice.createInjector(new MonopolyModule)
     val undoManager = new UndoManager
 
-    private val database: IDaoController = new MongoDbAdapter()
-//    private val database: IDaoController = RelationalAdapter
+//    private val database: IDaoController = new MongoDbAdapter()
+    private val database: IDaoController = RelationalAdapter
 
 
 
@@ -144,7 +144,6 @@ class Controller extends IController with Publisher {
         publish(new UpdateGui)
     }
 
-    // TODO put this into the board
     def payRent(): Unit = {
         val payAmount = MainComponentServer.getCurrentFieldRent(board)
         val currentPlayerMoney = MainComponentServer.getCurrentPlayerMoney(board)
