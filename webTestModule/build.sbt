@@ -4,12 +4,6 @@ version := "0.1"
 
 scalaVersion := "2.12.8"
 
-//resourceDirectory in Compile := baseDirectory.value / "../resources"
-//resourceDirectory := baseDirectory { _ / "../resources" }
-
-
-
-//baseDirectory in run := file("M:\\InformatikProgramme\\6Semester\\SA\\monopoly")
 
 libraryDependencies += "com.typesafe.akka" %% "akka-http" % "10.1.12"
 libraryDependencies += "com.typesafe.akka" %% "akka-stream" % "2.5.26"
