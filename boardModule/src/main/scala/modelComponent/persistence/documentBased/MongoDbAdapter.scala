@@ -6,7 +6,7 @@ import modelComponent.persistence.IDaoBoard
 import org.mongodb.scala._
 import play.api.libs.json.{JsObject, Json}
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
 
@@ -22,9 +22,11 @@ class MongoDbAdapter extends IDaoBoard {
 
     override def saveBoard(board: IBoard): Boolean = {
         println("Saving board in MongoDb")
-        Await.result(boardCollection.insertOne(
+//        Await.result(
+            boardCollection.insertOne(
             Document("board" -> board.toJson().toString())
-        ).toFuture(), HTTP_RESPONSE_WAIT_TIME)
+        ).toFuture()
+//        , HTTP_RESPONSE_WAIT_TIME)
         true
     }
 

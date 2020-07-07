@@ -5,7 +5,7 @@ import modelComponent.boardComponent.boardBaseImpl.Board
 import play.api.libs.json.{JsObject, Json}
 import slick.driver.H2Driver.api._
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
@@ -26,23 +26,25 @@ object BoardMapping {
         println(board.toJson().toString())
 
         try {
-            Await.result(db.run(DBIO.seq(
+//            Await.result(
+                db.run(DBIO.seq(
                 boards += (DbBoard(board.toJson().toString())),
-            )), Duration.Inf)
+            ))
+//            , Duration.Inf)
             true
         } catch {
             case e:Exception => false
         }
     }
 
-    def loadBoard(): Option[IBoard] = {
-        var board: Option[IBoard] = Option.empty
+    def loadBoard(): Future[IBoard] = {
+        var board: Future[IBoard] = Future.never
         println("Loading from H2 Database")
 
         Await.result(db.run(DBIO.seq(
             boards.result.map(pl => {
                 println(pl)
-                board = Some(Board.fromSimplefiedJson(Json.parse(pl.head.contents).as[JsObject]))
+                board = Future(Board.fromSimplefiedJson(Json.parse(pl.head.contents).as[JsObject]))
             }))), Duration.Inf)
         board
     }

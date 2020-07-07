@@ -3,6 +3,9 @@ package modelComponent.persistence.relational
 import modelComponent.boardComponent.IBoard
 import modelComponent.persistence.IDaoBoard
 
+import scala.concurrent.duration.Duration
+import scala.concurrent.Await
+
 object RelationalAdapter extends IDaoBoard {
 
     private val boardMapping = BoardMapping
@@ -12,10 +15,6 @@ object RelationalAdapter extends IDaoBoard {
     }
 
     override def loadBoard(): IBoard = {
-        boardMapping.loadBoard() match {
-            case Some(board) => board
-            case None => println("Loading Board Failed")
-                throw new RuntimeException("Loading Board Failed")
-        }
+        Await.result(boardMapping.loadBoard(), Duration.Inf)
     }
 }
