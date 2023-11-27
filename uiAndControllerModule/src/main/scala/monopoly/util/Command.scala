@@ -2,10 +2,10 @@ package monopoly.util
 
 trait Command {
 
-    def doStep(): Unit
+    def doStep(): String
 
-    def undoStep(): Unit
+    def undoStep(): String
 
-    def redoStep(): Unit
+    def redoStep(): String
 
 }

@@ -1,13 +1,10 @@
 package monopoly.controller
 
-import boardComponent.IBoard
 import com.google.inject.Injector
-import gamestate.GameStatus.BuildStatus.BuildStatus
-import gamestate.GameStatus._
+import monopoly.controller.gamestate.GameStatus.BuildStatus.BuildStatus
+import monopoly.controller.gamestate.GameStatus.GameStatus
 import monopoly.util.UndoManager
 import play.api.libs.json.{JsObject, JsValue}
-import playerModule.fieldComponent.{Field, IBuyable}
-import playerModule.playerComponent.IPlayer
 
 import scala.swing.Publisher
 import scala.xml.Elem
@@ -20,33 +17,27 @@ trait IController extends Publisher {
     var currentGameMessage: String
     var currentDice: (Int, Int)
 
-    def getBoard: IBoard
+    def getBoard(): String
 
-    def setBoard(board: IBoard): Unit
+    def setBoard(board: String): Unit
 
-    def setUp: Unit
+    def setUp(): Unit
 
-    def getBuyer(buyable: IBuyable): Option[IPlayer]
+    def getOwnersName(streetName: String): String
 
-    def rollDice: Unit
+    def rollDice(): Unit
 
-    def nextPlayer: Unit
+    def nextPlayer(): Unit
 
-    def updateCurrentPlayerInfo: Unit
+    def updateCurrentPlayerInfo(): Unit
 
-    def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer)
+    def payRent()
 
-    def buy: Unit
-
-    def getFieldByName(name: String): Option[Field]
+    def buy(): Unit
 
     def buildHouses(streetName: String, amount: Int): Unit
 
-    def getCurrentField: Field
-
-    def getCurrentPlayer: Option[IPlayer]
-
-    def catCurrentGameMessage: String
+    def catCurrentGameMessage(): String
 
     def turnString(message: String): String
 
@@ -60,15 +51,13 @@ trait IController extends Publisher {
 
     def getCurrentGameMessage: String
 
-    def buildablesToString(buildables: List[Set[String]]): String
+    def getJSON(): JsValue
 
-    def getJSON: JsValue
+    def getControllerState(): GameStatus
 
-    def getControllerState: GameStatus
+    def getUndoManager(): UndoManager
 
-    def getUndoManager: UndoManager
-
-    def getBuildStatus: BuildStatus
+    def getBuildStatus(): BuildStatus
 
     def getCurrentDice: (Int, Int)
 
@@ -78,7 +67,20 @@ trait IController extends Publisher {
 
     def toJson(): JsObject
 
-    def saveGame()
+    def saveGame(): Unit
 
-    def loadGame(path: String = "save-game")
+    def loadGame(path: String = "save-game"): String
+
+    def loadDefaultGame(): String
+
+    def shutdown(): Unit
+
+    def currentPlayerWalk(): String
+
+    def getDidPlayerPassGo(): Boolean
+
+    def loadControllerFromDb(): Unit
+
+    def loadBoardFromDb(): Unit
+
 }

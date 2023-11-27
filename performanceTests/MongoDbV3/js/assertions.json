@@ -1,0 +1,10 @@
+{
+  "simulation": "MonopolySimulation",
+  "simulationId": "monopolysimulation",
+  "start": 1592916275351,
+  "description": "",
+  "scenarios": ["MonopolySimulation"],
+  "assertions": [
+
+  ]
+}

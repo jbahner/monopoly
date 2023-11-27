@@ -1,0 +1,21 @@
+version: '3'
+services:
+  control_module:
+    image: niggischiggi/control_module:v1
+    stdin_open: true
+    tty: true
+    ports:
+      - 8080:8080
+    networks:
+      default:
+        aliases:
+          - mycontrol
+
+  game_module:
+    image: niggischiggi/board_module:v1
+    ports:
+      - 8082:8082
+    networks:
+      default:
+        aliases:
+          - myboard

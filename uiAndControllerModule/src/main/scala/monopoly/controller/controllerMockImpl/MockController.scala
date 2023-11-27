@@ -1,36 +1,29 @@
 package monopoly.controller.controllerMockImpl
 
-import boardComponent.IBoard
 import com.google.inject.{Guice, Injector}
-import gamestate.GameStatus.BuildStatus.BuildStatus
-import gamestate.GameStatus.GameStatus
 import monopoly.MonopolyModule
-import monopoly.controller.IController
+import monopoly.controller.gamestate.GameStatus.BuildStatus.BuildStatus
+import monopoly.controller.gamestate.GameStatus.GameStatus
 import monopoly.util.UndoManager
 import play.api.libs.json.{JsObject, JsValue}
-import playerModule.fieldComponent.{Field, IBuyable}
-import playerModule.playerComponent.IPlayer
 
 import scala.swing.Publisher
 import scala.xml.Elem
 
-class MockController extends IController with Publisher {
+class MockController
+//    extends IController 
+    extends Publisher {
     val injector: Injector = Guice.createInjector(new MonopolyModule)
     var controllerState: GameStatus = _
     var buildStatus: BuildStatus = _
     var currentGameMessage: String = _
     var currentDice: (Int, Int) = _
 
-    def getBoard: IBoard = ???
-
-    def setBoard(board: IBoard): Unit = ???
 
     def setUp: Unit = {
         print("THIS IS A MOCK IMPLEMENTATION\n")
         throw new Exception("MOCK IMPLEMENTATION")
     }
-
-    def getBuyer(buyable: IBuyable): Option[IPlayer] = ???
 
     def rollDice: Unit = ???
 
@@ -38,19 +31,11 @@ class MockController extends IController with Publisher {
 
     def updateCurrentPlayerInfo: Unit = ???
 
-    def payRent(currentPlayer: IPlayer, field: IBuyable, receiver: IPlayer): Unit = ???
-
     def buy: Unit = ???
-
-    def getFieldByName(name: String): Option[Field] = ???
 
     def buildHouses(streetName: String, amount: Int): Unit = ???
 
-    def getCurrentField: Field = ???
-
-    def getCurrentPlayer: Option[IPlayer] = ???
-
-    def catCurrentGameMessage: String = ???
+    def catCurrentGameMessage(): String = ???
 
     def turnString(message: String): String = ???
 
@@ -76,13 +61,29 @@ class MockController extends IController with Publisher {
 
     def getCurrentDice: (Int, Int) = ???
 
-    override def toXml(): Elem = ???
+    def toXml(): Elem = ???
 
-    override def saveGame(): Unit = ???
+    def saveGame(): Unit = ???
 
-    override def loadGame(path: String): Unit = ???
+    def loadGame(path: String): Unit = ???
 
-    override def unstyleString(input: String): String = ???
+    def unstyleString(input: String): String = ???
 
-    override def toJson(): JsObject = ???
+    def toJson(): JsObject = ???
+
+    def shutdown(): Unit = ???
+
+    def getHouseCost(streetName: String): Int = ???
+
+    def getHouseCount(streetName: String): Int = ???
+
+    def getCurrentFieldType(): String = ???
+
+    def getCurrentFieldName(): String = ???
+
+    def getCurrentFieldOwnerMessage(): String = ???
+
+    def getCurrentFieldRent(): Int = ???
+
+    def getCurrentFieldOwnersName(): String = ???
 }

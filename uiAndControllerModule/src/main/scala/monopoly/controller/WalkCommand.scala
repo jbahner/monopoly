@@ -1,65 +1,68 @@
 package monopoly.controller
 
-import boardComponent.IBoard
-import gamestate.GameStatus._
+import monopoly.MainComponentServer
 import monopoly.controller.controllerBaseImpl.{CatGuiMessage, UpdateInfo}
-import monopoly.util.{Command, GeneralUtil}
-import playerModule.fieldComponent.IBuyable
+import monopoly.controller.gamestate.GameStatus._
+import monopoly.util.Command
 
 
 case class WalkCommand(dice: (Int, Int), controller: IController) extends Command {
-    private val backupBoard: IBoard = controller.getBoard.copy(controller.getBoard.getFields,
-        controller.getBoard.getCurrentPlayer,
-        controller.getBoard.getPlayerIt)
+    private val backupBoard: String = controller.getBoard()
     private val backupGameString: String = controller.getCurrentGameMessage
 
-    override def undoStep(): Unit = {
+    override def undoStep(): String = {
         controller.setBoard(backupBoard)
         controller.controllerState = START_OF_TURN
         controller.currentGameMessage = backupGameString
-        controller.updateCurrentPlayerInfo
+        controller.updateCurrentPlayerInfo()
         controller.publish(new UpdateInfo)
+        backupBoard
     }
 
-    override def redoStep(): Unit = {
-        doStep()
+    override def redoStep(): String = {
+        val board = doStep()
         controller.publish(new UpdateInfo)
+        board
     }
 
-    override def doStep(): Unit = {
+    override def doStep(): String = {
         controller.controllerState = ROLLED
-        controller.catCurrentGameMessage
+        controller.catCurrentGameMessage()
         controller.publish(new CatGuiMessage)
-        val player = controller.getBoard.getCurrentPlayer
-        val (newPlayer, passedGo) = player.walk(dice._1 + dice._2)
+
+        // Seems a bit buggy -> Player always walks from "Go" and not from previous field
+        val board = controller.currentPlayerWalk()
+
+        val passedGo = controller.getDidPlayerPassGo()
+        controller.setBoard(board)
 
         if (passedGo) {
             controller.controllerState = PASSED_GO
-            controller.catCurrentGameMessage
+            controller.catCurrentGameMessage()
             controller.publish(new CatGuiMessage)
         }
 
-        controller.setBoard(controller.getBoard.replacePlayer(player, newPlayer))
+
         controller.controllerState = NEW_FIELD
-        controller.catCurrentGameMessage
+        controller.catCurrentGameMessage()
         controller.publish(new CatGuiMessage)
 
-        val newField = controller.getCurrentField
         // Action return ALREADY_BOUGHT, CAN_BUY or BOUGHT_BY_OTHER
-        controller.controllerState = newField.action(newPlayer)
-        controller.catCurrentGameMessage
+        controller.controllerState = MainComponentServer.getFieldGameState(controller.getBoard())
+        // controller.catCurrentGameMessage()
         controller.publish(new CatGuiMessage)
 
         controller.controllerState match {
             case BOUGHT_BY_OTHER =>
-                controller.payRent(controller.getCurrentPlayer.get, controller.getCurrentField.asInstanceOf[IBuyable],
-                    controller.getBuyer(controller.getCurrentField.asInstanceOf[IBuyable]).get)
+                // RentPay 3
+                controller.payRent()
             case _ =>
         }
 
-        if (GeneralUtil.getWholeGroups(newPlayer) != Nil) {
+        if (MainComponentServer.canCurrentPlayerBuyHouses(controller.getBoard())) {
             controller.controllerState = CAN_BUILD
             controller.buildStatus = BuildStatus.DEFAULT
         }
+        board
     }
 }

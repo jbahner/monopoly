@@ -1,16 +1,17 @@
 package monopoly.view
 
-import gamestate.GameStatus
-import gamestate.GameStatus._
+import monopoly.MainComponentServer
 import monopoly.controller.IController
 import monopoly.controller.controllerBaseImpl.UpdateInfo
+import monopoly.controller.gamestate.GameStatus
+import monopoly.controller.gamestate.GameStatus._
 
 import scala.swing.Reactor
 import scala.util.{Failure, Success, Try}
 
 class Tui(controller: IController) extends Reactor with IUi {
     listenTo(controller)
-    playerInfo(message(NEXT_PLAYER) + controller.getCurrentPlayer.get.getDetails)
+    playerInfo(message(NEXT_PLAYER) + MainComponentServer.getCurrentPlayerDetails(controller.getBoard()))
 
 
     def processInput(input: String): Unit = {
@@ -50,7 +51,7 @@ class Tui(controller: IController) extends Reactor with IUi {
                         val args = other.split("_")
                         if (args.length != 2) {
                             userInput("Invalid argument for street or amount of houses!\n" +
-                              "<street name>_<amount of houses>")
+                                "<street name>_<amount of houses>")
                             controller.buildStatus = GameStatus.BuildStatus.INVALID_ARGS
                         }
                         else {
@@ -60,7 +61,7 @@ class Tui(controller: IController) extends Reactor with IUi {
                                 case Success(v: Int) => controller.buildHouses(args(0), v)
                                 case Failure(_) =>
                                     userInput("Invalid argument for street or amount of houses!\n" +
-                                      "<street name>_<amount of houses>")
+                                        "<street name>_<amount of houses>")
                             }
                         }
                 }
@@ -70,7 +71,7 @@ class Tui(controller: IController) extends Reactor with IUi {
     }
 
     reactions += {
-        case event: UpdateInfo => info(controller.catCurrentGameMessage)
+        case event: UpdateInfo => info(controller.catCurrentGameMessage())
     }
 
     def userInput(message: String): Unit = {
@@ -91,5 +92,9 @@ class Tui(controller: IController) extends Reactor with IUi {
 
     def info(message: String): Unit = {
         Console.println(Console.BOLD + Console.BLUE + message + Console.RESET)
+    }
+
+    override def closeOperation(): Unit = {
+        controller.shutdown()
     }
 }
